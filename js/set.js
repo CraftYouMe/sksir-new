@@ -98,53 +98,33 @@ var se_list_preinstall = {
 // 默认快捷方式
 var quick_list_preinstall = {
     '1': {
-        title: "Vercel",
-        url: "https://vercel.com/",
+        title: "BiliBili",
+        url: "https://BiliBili.com",
     },
     '2': {
-        title: "GitHub",
-        url: "https://github.com/",
+        title: "哔咪动画",
+        url: "http://www.bimiacg4.net/",
     },
     '3': {
-        title: "Cloudflare",
-        url: "https://dash.cloudflare.com/",
+        title: "AGE动漫",
+        url: "https://www.agemys.net/",
     },
     '4': {
-        title: "W3school",
-        url: "https://www.w3school.com.cn/",
+        title: "樱花动漫",
+        url: "https://www.yhpdm.com/",
     },
     '5': {
-        title: "腾讯云",
-        url: "https://console.cloud.tencent.com/",
+        title: "云班课",
+        url: "https://www.mosoteach.cn/web/index.php?c=passport&m=index",
     },
     '6': {
-        title: "阿里云",
-        url: "https://console.aliyun.com/",
+        title: "全球通",
+        url: "https://www.goingv2pro.com/",
     },
     '7': {
-        title: "百度网盘",
-        url: "https://pan.baidu.com/",
+        title: "OPEN AI Key",
+        url: "https://platform.openai.com/account/api-keys",
     },
-    '8': {
-        title: "阿里云盘",
-        url: "https://www.aliyundrive.com/drive/",
-    },
-    '9': {
-        title: "Office",
-        url: "https://www.office.com/",
-    },
-    '10': {
-        title: "又拍云",
-        url: "https://console.upyun.com/",
-    },
-    '11': {
-        title: "CSDN",
-        url: "https://www.csdn.net/",
-    },
-    '12': {
-        title: "哔哩哔哩",
-        url: "https://www.bilibili.com/",
-    }
 };
 
 // 获取搜索引擎列表
@@ -221,19 +201,12 @@ function setBgImgInit() {
         case "1":
             var pictures = new Array();
             pictures[0] = './img/background1.jpg';
-            var rd = Math.floor(Math.random() * 10);
-            $('#bg').attr('src', pictures[rd]) //随机默认壁纸
+            $('#bg').attr('src', pictures[0]) //随机默认壁纸
             break;
         case "2":
             $('#bg').attr('src', 'https://api.dujin.org/bing/1920.php') //必应每日
             break;
         case "3":
-            $('#bg').attr('src', 'https://api.ixiaowai.cn/gqapi/gqapi.php') //随机风景
-            break;
-        case "4":
-            $('#bg').attr('src', 'https://api.ixiaowai.cn/api/api.php') //随机二次元
-            break;
-        case "5":
             $('#bg').attr('src', bg_img["path"]) //自定义
             break;
     }
@@ -1082,22 +1055,6 @@ $(document).ready(function () {
         }
 
         if (type === "3") {
-            $('#wallpaper_text').html("显示随机风景图，每次刷新后更换，刷新页面以生效 | API @ 小歪");
-            setBgImg(bg_img);
-            iziToast.show({
-                message: '壁纸设置成功，刷新生效',
-            });
-        }
-
-        if (type === "4") {
-            $('#wallpaper_text').html("显示随机二次元图，每次刷新后更换，刷新页面以生效 | API @ 小歪");
-            setBgImg(bg_img);
-            iziToast.show({
-                message: '壁纸设置成功，刷新生效',
-            });
-        }
-
-        if (type === "5") {
             $('#wallpaper_text').html("自定义壁纸地址，请输入正确地址，点击保存且刷新页面以生效");
             $("#wallpaper_url").fadeIn(100);
             $("#wallpaper-button").fadeIn(100);
