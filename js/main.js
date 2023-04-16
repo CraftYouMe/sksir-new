@@ -64,7 +64,7 @@ window.addEventListener('load', function () {
     setTimeout(function () {
         iziToast.show({
             title: hello,
-            message: '欢迎来到 Sksir标签页'
+            message: '欢迎来到 导航酱'
         });
     }, 800);
 
