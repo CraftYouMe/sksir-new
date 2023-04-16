@@ -122,8 +122,16 @@ var quick_list_preinstall = {
         url: "https://www.goingv2pro.com/",
     },
     '7': {
-        title: "OPEN AI Key",
+        title: "OPENAI Key",
         url: "https://platform.openai.com/account/api-keys",
+    },
+    '8': {
+        title: "Vercel",
+        url: "https://platform.openai.com/account/api-keys",
+    },
+    '9': {
+        title: "Railway",
+        url: "https://railway.app",
     },
 };
 
