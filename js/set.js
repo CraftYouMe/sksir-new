@@ -98,38 +98,50 @@ var se_list_preinstall = {
 // 默认快捷方式
 var quick_list_preinstall = {
     '1': {
+        title: "MOSS Web",
+        url: "https://web.farone.cn",
+    },
+    '2': {
+        title: "MOSS~",
+        url: "https://chat.farone.cn",
+    },
+    '3': {
+        title: "My Blog",
+        url: "https://farone.cn",
+    },
+    '4': {
         title: "BiliBili",
         url: "https://BiliBili.com",
     },
-    '2': {
+    '5': {
         title: "哔咪动画",
         url: "http://www.bimiacg4.net/",
     },
-    '3': {
+    '6': {
         title: "AGE动漫",
         url: "https://www.agemys.net/",
     },
-    '4': {
+    '7': {
         title: "樱花动漫",
         url: "https://www.yhpdm.com/",
     },
-    '5': {
+    '8': {
         title: "云班课",
         url: "https://www.mosoteach.cn/web/index.php?c=passport&m=index",
     },
-    '6': {
+    '9': {
         title: "全球通",
         url: "https://www.goingv2pro.com/",
     },
-    '7': {
+    '10': {
         title: "OPENAI Key",
         url: "https://platform.openai.com/account/api-keys",
     },
-    '8': {
+    '11': {
         title: "Vercel",
         url: "https://platform.openai.com/account/api-keys",
     },
-    '9': {
+    '12': {
         title: "Railway",
         url: "https://railway.app",
     },
