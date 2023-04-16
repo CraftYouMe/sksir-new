@@ -172,7 +172,7 @@ function setSeList(se_list) {
 // 获得默认搜索引擎
 function getSeDefault() {
     var se_default = Cookies.get('se_default');
-    return se_default ? se_default : "1";
+    return se_default ? se_default : "2";
 }
 
 //背景图片
@@ -566,6 +566,10 @@ $(document).ready(function () {
             blurWd();
         } else {
             openBox();
+            // 添加时间向上移动的样式
+            $(".tool-all").css({
+                "transform": 'translateY(-160%)'
+            });
         }
     });
 
@@ -1116,7 +1120,7 @@ $(document).ready(function () {
     // 自定义壁纸设置保存
     $(".wallpaper_save").click(function () {
         var url = $("#wallpaper-url").val();
-        var reg = /^http(s)?:\/\/(([\w-]+\.)+[\w-]|localhost)+(:[0-9]{1,5})?(\/[\w- ./?%&=]*)?$/g;
+        var reg = /^https?:\/\/(?:[a-z0-9-]+\.)*[a-z0-9-]+(?:\.[a-z]{2,})+(?:\/\S*)?\.(?:jpe?g|png|gif)$/i;
         if (!reg.test(url)) {
             iziToast.show({
                 message: '请输入正确的链接',

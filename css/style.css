@@ -166,7 +166,7 @@ img.error {
 
 /*时间上移*/
 .onsearch .tool-all {
-    transform: translateY(-140%) !important;
+    transform: translateY(-160%) !important;
 }
 
 /*搜索引擎选择上移*/
@@ -227,13 +227,6 @@ img.error {
     text-shadow: var(--main-text-shadow);
 }
 
-/*天气*/
-.weather {
-    color: #efefef;
-    opacity: 0.8;
-    font-size: 1.10rem;
-    text-shadow: var(--main-text-shadow);
-}
 
 /*搜索框*/
 .search,

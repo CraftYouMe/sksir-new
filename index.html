@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snavigation</title>
+    <title>新建标签页</title>
     <link rel="icon" href="favicon.ico">
     <!-- jQuery -->
     <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-y/jquery/3.6.0/jquery.min.js"></script>
@@ -29,22 +29,6 @@
 </head>
 
 <body>
-    <!--加载动画-->
-    <div id="loading-box">
-        <div class="loading-left-bg"></div>
-        <div class="loading-right-bg"></div>
-        <div class="spinner-box">
-            <div class="loader">
-                <div class="inner one"></div>
-                <div class="inner two"></div>
-                <div class="inner three"></div>
-            </div>
-            <div class="loading-word">
-                <p class="loading-title">Snavigation</p>
-                <span id="loading-text">加载中</span>
-            </div>
-        </div>
-    </div>
     <!-- 背景图片 -->
     <div class="bg-all">
         <img id="bg" onerror="this.classList.add('error');"></img>
@@ -57,12 +41,8 @@
                 <!-- 时间天气 -->
                 <div class="tool-all">
                     <div class="time">
-                        <span id="time_text">00<span id="point">:</span>00</span>
-                        <span id="day">0&nbsp;月&nbsp;00&nbsp;日&nbsp;周一</span>
-                    </div>
-                    <div class="weather">
-                        <span id="wea_text">N/A</span>&nbsp;<span id="tem2">N/A</span>°C&nbsp;~&nbsp;<span
-                            id="tem1">N/A</span>°C
+                        <span id="time_text"><span id="point"></span></span>
+                        <span id="day"></span>
                     </div>
                 </div>
                 <!-- 搜索框 -->

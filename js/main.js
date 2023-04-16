@@ -1,3 +1,43 @@
+$(document).ready(function () {
+    var time_key = "my_time";  // 定义本地存储的 key
+
+    // 读取本地存储中保存的时间信息，如果不存在则初始化为当前时间
+    var saved_time = localStorage.getItem(time_key);
+    if (!saved_time) {
+        saved_time = Date.now();
+        localStorage.setItem(time_key, saved_time);
+    }
+    saved_time = parseInt(saved_time);
+
+    var t = null;
+    t = setTimeout(time, 1000);
+
+    function time() {
+        clearTimeout(t);
+        var now = Date.now();
+        var dt = new Date(now);
+        var saved_dt = new Date(saved_time);
+        var diff = now - saved_time;
+        var mm = dt.getMonth() + 1;
+        var d = dt.getDate();
+        var weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+        var day = dt.getDay();
+        var h = saved_dt.getHours();  // 从保存的时间中获取小时和分钟数
+        var m = saved_dt.getMinutes() + Math.floor(diff / (60 * 1000));  // 根据时间差来计算分钟数
+        saved_time += diff;
+        localStorage.setItem(time_key, saved_time);  // 更新本地存储中的时间信息
+        if (h < 10) {
+            h = "0" + h;
+        }
+        if (m < 10) {
+            m = "0" + m;
+        }
+        $("#time_text").html(h + '<span id="point">:</span>' + m);
+        $("#day").html(mm + "&nbsp;月&nbsp;" + d + "&nbsp;日&nbsp;" + weekday[day]);
+        t = setTimeout(time, 1000);
+    }
+});
+
 //加载完成后执行
 window.addEventListener('load', function () {
     //载入动画
@@ -24,7 +64,7 @@ window.addEventListener('load', function () {
     setTimeout(function () {
         iziToast.show({
             title: hello,
-            message: '欢迎来到 Snavigation'
+            message: '欢迎来到 Sksir标签页'
         });
     }, 800);
 
@@ -59,42 +99,7 @@ if (hour < 6) {
     var hello = "夜深了";
 }
 
-//获取时间
-var t = null;
-t = setTimeout(time, 1000);
 
-function time() {
-    clearTimeout(t);
-    dt = new Date();
-    var mm = dt.getMonth() + 1;
-    var d = dt.getDate();
-    var weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-    var day = dt.getDay();
-    var h = dt.getHours();
-    var m = dt.getMinutes();
-    if (h < 10) {
-        h = "0" + h;
-    }
-    if (m < 10) {
-        m = "0" + m;
-    }
-    $("#time_text").html(h + '<span id="point">:</span>' + m);
-    $("#day").html(mm + "&nbsp;月&nbsp;" + d + "&nbsp;日&nbsp;" + weekday[day]);
-    t = setTimeout(time, 1000);
-}
-
-//获取天气
-//每日限量 100 次
-//请前往 https://www.tianqiapi.com/index/doc?version=v6 申请（免费）
-fetch('https://yiketianqi.com/api?unescape=1&version=v6&appid=43986679&appsecret=TksqGZT7')
-    .then(response => response.json())
-    .then(data => {
-        //$('#wea_text').html(data.wea + '&nbsp;' + data.tem_night + '℃' + '&nbsp;~&nbsp;' + data.tem_day + '℃')
-        $('#wea_text').text(data.wea)
-        $('#tem1').text(data.tem1)
-        $('#tem2').text(data.tem2)
-    })
-    .catch(console.error)
     
 //Tab书签页
 $(function () {
@@ -151,20 +156,10 @@ color: rgb(244,167,89);
 var styleContent = `
 color: rgb(30,152,255);
 `
-var title1 = 'Snavigation'
-var title2 = `
- _____ __  __  _______     ____     __
-|_   _|  \\/  |/ ____\\ \\   / /\\ \\   / /
-  | | | \\  / | (___  \\ \\_/ /  \\ \\_/ / 
-  | | | |\\/| |\\___ \\  \\   /    \\   /  
- _| |_| |  | |____) |  | |      | |   
-|_____|_|  |_|_____/   |_|      |_|                                                     
-`
+var title1 = 'sksir'
 var content = `
-版 本 号：1.1
-更新日期：2022-07-12
-
-Github:  https://github.com/imsyy/Snavigation
+版 本 号：0.1
+更新日期：2023-04-16
 `
-console.log(`%c${title1} %c${title2}
+console.log(`%c${title1}
 %c${content}`, styleTitle1, styleTitle2, styleContent)
