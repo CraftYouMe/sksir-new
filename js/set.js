@@ -1,16 +1,16 @@
 /*
 作者:D.Young
-主页：https://yyv.me/
-github：https://github.com/5iux/sou
 日期：2019-07-26
 版权所有，请勿删除
 ========================================
 由 yeetime 修改
-github：https://github.com/yeetime/sou2
 日期：2019-12-13
 ========================================
 由 imsyy 二次修改
-github：https://github.com/imsyy/sou2
+日期：2022-03-10
+========================================
+由 CraftYui 三次修改
+github：https://github.com/CraftYouMe/sksir-new
 日期：2022-03-10
 */
 
@@ -1095,6 +1095,9 @@ $(document).ready(function () {
         } else {
             $("#wallpaper_url").fadeOut(300);
             $("#wallpaper-button").fadeOut(300);
+        }
+        if (type === "4") {
+            $('#wallpaper_text').html("暂未实现该功能");
         }
     });
 
