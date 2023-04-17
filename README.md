@@ -8,18 +8,23 @@
 ### Demo
 >由于 CDN 缓存原因，查看最新效果可能需要 `Ctrl` + `F5` 强制刷新浏览器缓存
 
-- [Snavigation](https://snavigation.vercel.app/)
+- [Sksir](https://sksir.top/)
 
 ### 功能
 
-- [x] 载入动画
 - [x] 搜索引擎切换
-- [x] 时间及天气显示
+- [x] 时间显示
 - [x] 快捷方式自定义
 - [x] 网站背景自定义
 - [x] 数据备份及恢复
 - [x] 移动端适配
 * [ ] 还没想好呢
+
+### 插件
+
+* [iziToast](https://izitoast.marcelodolza.com/)
+* [Iconfont](https://www.iconfont.cn/)
+* [jQuery](https://jquery.com/)
 
 ### 鸣谢
 
