@@ -145,6 +145,10 @@ var quick_list_preinstall = {
         title: "Railway",
         url: "https://railway.app",
     },
+    '13': {
+        title: "QQ邮箱",
+        url: "https://mail.qq.com",
+    },
 };
 
 // 获取搜索引擎列表
