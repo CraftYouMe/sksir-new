@@ -367,6 +367,19 @@ function quickData() {
                 </div>`;
     }
     $(".quick-all").html(html + `<div class="quick"><a id="set-quick"><i class="iconfont icon-tianjia-"></i></a></div>`);
+    
+    // 绑定点击事件
+    $(document).on("click", "#set-quick", function () {
+        openSet();
+
+        // 设置内容加载
+        setSeInit(); //搜索引擎设置
+        setQuickInit(); //快捷方式设置
+
+        //添加快捷方式
+        $("#set-quick-menu").trigger('click');
+        $(".set_quick_list_add").trigger('click');
+    });
 }
 
 // 设置-快捷方式加载
