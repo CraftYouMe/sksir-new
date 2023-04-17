@@ -220,7 +220,7 @@ function setBgImgInit() {
     switch (bg_img["type"]) {
         case "1":
             var pictures = new Array();
-            pictures[0] = './img/background1.jpg';
+            pictures[0] = 'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image.jpg';
             $('#bg').attr('src', pictures[0]) //随机默认壁纸
             break;
         case "2":
