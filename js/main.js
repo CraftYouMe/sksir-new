@@ -1,7 +1,6 @@
 $(document).ready(function () {
     var time_key = "my_time";  // 定义本地存储的 key
 
-    // 读取本地存储中保存的时间信息，如果不存在则初始化为当前时间
     var saved_time = localStorage.getItem(time_key);
     if (!saved_time) {
         saved_time = Date.now();
@@ -9,8 +8,18 @@ $(document).ready(function () {
     }
     saved_time = parseInt(saved_time);
 
-    var t = null;
-    t = setTimeout(time, 1000);
+    var t = setTimeout(function() {
+        time();
+    }, 0);
+
+    // 添加 visibilitychange 事件的处理函数
+    document.addEventListener("visibilitychange", function() {
+        if (document.visibilityState === 'visible') {
+            // 如果页面已唤醒，重新计算时间差
+            saved_time += (Date.now() - saved_time);
+            localStorage.setItem(time_key, saved_time);
+        }
+    });
 
     function time() {
         clearTimeout(t);
@@ -22,10 +31,15 @@ $(document).ready(function () {
         var d = dt.getDate();
         var weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
         var day = dt.getDay();
-        var h = saved_dt.getHours();  // 从保存的时间中获取小时和分钟数
-        var m = saved_dt.getMinutes() + Math.floor(diff / (60 * 1000));  // 根据时间差来计算分钟数
+        var h = saved_dt.getHours();
+        var m = saved_dt.getMinutes() + Math.floor(diff / (60 * 1000));
+        // 如果分钟数超过60，将小时数加上相应的量，并减去60
+        if (m >= 60) {
+            h += Math.floor(m / 60);
+            m = m % 60;
+        }
         saved_time += diff;
-        localStorage.setItem(time_key, saved_time);  // 更新本地存储中的时间信息
+        localStorage.setItem(time_key, saved_time);
         if (h < 10) {
             h = "0" + h;
         }
@@ -37,6 +51,8 @@ $(document).ready(function () {
         t = setTimeout(time, 1000);
     }
 });
+
+
 
 //加载完成后执行
 window.addEventListener('load', function () {
@@ -158,8 +174,16 @@ color: rgb(30,152,255);
 `
 var title1 = 'sksir'
 var content = `
-版 本 号：0.1
-更新日期：2023-04-16
+版 本 号：0.2
+更新日期：2023-04-19
+
+0.2 | 更新内容
+1. 修复刷新页面时间暂时消失
+2. 修复页面休眠分钟超过60m
+
+0.1 | 更新内容
+1. 修复搜索栏显示距离
+2. 修复添加快捷方式失效问题
 `
 console.log(`%c${title1}
 %c${content}`, styleTitle1, styleTitle2, styleContent)
