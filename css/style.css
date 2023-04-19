@@ -143,6 +143,7 @@ img.error {
     background-color: var(--main-text-form-hover-color);
     transform: translateY(-140%);
     transition: ease 0.3s !important;
+    width: 100%;
 }
 
 /*背景模糊*/
@@ -156,12 +157,14 @@ img.error {
 .onsearch #icon-se {
     color: var(--main-text-form-color) !important;
     transition: ease 0.5s;
+    display: block;
 }
 
 /*搜索按钮*/
 .onsearch #icon-sou {
     color: var(--main-text-form-color) !important;
     transition: ease 0.5s;
+    display: block;
 }
 
 /*时间上移*/
@@ -254,7 +257,7 @@ img.error {
 .all-search {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 70%;
     height: 43px;
     border-radius: 30px;
     color: var(--main-text-color);
@@ -268,6 +271,7 @@ img.error {
 
 .all-search:hover {
     box-shadow: var(--main-search-hover-shadow);
+    width: 100%;
 }
 
 .con .sou form .wd {
@@ -295,6 +299,7 @@ img.error {
 #icon-sou {
     font-size: 1.25rem;
     color: #efefef;
+    display: none;
 }
 
 .sou form .se {
