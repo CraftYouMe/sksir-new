@@ -565,6 +565,10 @@ $(document).ready(function () {
             closeBox();
             closeSet();
             blurWd();
+            // 隐藏搜索按钮
+            $('#s-button').hide();
+            // 隐藏引擎按钮
+            $('.se').hide();
         } else {
             openBox();
             // 添加时间向上移动的样式
@@ -599,6 +603,10 @@ $(document).ready(function () {
     // 搜索框点击事件
     $(document).on('click', '.sou', function () {
         focusWd();
+        // 显示搜索按钮
+        $('#s-button').show();
+        // 显示引擎按钮
+        $('.se').show();
         $(".search-engine").slideUp(160);
     });
 
@@ -608,10 +616,16 @@ $(document).ready(function () {
         $(".search-engine").slideUp(160);
     });
 
+
+
     // 点击其他区域关闭事件
     $(document).on('click', '.close_sou', function () {
         blurWd();
         closeSet();
+        // 隐藏搜索按钮
+        $('#s-button').hide();
+        // 隐藏引擎按钮
+        $('.se').hide();
     });
 
     // 点击搜索引擎时隐藏自动提示
