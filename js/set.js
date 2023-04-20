@@ -431,9 +431,6 @@ function openSet() {
 
     openBox();
 
-    //更改设置图标
-    $("#icon-menu").attr("class", "iconfont icon-home");
-
     //隐藏书签打开设置
     $(".mark").css({
         "display": "none",
@@ -449,13 +446,13 @@ function closeSet() {
 
     closeBox();
 
-    //更改设置图标
-    $("#icon-menu").attr("class", "iconfont icon-shezhi");
 
     //隐藏设置
     $(".set").css({
         "display": "none",
     });
+
+    $('#menu').hide();
 
     // 刷新主页数据
     seList();
@@ -569,8 +566,10 @@ $(document).ready(function () {
             $('#s-button').hide();
             // 隐藏引擎按钮
             $('.se').hide();
+            $('#menu').hide();
         } else {
             openBox();
+            $('#menu').show();
             // 添加时间向上移动的样式
             $(".tool-all").css({
                 "transform": 'translateY(-160%)'
@@ -607,6 +606,7 @@ $(document).ready(function () {
         $('#s-button').show();
         // 显示引擎按钮
         $('.se').show();
+        $('#menu').show();
         $(".search-engine").slideUp(160);
     });
 
@@ -626,6 +626,7 @@ $(document).ready(function () {
         $('#s-button').hide();
         // 隐藏引擎按钮
         $('.se').hide();
+        $('#menu').hide();
     });
 
     // 点击搜索引擎时隐藏自动提示
