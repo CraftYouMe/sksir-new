@@ -1,53 +1,56 @@
-$(document).ready(function() {
-    var time_key = "my_time";
+$(document).ready(function () {
+    var time_key = "my_time";  // 定义本地存储的 key
+
     var saved_time = localStorage.getItem(time_key);
     if (!saved_time) {
-      saved_time = Date.now();
-      localStorage.setItem(time_key, saved_time);
+        saved_time = Date.now();
+        localStorage.setItem(time_key, saved_time);
     }
     saved_time = parseInt(saved_time);
-  
-    // 显示初始时间
-    update_time();
-  
-    setInterval(function() {
-      // 更新时间
-      update_time();
-    }, 1000);
-  
+
+    var t = setTimeout(function() {
+        time();
+    }, 0);
+
     // 添加 visibilitychange 事件的处理函数
     document.addEventListener("visibilitychange", function() {
-      if (document.visibilityState === 'visible') {
-        // 如果页面已唤醒，重新计算时间差
-        saved_time += (Date.now() - saved_time);
-        localStorage.setItem(time_key, saved_time);
-      }
+        if (document.visibilityState === 'visible') {
+            // 如果页面已唤醒，重新计算时间差
+            saved_time += (Date.now() - saved_time);
+            localStorage.setItem(time_key, saved_time);
+        }
     });
-  
-    function update_time() {
-      var dt = new Date(saved_time);
-      var hh = dt.getHours();
-      var mm = dt.getMinutes();
-      if (hh < 10) {
-        hh = "0" + hh;
-      }
-      if (mm < 10) {
-        mm = "0" + mm;
-      }
-      $("#time_text").html(hh + '<span id="point">:</span>' + mm);
-      var mm = dt.getMonth() + 1;
-      var d = dt.getDate();
-      var weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-      var day = dt.getDay();
-      $("#day").html(mm + "&nbsp;月&nbsp;" + d + "&nbsp;日&nbsp;" + weekday[day]);
-  
-      // 更新保存的时间
-      saved_time += 1000;
-      localStorage.setItem(time_key, saved_time);
-    }
-  });
-  
 
+    function time() {
+        clearTimeout(t);
+        var now = Date.now();
+        var dt = new Date(now);
+        var saved_dt = new Date(saved_time);
+        var diff = now - saved_time;
+        var mm = dt.getMonth() + 1;
+        var d = dt.getDate();
+        var weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+        var day = dt.getDay();
+        var h = saved_dt.getHours();
+        var m = saved_dt.getMinutes() + Math.floor(diff / (60 * 1000));
+        // 如果分钟数超过60，将小时数加上相应的量，并减去60
+        if (m >= 60) {
+            h += Math.floor(m / 60);
+            m = m % 60;
+        }
+        saved_time += diff;
+        localStorage.setItem(time_key, saved_time);
+        if (h < 10) {
+            h = "0" + h;
+        }
+        if (m < 10) {
+            m = "0" + m;
+        }
+        $("#time_text").html(h + '<span id="point">:</span>' + m);
+        $("#day").html(mm + "&nbsp;月&nbsp;" + d + "&nbsp;日&nbsp;" + weekday[day]);
+        t = setTimeout(time, 1000);
+    }
+});
 
 
 
