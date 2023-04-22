@@ -102,50 +102,46 @@ var quick_list_preinstall = {
         url: "https://web.farone.cn",
     },
     '2': {
-        title: "MOSS~",
-        url: "https://chat.farone.cn",
-    },
-    '3': {
         title: "My Blog",
         url: "https://farone.cn",
     },
-    '4': {
+    '3': {
         title: "BiliBili",
         url: "https://BiliBili.com",
     },
-    '5': {
+    '4': {
         title: "哔咪动画",
         url: "http://www.bimiacg4.net/",
     },
-    '6': {
+    '5': {
         title: "AGE动漫",
         url: "https://www.agemys.net/",
     },
-    '7': {
+    '6': {
         title: "樱花动漫",
         url: "https://www.yhpdm.com/",
     },
-    '8': {
+    '7': {
         title: "云班课",
         url: "https://www.mosoteach.cn/web/index.php?c=passport&m=index",
     },
-    '9': {
+    '8': {
         title: "全球通",
         url: "https://www.goingv2pro.com/",
     },
-    '10': {
+    '9': {
         title: "OPENAI Key",
         url: "https://platform.openai.com/account/api-keys",
     },
-    '11': {
+    '10': {
         title: "Vercel",
         url: "https://platform.openai.com/account/api-keys",
     },
-    '12': {
+    '11': {
         title: "Railway",
         url: "https://railway.app",
     },
-    '13': {
+    '12': {
         title: "QQ邮箱",
         url: "https://mail.qq.com",
     },
