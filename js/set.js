@@ -145,6 +145,10 @@ var quick_list_preinstall = {
         title: "QQ邮箱",
         url: "https://mail.qq.com",
     },
+    '13': {
+        title: "MCBBS",
+        url: "https://www.mcbbs.net/",
+    },
 };
 
 // 获取搜索引擎列表
