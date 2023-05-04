@@ -1,12 +1,9 @@
 $(document).ready(function () {
-    var time_key = "my_time";  // 定义本地存储的 key
+    var time_key = "my_time";   
 
-    var saved_time = localStorage.getItem(time_key);
-    if (!saved_time) {
-        saved_time = Date.now();
-        localStorage.setItem(time_key, saved_time);
-    }
-    saved_time = parseInt(saved_time);
+    // 获取上次保存的时间以及过期时间
+    var saved_time = parseInt(localStorage.getItem(time_key)) || Date.now();
+    var expire_time = saved_time + 60 * 60 * 1000;   // 设置过期时间为1小时
 
     var t = setTimeout(function() {
         time();
@@ -16,7 +13,15 @@ $(document).ready(function () {
     document.addEventListener("visibilitychange", function() {
         if (document.visibilityState === 'visible') {
             // 如果页面已唤醒，重新计算时间差
-            saved_time += (Date.now() - saved_time);
+            var now = Date.now();
+            if (now > expire_time) {
+                // 如果超过过期时间，重新设置saved_time为当前时间
+                saved_time = now;
+                expire_time = saved_time + 60 * 60 * 1000;
+            } else {
+                // 如果没有超过过期时间，更新saved_time
+                saved_time += (now - saved_time);
+            }
             localStorage.setItem(time_key, saved_time);
         }
     });
@@ -27,6 +32,15 @@ $(document).ready(function () {
         var dt = new Date(now);
         var saved_dt = new Date(saved_time);
         var diff = now - saved_time;
+
+        // 判断是否超过过期时间
+        if (now > expire_time) {
+            // 如果超过过期时间，保存当前时间并将saved_time和过期时间更新
+            saved_time = now;
+            expire_time = saved_time + 60 * 60 * 1000;
+            localStorage.setItem(time_key, saved_time);
+        }
+
         var mm = dt.getMonth() + 1;
         var d = dt.getDate();
         var weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
@@ -51,6 +65,7 @@ $(document).ready(function () {
         t = setTimeout(time, 1000);
     }
 });
+
 
 
 
@@ -187,7 +202,7 @@ color: rgb(30,152,255);
 var title1 = 'sksir'
 var content = `
 版 本 号：0.2
-更新日期：2023-04-19
+更新日期：2023-05-04
 
 0.2 | 更新内容
 1. 修复刷新页面时间暂时消失

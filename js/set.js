@@ -98,11 +98,11 @@ var se_list_preinstall = {
 // 默认快捷方式
 var quick_list_preinstall = {
     '1': {
-        title: "MOSS Web",
+        title: "MOSS",
         url: "https://web.farone.cn",
     },
     '2': {
-        title: "My Blog",
+        title: "博客",
         url: "https://farone.cn",
     },
     '3': {
