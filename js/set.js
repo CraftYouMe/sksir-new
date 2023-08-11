@@ -149,6 +149,10 @@ var quick_list_preinstall = {
         title: "MCBBS",
         url: "https://www.mcbbs.net/",
     },
+    '14': {
+        title: "Github",
+        url: "https://github.com/",
+    },
 };
 
 // 获取搜索引擎列表
