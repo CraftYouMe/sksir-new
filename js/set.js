@@ -111,7 +111,7 @@ var quick_list_preinstall = {
     },
     '4': {
         title: "哔咪动画",
-        url: "http://www.bimiacg4.net/",
+        url: "https://www.agedm.tv/",
     },
     '5': {
         title: "AGE动漫",
