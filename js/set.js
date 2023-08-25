@@ -135,7 +135,7 @@ var quick_list_preinstall = {
     },
     '10': {
         title: "Vercel",
-        url: "https://platform.openai.com/account/api-keys",
+        url: "https://vercel.com/",
     },
     '11': {
         title: "Railway",
