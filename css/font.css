@@ -1,7 +1,7 @@
-/* @font-face {
+@font-face {
   font-family: "MiSans";
-  src: url('../font/MiSans-Regular.subset.ttf') format('woff');
-} */
+  src: url('https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/MiSans-Regular.subset.ttf') format('woff');
+}
 
 @font-face {
   font-family: "iconfont";
