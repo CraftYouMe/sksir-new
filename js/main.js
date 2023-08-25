@@ -91,7 +91,7 @@ window.addEventListener('load', function () {
     //由于压缩过后的中文字体仍旧过大，可转移至对象存储或 CDN 加载
     const font = new FontFace(
         "MiSans",
-        "url(" + "./font/MiSans-Regular.woff2" + ")"
+        "url(" + "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/MiSans-Regular.woff2" + ")"
     );
     document.fonts.add(font);
 
