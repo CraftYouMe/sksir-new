@@ -115,7 +115,7 @@ var quick_list_preinstall = {
     },
     '5': {
         title: "AGE动漫",
-        url: "https://www.agemys.tv/",
+        url: "https://www.age.tv",
     },
     '6': {
         title: "樱花动漫",
