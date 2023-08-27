@@ -111,11 +111,11 @@ var quick_list_preinstall = {
     },
     '4': {
         title: "哔咪动画",
-        url: "https://www.agedm.tv/",
+        url: "https://www.bimiacg10.net/",
     },
     '5': {
         title: "AGE动漫",
-        url: "https://www.agemys.net/",
+        url: "https://www.agemys.tv/",
     },
     '6': {
         title: "樱花动漫",
