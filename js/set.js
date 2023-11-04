@@ -115,11 +115,11 @@ var quick_list_preinstall = {
     },
     '5': {
         title: "AGE动漫",
-        url: "https://www.age.tv",
+        url: "https://www.agedm.org/",
     },
     '6': {
         title: "樱花动漫",
-        url: "https://www.yhpdm.com/",
+        url: "https://www.yinhuadm.cc/",
     },
     '7': {
         title: "云班课",
