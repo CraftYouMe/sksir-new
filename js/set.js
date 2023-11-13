@@ -103,7 +103,7 @@ var quick_list_preinstall = {
     },
     '2': {
         title: "博客",
-        url: "https://farone.cn",
+        url: "https://blog.sksir.top",
     },
     '3': {
         title: "BiliBili",
