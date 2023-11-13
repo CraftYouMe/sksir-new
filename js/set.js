@@ -99,7 +99,7 @@ var se_list_preinstall = {
 var quick_list_preinstall = {
     '1': {
         title: "MOSS",
-        url: "https://web.farone.cn",
+        url: "https://bot.sksir.top",
     },
     '2': {
         title: "博客",
