@@ -106,12 +106,12 @@ var quick_list_preinstall = {
         url: "https://blog.sksir.top",
     },
     '3': {
-        title: "BiliBili",
-        url: "https://BiliBili.com",
+        title: "ChatGPT",
+        url: "https://chat.openai.com/",
     },
     '4': {
-        title: "哔咪动画",
-        url: "https://www.bimiacg10.net/",
+        title: "BiliBili",
+        url: "https://BiliBili.com",
     },
     '5': {
         title: "AGE动漫",
@@ -122,8 +122,8 @@ var quick_list_preinstall = {
         url: "https://www.yinhuadm.cc/",
     },
     '7': {
-        title: "云班课",
-        url: "https://www.mosoteach.cn/web/index.php?c=passport&m=index",
+        title: "哔咪动画",
+        url: "https://www.bimiacg10.net/",
     },
     '8': {
         title: "全球通",
@@ -154,8 +154,8 @@ var quick_list_preinstall = {
         url: "https://github.com/",
     },
     '15': {
-        title: "ChatGPT",
-        url: "https://chat.openai.com/",
+        title: "云班课",
+        url: "https://www.mosoteach.cn/web/index.php?c=passport&m=index",
     },
 };
 
