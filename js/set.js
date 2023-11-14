@@ -153,6 +153,10 @@ var quick_list_preinstall = {
         title: "Github",
         url: "https://github.com/",
     },
+    '15': {
+        title: "ChatGPT",
+        url: "https://chat.openai.com/",
+    },
 };
 
 // 获取搜索引擎列表
