@@ -95,13 +95,6 @@ var se_list_preinstall = {
     }
 };
 
-// 默认快捷方式
-var quick_list_preinstall = {
-    '1': {
-        title: "MOSS",
-        url: "https://bot.sksir.top",
-    },
-};
 
 // 获取搜索引擎列表
 function getSeList() {
@@ -291,92 +284,6 @@ function setSeInit() {
     $(".se_list_table").html(html);
 }
 
-// 获取快捷方式列表
-function getQuickList() {
-    var quick_list_local = Cookies.get('quick_list');
-    if (quick_list_local !== "{}" && quick_list_local) {
-        return JSON.parse(quick_list_local);
-    } else {
-        setQuickList(quick_list_preinstall);
-        return quick_list_preinstall;
-    }
-}
-
-// 设置快捷方式列表
-function setQuickList(quick_list) {
-    if (quick_list) {
-        Cookies.set('quick_list', quick_list, {
-            expires: 36500
-        });
-        return true;
-    }
-    return false;
-}
-
-// 快捷方式数据加载
-function quickData() {
-    var html = "";
-    var quick_list = getQuickList();
-    for (var i in quick_list) {
-        html += `<div class="quick">
-                    <a href="${quick_list[i]['url']}" target="_blank">${quick_list[i]['title']}</a>
-                </div>`;
-    }
-    $(".quick-all").html(html + `<div class="quick"><a id="set-quick"><i class="iconfont icon-tianjia-"></i></a></div>`);
-    
-    // 绑定点击事件
-    $(document).on("click", "#set-quick", function () {
-        openSet();
-
-        // 设置内容加载
-        setSeInit(); //搜索引擎设置
-        setQuickInit(); //快捷方式设置
-
-        //添加快捷方式
-        $("#set-quick-menu").trigger('click');
-        $(".set_quick_list_add").trigger('click');
-    });
-}
-
-// 设置-快捷方式加载
-function setQuickInit() {
-    var quick_list = getQuickList();
-    var html = "";
-    for (var i in quick_list) {
-        tr = `
-        <div class='quick_list_div'>
-            <div class='quick_list_div_num'>${i}</div>
-            <div class='quick_list_div_name'>${quick_list[i]['title']}</div>
-            <div class='quick_list_div_button'>
-                <button class='edit_quick' value='${i}' style='border-radius: 8px 0px 0px 8px;'>
-                <i class='iconfont icon-xiugai'></i></button>
-                <button class='delete_quick' value='${i}' style='border-radius: 0px 8px 8px 0px;'>
-                <i class='iconfont icon-delete'></i></button>
-            </div>
-        </div>`;
-        html += tr;
-    }
-    $(".quick_list_table").html(html);
-}
-
-/**
- * 下载文本为文件
- * @param filename 文件名
- * @param text     内容
- */
-function download(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
-}
-
 // 打开设置
 function openSet() {
     $("#menu").addClass('on');
@@ -459,19 +366,6 @@ function hideSe() {
     $(".se_add_preinstall").hide();
 }
 
-//显示设置快捷方式列表
-function showQuick() {
-    $(".quick_list").show();
-    $(".se_add_preinstalls").show();
-}
-
-//隐藏设置快捷方式列表
-function hideQuick() {
-    $(".quick_list").hide();
-    $(".se_add_preinstalls").hide();
-}
-
-
 $(document).ready(function () {
 
     // 搜索框数据加载
@@ -479,9 +373,6 @@ $(document).ready(function () {
 
     // 搜索引擎列表加载
     seList();
-
-    // 快捷方式数据加载
-    quickData();
 
     // 壁纸数据加载
     setBgImgInit();
@@ -868,174 +759,6 @@ $(document).ready(function () {
         });
     });
 
-    // 设置-快捷方式添加
-    $(".set_quick_list_add").click(function () {
-        $(".quick_add_content input").val("");
-        $(".quick_add_content").show();
-
-        //隐藏列表
-        hideQuick();
-    });
-
-    // 设置-快捷方式保存
-    $(".quick_add_save").click(function () {
-        var key_inhere = $(".quick_add_content input[name='key_inhere']").val();
-        var key = $(".quick_add_content input[name='key']").val();
-        var title = $(".quick_add_content input[name='title']").val();
-        var url = $(".quick_add_content input[name='url']").val();
-        var img = $(".quick_add_content input[name='img']").val();
-
-        var num = /^\+?[1-9][0-9]*$/;
-        if (!num.test(key)) {
-            iziToast.show({
-                timeout: 2000,
-                message: '快捷方式 ' + key + ' 不是正整数'
-            });
-            return;
-        }
-
-        var quick_list = getQuickList();
-
-        if (quick_list[key]) {
-            iziToast.show({
-                timeout: 8000,
-                message: '快捷方式 " + key + " 已有数据，是否覆盖？',
-                buttons: [
-                    ['<button>确认</button>', function (instance, toast) {
-                        quick_list[key] = {
-                            title: title,
-                            url: url,
-                            img: img,
-                        };
-                        setQuickList(quick_list);
-                        setQuickInit();
-                        $(".quick_add_content").hide();
-                        //显示列表
-                        showQuick();
-
-                        instance.hide({
-                            transitionOut: 'flipOutX',
-                        }, toast, 'buttonName');
-                        iziToast.show({
-                            message: '覆盖成功'
-                        });
-                    }, true],
-                    ['<button>取消</button>', function (instance, toast) {
-                        instance.hide({
-                            transitionOut: 'flipOutX',
-                        }, toast, 'buttonName');
-                    }]
-                ]
-            });
-            return;
-        }
-
-        if (key_inhere && key != key_inhere) {
-            delete quick_list[key_inhere];
-        }
-
-        quick_list[key] = {
-            title: title,
-            url: url,
-            img: img,
-        };
-        setQuickList(quick_list);
-        setQuickInit();
-        $(".quick_add_content").hide();
-        iziToast.show({
-            timeout: 2000,
-            message: '添加成功'
-        });
-
-        //显示列表
-        showQuick();
-    });
-
-    // 设置-快捷方式关闭添加表单
-    $(".quick_add_cancel").click(function () {
-        $(".quick_add_content").hide();
-
-        //显示列表
-        showQuick();
-    });
-
-    //恢复预设快捷方式
-    $(".set_quick_list_preinstall").click(function () {
-        iziToast.show({
-            timeout: 8000,
-            message: '快捷方式数据将被清空',
-            buttons: [
-                ['<button>确认</button>', function (instance, toast) {
-                    setQuickList(quick_list_preinstall);
-                    setQuickInit();
-                    instance.hide({
-                        transitionOut: 'flipOutX',
-                    }, toast, 'buttonName');
-                    iziToast.show({
-                        timeout: 2000,
-                        message: '重置成功'
-                    });
-                    // setTimeout(function () {
-                    //     window.location.reload()
-                    // }, 1000);
-                }, true],
-                ['<button>取消</button>', function (instance, toast) {
-                    instance.hide({
-                        transitionOut: 'flipOutX',
-                    }, toast, 'buttonName');
-                }]
-            ]
-        });
-    });
-
-    // 快捷方式修改
-    $(".quick_list").on("click", ".edit_quick", function () {
-
-        var quick_list = getQuickList();
-        var key = $(this).val();
-        $(".quick_add_content input[name='key_inhere']").val(key);
-        $(".quick_add_content input[name='key']").val(key);
-        $(".quick_add_content input[name='title']").val(quick_list[key]["title"]);
-        $(".quick_add_content input[name='url']").val(quick_list[key]["url"]);
-        $(".quick_add_content input[name='img']").val(quick_list[key]["img"]);
-
-        //隐藏列表
-        hideQuick();
-
-        $(".quick_add_content").show();
-    });
-
-    // 快捷方式删除
-    $(".quick_list").on("click", ".delete_quick", function () {
-
-        var key = $(this).val();
-
-        iziToast.show({
-            timeout: 8000,
-            message: '快捷方式 ' + key + ' 是否删除？',
-            buttons: [
-                ['<button>确认</button>', function (instance, toast) {
-                    var quick_list = getQuickList();
-                    delete quick_list[key];
-                    setQuickList(quick_list);
-                    setQuickInit();
-                    instance.hide({
-                        transitionOut: 'flipOutX',
-                    }, toast, 'buttonName');
-                    iziToast.show({
-                        timeout: 2000,
-                        message: '删除成功'
-                    });
-                }, true],
-                ['<button>取消</button>', function (instance, toast) {
-                    instance.hide({
-                        transitionOut: 'flipOutX',
-                    }, toast, 'buttonName');
-                }]
-            ]
-        });
-    });
-
     // 壁纸设置
     $("#wallpaper").on("click", ".set-wallpaper", function () {
         var type = $(this).val();
@@ -1087,88 +810,6 @@ $(document).ready(function () {
             setBgImg(bg_img);
             iziToast.show({
                 message: '自定义壁纸设置成功，刷新生效',
-            });
-        }
-    });
-
-    // 我的数据导出
-    $("#my_data_out").click(function () {
-        var cookies = Cookies.get();
-        var json = JSON.stringify(cookies);
-        download("Snavigation-back-up-" + $.now() + ".json", json);
-        iziToast.show({
-            timeout: 2000,
-            message: '已导出备份文件至下载目录'
-        });
-    });
-
-    // 我的数据导入 点击触发文件选择
-    $("#my_data_in").click(function () {
-        $("#my_data_file").click();
-    });
-
-    // 选择文件后读取文件内容
-    $("#my_data_file").change(function () {
-        var selectedFile = document.getElementById('my_data_file').files[0];
-        //var name = selectedFile.name;//读取选中文件的文件名
-        //var size = selectedFile.size;//读取选中文件的大小
-        //console.log("文件名:"+name+" 大小:"+size);
-
-        var reader = new FileReader(); //这是核心,读取操作就是由它完成.
-        reader.readAsText(selectedFile); //读取文件的内容,也可以读取文件的URL
-        reader.onload = function () {
-            //当读取完成后回调这个函数,然后此时文件的内容存储到了result中,直接操作即可
-            //console.log(this.result);
-
-            // json 格式校验
-            var mydata;
-            try {
-                mydata = JSON.parse(this.result);
-            } catch (e) {
-                iziToast.show({
-                    timeout: 2000,
-                    message: '数据解析异常'
-                });
-                return;
-            }
-            if (typeof mydata != 'object') {
-                iziToast.show({
-                    timeout: 2000,
-                    message: '数据格式错误'
-                });
-                return;
-            }
-
-            iziToast.show({
-                timeout: 8000,
-                message: '当前数据将会被覆盖！是否继续导入？',
-                buttons: [
-                    ['<button>确认</button>', function (instance, toast) {
-                        for (var key in mydata) {
-                            Cookies.set(key, mydata[key], {
-                                expires: 36500
-                            });
-                        }
-                        instance.hide({
-                            transitionOut: 'flipOutX',
-                        }, toast, 'buttonName');
-                        iziToast.show({
-                            timeout: 2000,
-                            message: '导入成功'
-                        });
-                        setTimeout(function () {
-                            window.location.reload()
-                        }, 1000);
-                    }, true],
-                    ['<button>取消</button>', function (instance, toast) {
-                        instance.hide({
-                            transitionOut: 'flipOutX',
-                        }, toast, 'buttonName');
-                        setTimeout(function () {
-                            window.location.reload()
-                        }, 1000);
-                    }]
-                ]
             });
         }
     });
