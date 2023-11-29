@@ -315,7 +315,6 @@ function closeSet() {
 
     // 刷新主页数据
     seList();
-    quickData();
 }
 
 // 书签显示
@@ -535,21 +534,7 @@ $(document).ready(function () {
 
             // 设置内容加载
             setSeInit(); //搜索引擎设置
-            setQuickInit(); //快捷方式设置
         }
-    });
-
-    // 快捷方式添加按钮点击
-    $("#set-quick").click(function () {
-        openSet();
-
-        // 设置内容加载
-        setSeInit(); //搜索引擎设置
-        setQuickInit(); //快捷方式设置
-
-        //添加快捷方式
-        $("#set-quick-menu").trigger('click');
-        $(".set_quick_list_add").trigger('click');
     });
 
     // 修改默认搜索引擎
