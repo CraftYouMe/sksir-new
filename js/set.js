@@ -101,62 +101,6 @@ var quick_list_preinstall = {
         title: "MOSS",
         url: "https://bot.sksir.top",
     },
-    '2': {
-        title: "博客",
-        url: "https://blog.sksir.top",
-    },
-    '3': {
-        title: "ChatGPT",
-        url: "https://chat.openai.com/",
-    },
-    '4': {
-        title: "BiliBili",
-        url: "https://BiliBili.com",
-    },
-    '5': {
-        title: "AGE动漫",
-        url: "https://www.agedm.org/",
-    },
-    '6': {
-        title: "樱花动漫",
-        url: "https://www.yinhuadm.cc/",
-    },
-    '7': {
-        title: "哔咪动画",
-        url: "https://www.bimiacg10.net/",
-    },
-    '8': {
-        title: "全球通",
-        url: "https://www.goingv2pro.com/",
-    },
-    '9': {
-        title: "OPENAI Key",
-        url: "https://platform.openai.com/account/api-keys",
-    },
-    '10': {
-        title: "Vercel",
-        url: "https://vercel.com/",
-    },
-    '11': {
-        title: "Railway",
-        url: "https://railway.app",
-    },
-    '12': {
-        title: "QQ邮箱",
-        url: "https://mail.qq.com",
-    },
-    '13': {
-        title: "MCBBS",
-        url: "https://www.mcbbs.net/",
-    },
-    '14': {
-        title: "Github",
-        url: "https://github.com/",
-    },
-    '15': {
-        title: "云班课",
-        url: "https://www.mosoteach.cn/web/index.php?c=passport&m=index",
-    },
 };
 
 // 获取搜索引擎列表
