@@ -1136,4 +1136,13 @@ input[type="radio"]:checked+label {
 /*iconcss*/
 .iconcss{
     padding-right: 5px;
+    width: 20px; /* 指定展示图片的宽度 */
+    height: 20px; /* 指定展示图片的高度 */
+    overflow: hidden; /* 避免图片超出容器部分显示 */
+}
+
+.iconcss img {
+    width: 100%; /* 让图片宽度充满父容器 */
+    height: auto; /* 根据宽度等比例缩放高度 */
+    display: block; /* 去除图片默认的间距，使其能够填充整个父容器 */
 }
