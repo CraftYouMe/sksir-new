@@ -57,12 +57,11 @@
     }
 
     /*书签*/
-    .quick,
     .quicks,
     .quickjl {
-        width: 31.33%;
-        min-width: 31.33%;
-        max-width: 31.33%;
+        width: 48%;
+        min-width: 48%;
+        max-width: 48%;
     }
 
     /*壁纸设置*/
@@ -81,6 +80,18 @@
     /*隐藏*/
     .mobile {
         display: none;
+    }
+
+    .passcode input[type="password"], .passcode button {
+        width: 135px;
+        padding: 15px 10px;
+        font-size: 13px;
+        margin-right: 5px;
+    }
+
+    .passcode button {
+        height: 45px;
+        width: 65px;
     }
 }
 

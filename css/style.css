@@ -667,10 +667,15 @@ img.error {
 
 
 .passcode button {
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    height: 45px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+
 
 
 /*设置区域统一样式*/
