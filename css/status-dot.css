@@ -14,7 +14,6 @@
   }
   
   /* 基础伪元素通用设置 */
-  .quicks::after,
   .quicks.loading::before {
     content: "";
     position: absolute;
@@ -42,9 +41,10 @@
   
   /* 各状态主色调 */
   .quicks.alive {    color: rgba(0, 255, 136, 0.75); }
+  .quicks.slow {    color: rgba(255, 200, 0, 0.75)}
   .quicks.dead {     color: rgba(255, 68, 68, 0.75); }
   .quicks.loading {  color: rgba(157, 124, 255, 0.75); }
-  
+
   /* loading 额外环形 ::before */
   .quicks.loading::before {
     width: 10px;

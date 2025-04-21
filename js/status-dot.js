@@ -13,9 +13,20 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       card.classList.remove("loading");
-      card.classList.add(data.status === "alive" ? "alive" : "dead");
+      card.classList.remove("alive", "dead", "slow");
+
+      if (data.status === "alive") {
+        card.classList.add("alive");
+      } else if (data.status === "slow") {
+        card.classList.add("slow");
+      } else {
+        card.classList.add("dead");
+      }
+
     } catch (error) {
+      console.error("检查链接失败:", link.href, error);
       card.classList.remove("loading");
+      card.classList.remove("alive", "slow");
       card.classList.add("dead");
     }
   };
