@@ -21,7 +21,6 @@
     top: 5px;
     right: 5px;
     border-radius: 50%;
-    animation: pulse-opacity 2.5s ease-in-out infinite;
     transition: box-shadow 0.2s ease, opacity 0.2s ease;
   }
   
