@@ -5,26 +5,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const link = card.querySelector("a");
     if (!link || !link.href) return;
 
-    const url = link.href;
+    const url = encodeURIComponent(link.href);
     card.classList.add("loading");
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-
     try {
-      await fetch(url, { method: "HEAD", mode: "no-cors", signal: controller.signal });
+      const res = await fetch(`/api/check?url=${url}`);
+      const data = await res.json();
+
       card.classList.remove("loading");
-      card.classList.add("alive");
+      card.classList.add(data.status === "alive" ? "alive" : "dead");
     } catch (error) {
       card.classList.remove("loading");
       card.classList.add("dead");
-      // You can also log or handle the error if needed
-      console.error("Error fetching URL:", error);
-    } finally {
-      clearTimeout(timeout);
     }
   };
 
-  // Loop over each card and check the status
   cards.forEach(card => checkLinkStatus(card));
 });
