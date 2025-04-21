@@ -14,6 +14,7 @@
   }
   
   /* 基础伪元素通用设置 */
+  .quicks::after,
   .quicks.loading::before {
     content: "";
     position: absolute;
@@ -31,6 +32,11 @@
     background: currentColor;
     opacity: 0.8;
     box-shadow: 0 0 3px currentColor;
+  }
+
+  /* 只有 loading 时闪烁动画 */
+  .quicks.loading::after {
+    animation: pulse-opacity 2.5s ease-in-out infinite;
   }
   
   /* 悬浮高亮 */
