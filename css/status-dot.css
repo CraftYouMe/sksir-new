@@ -1,0 +1,55 @@
+
+/* =============================
+   极简极小型状态指示点（右上角）
+   ============================= */
+   .quicks {
+    position: relative;
+    overflow: hidden; /* 防止指示点溢出 */
+  }
+  
+  /* 淡入淡出动画 */
+  @keyframes pulse-opacity {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+  }
+  
+  /* 基础伪元素通用设置 */
+  .quicks::after,
+  .quicks.loading::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border-radius: 50%;
+    animation: pulse-opacity 2.5s ease-in-out infinite;
+    transition: box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+  
+  /* 指示点 ::after */
+  .quicks::after {
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    opacity: 0.8;
+    box-shadow: 0 0 3px currentColor;
+  }
+  
+  /* 悬浮高亮 */
+  .quicks:hover::after {
+    opacity: 1;
+    box-shadow: 0 0 4px currentColor;
+  }
+  
+  /* 各状态主色调 */
+  .quicks.alive {    color: rgba(0, 255, 136, 0.75); }
+  .quicks.dead {     color: rgba(255, 68, 68, 0.75); }
+  .quicks.loading {  color: rgba(157, 124, 255, 0.75); }
+  
+  /* loading 额外环形 ::before */
+  .quicks.loading::before {
+    width: 10px;
+    height: 10px;
+    border: 1px solid currentColor;
+    opacity: 0.5;
+  }
+  
