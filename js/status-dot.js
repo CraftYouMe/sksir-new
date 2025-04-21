@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const cards = document.querySelectorAll(".quicks, .quickjl");
+  const cards = [...document.querySelectorAll(".quicks, .quickjl")];
 
   const setCardStatus = (card, status) => {
     card.classList.remove("loading", "alive", "dead", "slow");
@@ -12,33 +12,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }[status] || "";
   };
 
-  const checkLinkStatus = async (card) => {
-    const link = card.querySelector("a");
-    if (!link || !link.href) return;
+  const checkLinks = async () => {
+    cards.forEach(card => setCardStatus(card, "loading"));
 
-    const url = encodeURIComponent(link.href);
-    setCardStatus(card, "loading");
-
+    const urls = cards.map(card => card.querySelector("a")?.href || "").filter(Boolean);
     try {
-      const res = await fetch(`/api/check?url=${url}`);
+      const res = await fetch("/api/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ urls })
+      });
+
       const data = await res.json();
-
-      setCardStatus(card, data.status === "alive" ? "alive"
-                          : data.status === "slow" ? "slow"
-                          : "dead");
-    } catch (error) {
-      console.error("检查链接失败:", link.href, error);
-      setCardStatus(card, "dead");
+      data.forEach(({ url, status }) => {
+        const card = cards.find(c => c.querySelector("a")?.href === url);
+        if (card) setCardStatus(card, status);
+      });
+    } catch (err) {
+      console.error("批量检测失败", err);
+      cards.forEach(card => setCardStatus(card, "dead"));
     }
   };
 
-  // 并发控制：每隔 200ms 检测一个链接
-  const checkAllLinks = async () => {
-    for (const card of cards) {
-      await checkLinkStatus(card);
-      await new Promise(res => setTimeout(res, 200));
-    }
-  };
-
-  checkAllLinks();
+  checkLinks();
 });
