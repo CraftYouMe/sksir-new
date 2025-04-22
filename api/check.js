@@ -21,18 +21,6 @@ async function fetchWithTimeout(url, timeoutMs) {
   }
 }
 
-async function getGeoLocation(url) {
-  try {
-    const ipApiUrl = `http://ip-api.com/json/${new URL(url).hostname}`;
-    const response = await fetch(ipApiUrl);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch geolocation:", error);
-    return null;
-  }
-}
-
 export default async function handler(req, res) {
   const { url } = req.query;
   if (!url) return res.status(400).json({ status: "error", message: "Missing URL" });
@@ -44,25 +32,11 @@ export default async function handler(req, res) {
     const timeUsed = Date.now() - startTime;
     const statusCode = response.status;
 
-    // 获取地理位置
-    const geoData = await getGeoLocation(decodedUrl);
-    const isNonChinaServer = geoData && geoData.countryCode !== "CN";
-
     if (statusCode >= 200 && statusCode < 400) {
       const status = timeUsed > 5000 ? "slow" : "alive";
-      return res.status(200).json({
-        status,
-        time: timeUsed,
-        location: geoData ? geoData.country : "Unknown",
-        color: isNonChinaServer ? "yellow" : "green"
-      });
+      return res.status(200).json({ status, time: timeUsed });
     } else {
-      return res.status(200).json({
-        status: "dead",
-        code: statusCode,
-        location: geoData ? geoData.country : "Unknown",
-        color: isNonChinaServer ? "yellow" : "red"
-      });
+      return res.status(200).json({ status: "dead", code: statusCode });
     }
   } catch (error) {
     if (error.name === "AbortError") {
