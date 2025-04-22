@@ -161,17 +161,20 @@ $(window).mousedown(function (event) {
     }
 });
 
-//奖励栏密码获取
-document.getElementById("passBtn").addEventListener("click", function() {
-    var password = "mypassword"; //这里替换成你的密码
-    var passInput = document.getElementById("passInput").value;
+// 奖励栏密码获取
+document.getElementById("passBtn").addEventListener("click", function () {
+    const password = "mypassword"; // 替换成你的密码
+    const passInput = document.getElementById("passInput").value.trim(); // 去除输入的空格
+    const passcodeElement = document.querySelector(".passcode");
+    const quickJlElement = document.querySelector(".quick-jl");
+
     if (passInput === password) {
-        document.querySelector(".passcode").style.display = "none";
-        document.querySelector(".quick-jl").style.visibility = "visible";
+        if (passcodeElement) passcodeElement.style.display = "none";
+        if (quickJlElement) quickJlElement.style.visibility = "visible";
     } else {
         alert("密码不正确，请重新输入！");
     }
-})
+});
 
 //控制台输出
 var styleTitle1 = `

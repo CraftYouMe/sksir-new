@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>无中心点 VIP 圆点预览</title>
+  <style>
+    body {
+      background: #1a1a1a;
+      color: #eee;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .controls {
+      margin-bottom: 20px;
+    }
+    .controls label {
+      margin-right: 15px;
+      cursor: pointer;
+    }
+    .demo {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      background: #292929;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .quicks.skip {
+      position: relative;
+      width: 12px;
+      height: 12px;
+    }
+    .quicks.skip::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      transform-origin: center;
+      animation: spin 4s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* —— 方案 1：边框环形渐变 —— */
+    .ring-border::after {
+      /* 用 border-image 只绘制环形 */
+      border: 2px solid transparent;
+      border-image: conic-gradient(
+        from 0deg,
+        rgba(255,215,0,0.9),
+        rgba(186,85,211,0.9),
+        rgba(0,191,255,0.9),
+        rgba(255,215,0,0.9)
+      ) 1;
+      background: none;
+      box-shadow: 0 0 6px rgba(255,215,0,0.6);
+    }
+
+    /* —— 方案 2：Mask 挖空中心 —— */
+    .mask-ring::after {
+      background: conic-gradient(
+        from 0deg,
+        rgba(255,215,0,0.9),
+        rgba(186,85,211,0.9),
+        rgba(0,191,255,0.9),
+        rgba(255,215,0,0.9)
+      );
+      /* 挖空中心 50% 区域 */
+      mask: radial-gradient(circle at center, transparent 50%, black 51%);
+      -webkit-mask: radial-gradient(circle at center, transparent 50%, black 51%);
+      box-shadow: 0 0 6px rgba(255,215,0,0.6);
+    }
+
+    /* —— 方案 3：内层遮罩伪元素 —— */
+    .cover-center::after {
+      background: conic-gradient(
+        from 0deg,
+        rgba(255,215,0,0.9),
+        rgba(186,85,211,0.9),
+        rgba(0,191,255,0.9),
+        rgba(255,215,0,0.9)
+      );
+      box-shadow: 0 0 6px rgba(255,215,0,0.6);
+    }
+    .cover-center::before {
+      /* 覆盖中心 6px 圆形，露出环形部分 */
+      content: "";
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 6px; height: 6px;
+      background: #292929;  /* 与 .demo 背景一致 */
+      border-radius: 50%;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="controls">
+    <label><input type="radio" name="mode" value="ring-border" checked> 环形边框</label>
+    <label><input type="radio" name="mode" value="mask-ring"> Mask 挖空</label>
+    <label><input type="radio" name="mode" value="cover-center"> 伪元素遮罩</label>
+  </div>
+
+  <div class="demo">
+    <span id="badge" class="quicks skip ring-border"></span>
+  </div>
+
+  <script>
+    const radios = document.querySelectorAll('input[name="mode"]');
+    const badge = document.getElementById('badge');
+    radios.forEach(r => {
+      r.addEventListener('change', () => {
+        badge.className = 'quicks skip ' + r.value;
+      });
+    });
+  </script>
+
+</body>
+</html>
