@@ -1,15 +1,11 @@
 // /api/check.js
 
-export default async function handler(req, res) {
-  const { url } = req.query;
-  if (!url) return res.status(400).json({ status: "error", message: "Missing URL" });
+async function fetchWithTimeout(url, timeoutMs) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10秒超时
-
-    const startTime = Date.now();
-    const response = await fetch(decodeURIComponent(url), {
+    const response = await fetch(url, {
       method: "GET",
       signal: controller.signal,
       headers: {
@@ -17,9 +13,22 @@ export default async function handler(req, res) {
         "Accept": "*/*"
       }
     });
-
     clearTimeout(timeout);
+    return response;
+  } catch (error) {
+    clearTimeout(timeout);
+    throw error;
+  }
+}
 
+export default async function handler(req, res) {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ status: "error", message: "Missing URL" });
+
+  try {
+    const decodedUrl = decodeURIComponent(url);
+    const startTime = Date.now();
+    const response = await fetchWithTimeout(decodedUrl, 20000); // 20秒超时
     const timeUsed = Date.now() - startTime;
     const statusCode = response.status;
 
@@ -30,6 +39,9 @@ export default async function handler(req, res) {
       return res.status(200).json({ status: "dead", code: statusCode });
     }
   } catch (error) {
-    return res.status(200).json({ status: "dead", error: error.message });
+    if (error.name === "AbortError") {
+      return res.status(408).json({ status: "dead", error: "Request timed out" });
+    }
+    return res.status(500).json({ status: "dead", error: error.message });
   }
 }
