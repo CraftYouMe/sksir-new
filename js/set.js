@@ -26,7 +26,7 @@ var se_list_preinstall = {
     '2': {
         id: 2,
         title: "必应",
-        url: "https://www.cn.bing.com/search?q=%s&go=&form=QBLH&qs=n&sk=",
+        url: "https://cn.bing.com/search?q=%s&go=&form=QBLH&qs=n&sk=",
         name: "q",
         icon: "iconfont icon-bing",
     },
