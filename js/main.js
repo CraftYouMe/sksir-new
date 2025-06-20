@@ -16,13 +16,15 @@ $(document).ready(function () {
     document.addEventListener("visibilitychange", function() {
         if (document.visibilityState === 'visible') {
             // 如果页面已唤醒，重新计算时间差
-            saved_time += (Date.now() - saved_time);
+            saved_time = Date.now();
             localStorage.setItem(time_key, saved_time);
         }
     });
 
     function time() {
-        clearTimeout(t);
+        if (typeof t !== "undefined") {
+            clearTimeout(t);
+        }
         var now = Date.now();
         var dt = new Date(now);
         var saved_dt = new Date(saved_time);
@@ -38,7 +40,7 @@ $(document).ready(function () {
             h += Math.floor(m / 60);
             m = m % 60;
         }
-        saved_time += diff;
+        saved_time = now;
         localStorage.setItem(time_key, saved_time);
         if (h < 10) {
             h = "0" + h;
@@ -81,7 +83,7 @@ window.addEventListener('load', function () {
     });
     setTimeout(function () {
         iziToast.show({
-            title: hello,
+            title: getHello(),
             message: '欢迎来到 导航酱'
         });
     }, 800);
@@ -96,25 +98,27 @@ window.addEventListener('load', function () {
     document.fonts.add(font);
 
 }, false)
-
+var now = new Date(), hour = now.getHours()
 //进入问候
-now = new Date(), hour = now.getHours()
-if (hour < 6) {
-    var hello = "凌晨好";
-} else if (hour < 9) {
-    var hello = "早上好";
-} else if (hour < 12) {
-    var hello = "上午好";
-} else if (hour < 14) {
-    var hello = "中午好";
-} else if (hour < 17) {
-    var hello = "下午好";
-} else if (hour < 19) {
-    var hello = "傍晚好";
-} else if (hour < 22) {
-    var hello = "晚上好";
-} else {
-    var hello = "夜深了";
+function getHello() {
+    var now = new Date(), hour = now.getHours();
+    if (hour < 6) {
+        return "凌晨好";
+    } else if (hour < 9) {
+        return "早上好";
+    } else if (hour < 12) {
+        return "上午好";
+    } else if (hour < 14) {
+        return "中午好";
+    } else if (hour < 17) {
+        return "下午好";
+    } else if (hour < 19) {
+        return "傍晚好";
+    } else if (hour < 22) {
+        return "晚上好";
+    } else {
+        return "夜深了";
+    }
 }
 
 
@@ -176,38 +180,17 @@ document.getElementById("passBtn").addEventListener("click", function () {
     }
 });
 
-//控制台输出
-var styleTitle1 = `
-font-size: 20px;
-font-weight: 600;
-color: rgb(244,167,89);
-`
-var styleTitle2 = `
-font-size:12px;
-color: rgb(244,167,89);
-`
-var styleContent = `
-color: rgb(30,152,255);
-`
-var title1 = 'sksir'
-var content = `
-版 本 号：0.3
-更新日期：2023-11-30
-
-0.3 | 更新内容
-1. 为标签添加了icon图标
-2. 删除快捷方式添加和使用习惯导出
-3. 将常用栏的添加功能取消
-
-0.2 | 更新内容
-1. 修复刷新页面时间暂时消失
-2. 修复页面休眠分钟超过60m
-3. 添加搜索栏交互动画
-
-0.1 | 更新内容
-1. 修复搜索栏显示距离
-2. 修复添加快捷方式失效问题
-`
-console.log(`%c${title1}
-%c${content}`, styleTitle1, styleTitle2, styleContent)
-
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.quicks').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      // 如果点击的是a标签本身，浏览器会自动跳转，无需处理
+      // 否则手动跳转到a的href
+      if (e.target.tagName.toLowerCase() !== 'a') {
+        var a = card.querySelector('a');
+        if (a && a.href) {
+          window.open(a.href, a.target || '_self');
+        }
+      }
+    });
+  });
+});
