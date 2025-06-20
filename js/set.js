@@ -124,10 +124,14 @@ function getSeDefault() {
     return se_default ? se_default : "2";
 }
 
-//背景图片
+/**
+ * 背景图片配置
+ * type: "1" 默认壁纸, "2" 必应每日一图, "5" 自定义壁纸
+ * path: 自定义图片地址
+ */
 var bg_img_preinstall = {
-    "type": "1", // 1:使用主题默认的背景图片 2:关闭背景图片 3:使用自定义的背景图片
-    "path": "", //自定义图片
+    "type": "1",
+    "path": "",
 };
 
 // 获取背景图片
@@ -153,7 +157,6 @@ function setBgImg(bg_img) {
 }
 
 // 设置-壁纸
-//$('#bg').attr('src','https://api.dujin.org/bing/1920.php')
 function setBgImgInit() {
     var bg_img = getBgImg();
     $("input[name='wallpaper-type'][value=" + bg_img["type"] + "]").click();
@@ -168,15 +171,26 @@ function setBgImgInit() {
 
     switch (bg_img["type"]) {
         case "1":
-            var pictures = new Array();
-            pictures[0] = 'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image.jpg';
-            $('#bg').attr('src', pictures[0]) //随机默认壁纸
+            // 默认壁纸轮播，每张图片尽量刷新到一次
+            var pictures = [
+                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image.jpg',
+                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image2.PNG',
+                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image3.JPG',
+                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image4.PNG',
+                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image5.JPG',
+                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image6.PNG'
+            ];
+            // 记录上次索引
+            var idx = parseInt(localStorage.getItem('bg_img_idx') || '0', 10);
+            $('#bg').attr('src', pictures[idx]);
+            idx = (idx + 1) % pictures.length;
+            localStorage.setItem('bg_img_idx', idx);
             break;
         case "2":
-            $('#bg').attr('src', 'https://api.dujin.org/bing/1920.php') //必应每日
+            $('#bg').attr('src', 'https://api.dujin.org/bing/1920.php');
             break;
-        case "3":
-            $('#bg').attr('src', bg_img["path"]) //自定义
+        case "5":
+            $('#bg').attr('src', bg_img["path"]);
             break;
     }
 }
