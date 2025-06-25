@@ -194,3 +194,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+$(function () {
+    // 分类高亮及内容切换，只影响当前mainCont
+    $('.category-row').on('click', '.category-item', function () {
+        var $row = $(this).closest('.category-row');
+        $(this).addClass('active').siblings().removeClass('active');
+        var category = $(this).text().trim();
+        var $mainCont = $row.closest('.mainCont');
+        $mainCont.find('.quicks').each(function () {
+            if (category === '全部' || $(this).attr('data-category') === category) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+});

@@ -339,7 +339,7 @@ function openBox() {
     });
     //时间上移
     $(".tool-all").css({
-        "transform": 'translateY(-160%)'
+        "transform": 'translateY(-220%)'
     });
     //背景模糊
     $('#bg').css({
@@ -428,7 +428,7 @@ $(document).ready(function () {
             $('#menu').show();
             // 添加时间向上移动的样式
             $(".tool-all").css({
-                "transform": 'translateY(-160%)'
+                "transform": 'translateY(-220%)'
             });
         }
     });
