@@ -23,13 +23,15 @@
         var style = document.createElement("style");
         style.id = "toast-fallback-style";
         style.textContent = [
-            ".toast-fallback-wrap{position:fixed;top:18px;left:50%;z-index:2147483647;display:flex;flex-direction:column;gap:8px;transform:translateX(-50%);pointer-events:none}",
-            ".toast-fallback{min-width:220px;max-width:min(360px,calc(100vw - 28px));padding:12px 16px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:linear-gradient(180deg,rgba(20,26,32,.82),rgba(20,26,32,.66));box-shadow:0 14px 32px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.14);backdrop-filter:blur(14px) saturate(1.08);-webkit-backdrop-filter:blur(14px) saturate(1.08);color:#fff;text-shadow:none;pointer-events:auto;animation:toastFallbackIn .22s ease}",
-            ".toast-fallback-title{font-weight:700;margin-bottom:2px;color:#fff}",
-            ".toast-fallback-message{font-size:14px;line-height:1.5;color:rgba(255,255,255,.72)}",
-            ".toast-fallback-buttons{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}",
-            ".toast-fallback-buttons button{height:30px;padding:0 12px;border:1px solid rgba(179,195,214,.22);border-radius:6px;background:rgba(120,145,176,.30);color:#f7fbff;font-weight:700;cursor:pointer}",
+            ".toast-fallback-wrap{position:fixed;top:18px;left:50%;z-index:2147483647;display:flex;flex-direction:column;align-items:center;gap:8px;transform:translateX(-50%);pointer-events:none}",
+            ".toast-fallback{width:fit-content;max-width:min(520px,calc(100vw - 32px));min-height:44px;padding:10px 28px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(20,26,32,.78);box-shadow:0 14px 32px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.14);backdrop-filter:blur(14px) saturate(1.08);-webkit-backdrop-filter:blur(14px) saturate(1.08);color:#fff;text-shadow:none;pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:10px;box-sizing:border-box;text-align:left;animation:toastFallbackIn .22s ease}",
+            ".toast-fallback-title{flex:0 0 auto;margin:0;color:#fff;font-size:14px;font-weight:700;line-height:1.35;white-space:nowrap}",
+            ".toast-fallback-message{flex:0 1 auto;min-width:0;font-size:14px;line-height:1.35;color:rgba(255,255,255,.74);overflow-wrap:anywhere}",
+            ".toast-fallback-title+.toast-fallback-message{padding-left:10px;border-left:1px solid rgba(255,255,255,.14)}",
+            ".toast-fallback-buttons{display:flex;flex:0 0 auto;align-items:center;justify-content:flex-end;gap:8px;margin:0 0 0 4px}",
+            ".toast-fallback-buttons button{height:30px;padding:0 14px;border:1px solid rgba(179,195,214,.22);border-radius:999px;background:rgba(120,145,176,.30);color:#f7fbff;font-weight:700;cursor:pointer}",
             ".toast-fallback-buttons button:hover{background:rgba(145,166,193,.38)}",
+            "@media (max-width:480px){.toast-fallback{min-width:0;width:calc(100vw - 32px);padding:10px 22px;justify-content:flex-start;flex-wrap:wrap;border-radius:24px}.toast-fallback-title+.toast-fallback-message{padding-left:0;border-left:0}.toast-fallback-buttons{width:100%;justify-content:flex-end;margin:2px 0 0 0}}",
             "@keyframes toastFallbackIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}"
         ].join("");
         document.head.appendChild(style);
