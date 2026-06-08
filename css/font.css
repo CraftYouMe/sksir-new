@@ -1,13 +1,10 @@
 @font-face {
-  font-family: "MiSans";
-  src: url('https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/MiSans-Regular.subset.ttf') format('woff');
-}
-
-@font-face {
   font-family: "iconfont";
   /* Project id 3222465 */
-  src: url('../font/iconfont.woff') format('woff'),
+  src: url('../font/iconfont.woff2') format('woff2'),
+    url('../font/iconfont.woff') format('woff'),
     url('../font/iconfont.ttf') format('truetype');
+  font-display: swap;
 }
 
 .iconfont {

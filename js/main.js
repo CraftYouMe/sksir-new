@@ -59,9 +59,8 @@ $(document).ready(function () {
 
 
 //加载完成后执行
-window.addEventListener('load', function () {
+$(function () {
     //载入动画
-    $('#loading-box').attr('class', 'loaded');
     $('#bg').css("cssText", "transform: scale(1);filter: blur(0px);transition: ease 1.5s;");
     $('#section').css("cssText", "opacity: 1;transition: ease 1.5s;");
     $('.cover').css("cssText", "opacity: 1;transition: ease 1.5s;");
@@ -91,13 +90,7 @@ window.addEventListener('load', function () {
     //中文字体缓加载-此处写入字体源文件
     //先行加载简体中文子集，后续补全字集
     //由于压缩过后的中文字体仍旧过大，可转移至对象存储或 CDN 加载
-    const font = new FontFace(
-        "MiSans",
-        "url(" + "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/MiSans-Regular.woff2" + ")"
-    );
-    document.fonts.add(font);
-
-}, false)
+});
 var now = new Date(), hour = now.getHours()
 //进入问候
 function getHello() {

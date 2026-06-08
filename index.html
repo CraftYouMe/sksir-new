@@ -14,35 +14,36 @@
     <title>导航酱 - 但行好事，莫问前程</title>
     <link rel="icon" href="apple-touch-icon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- jQuery -->
-    <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-y/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="preconnect" href="https://lf26-cdn-tos.bytecdntp.com" crossorigin>
+    <link rel="dns-prefetch" href="//busuanzi.ibruce.info">
+    <link rel="dns-prefetch" href="//visitor-badge.laobi.icu">
+    <link rel="dns-prefetch" href="//yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
+    <link rel="preload" as="image" href="./img/background1.jpg" fetchpriority="high">
     <!-- 引入样式 -->
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" type="text/css" href="./css/font.css">
-    <link rel="stylesheet" type="text/css" href="./css/loading.css">
     <link rel="stylesheet" type="text/css" href="./css/mobile.css">
     <link rel="stylesheet" type="text/css" href="./css/animation.css">
     <link rel="stylesheet" href="./css/status-dot.css">
-    <!-- Izitoast -->
-    <link href="https://cdn.bootcdn.net/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcdn.net/ajax/libs/izitoast/1.4.0/css/iziToast.css" rel="stylesheet">
-    <script type="text/javascript"
-        src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-y/izitoast/1.4.0/js/iziToast.min.js">
-    </script>
+    <script src="./js/jquery-3.6.0.min.js"></script>
+    <script defer src="./js/js.cookie.js"></script>
+    <script defer src="./js/toast-loader.js"></script>
+    <script defer src="./js/main.js"></script>
+    <script defer src="./js/set.js"></script>
+    <script defer src="./js/status-dot.js"></script>
+    <script async defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <!-- IE Out -->
 </head>
-<script src="./js/status-dot.js"></script>
 
 <body>
     <div>
         <a href="https://visitor-badge.laobi.icu" target="_blank" style="position:fixed;top:14px;left:14px;z-index:9999;">
-        <img src="https://visitor-badge.laobi.icu/badge?page_id=sksir-new" alt="visitor badge"/>
+        <img src="https://visitor-badge.laobi.icu/badge?page_id=sksir-new" alt="visitor badge" loading="lazy" decoding="async"/>
         </a>
     </div>
     <!-- 背景图片 -->
     <div class="bg-all">
-        <img id="bg" onerror="this.classList.add('error');"></img>
+        <img id="bg" src="./img/background1.jpg" fetchpriority="high" decoding="async" onerror="this.classList.add('error');"></img>
         <div class="cover"></div>
     </div>
     <!-- 主体内容 -->
@@ -124,89 +125,89 @@
                             <div class="quick-alls">
                                 <div class="quicks">
                                     <a href="https://BiliBili.com" target="_blank" data-favorite-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bilibili.ico" class="iconcss"> BiliBili
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bilibili.ico" class="iconcss" loading="lazy" decoding="async"> BiliBili
                                     </a>
                                     <span class="quick-desc">哔哩哔哩 (゜-゜)つロ 干杯~</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://www.deepseek.com/" target="_blank" data-favorite-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepseek.ico" class="iconcss"> Deepseek
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepseek.ico" class="iconcss" loading="lazy" decoding="async"> Deepseek
                                     </a>
                                     <span class="quick-desc">探索未至之境</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://rentry.la/agefans" target="_blank" data-favorite-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/age.ico" class="iconcss"> AGE动漫
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/age.ico" class="iconcss" loading="lazy" decoding="async"> AGE动漫
                                     </a>
                                     <span class="quick-desc">比较稳定的看动漫网站</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://www.bimiacg.icu/" target="_blank" data-favorite-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bimi.ico" class="iconcss"> 哔咪动画
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bimi.ico" class="iconcss" loading="lazy" decoding="async"> 哔咪动画
                                     </a>
                                     <span class="quick-desc">比较清晰的番剧网站</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://fixunlink.com/" target="_blank" data-favorite-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/quanqiu.ico" class="iconcss"> 全球通
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/quanqiu.ico" class="iconcss" loading="lazy" decoding="async"> 全球通
                                     </a>
                                     <span class="quick-desc">科学上网</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://github.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/github.png" class="iconcss"> Github
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/github.png" class="iconcss" loading="lazy" decoding="async"> Github
                                     </a>
                                     <span class="quick-desc">世界上最大的代码托管平台</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://chat.openai.com/" target="_blank" data-skip-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico" class="iconcss"> ChatGPT
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico" class="iconcss" loading="lazy" decoding="async"> ChatGPT
                                     </a>
                                     <span class="quick-desc">Ai元老，ChatGPT</span>
                                 </div>
                                 
                                 <div class="quicks">
                                     <a href="https://www.deepl.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepl.png" class="iconcss"> DeepL
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepl.png" class="iconcss" loading="lazy" decoding="async"> DeepL
                                     </a>
                                     <span class="quick-desc">翻译网站，有点慢</span>
                                 </div>
 
                                 <div class="quicks">
                                     <a href="https://uutool.cn/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/uutools.ico" class="iconcss"> UUtools
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/uutools.ico" class="iconcss" loading="lazy" decoding="async"> UUtools
                                     </a>
                                     <span class="quick-desc">便捷实用的在线工具集合</span>
                                 </div>
 
                                 <div class="quicks">
                                     <a href="https://www.yinhuadm.one/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sakura.ico" class="iconcss"> 樱花动漫
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sakura.ico" class="iconcss" loading="lazy" decoding="async"> 樱花动漫
                                     </a>
                                     <span class="quick-desc">感觉不是很好用了</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://blog.sksir.top" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/blog.ico" class="iconcss"> Blog
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/blog.ico" class="iconcss" loading="lazy" decoding="async"> Blog
                                     </a>
                                     <span class="quick-desc">远一的博客，不怎么更新</span>
                                 </div>
 
                                 <div class="quicks">
                                     <a href="https://vercel.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vercel.ico" class="iconcss"> Vercel
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vercel.ico" class="iconcss" loading="lazy" decoding="async"> Vercel
                                     </a>
                                     <span class="quick-desc">静态网页托管</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://railway.app" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/railway.ico" class="iconcss"> Railway
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/railway.ico" class="iconcss" loading="lazy" decoding="async"> Railway
                                     </a>
                                     <span class="quick-desc">静态网页托管</span>
                                 </div>
                                 <div class="quicks">
                                     <a href="https://pixiv.net/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico" class="iconcss"> Pixiv
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico" class="iconcss" loading="lazy" decoding="async"> Pixiv
                                     </a>
                                     <span class="quick-desc">插画世界</span>
                                 </div>
@@ -223,43 +224,43 @@
                             <div class="quick-alls">
                                 <div class="quicks" data-category="在线影院">
                                     <a href="https://www.libvio.app" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/LIBOVIO.ico" class="iconcss"> LIBOVIO
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/LIBOVIO.ico" class="iconcss" loading="lazy" decoding="async"> LIBOVIO
                                     </a>
                                     <span class="quick-desc">韩剧欧美剧，夸克网盘资源</span>
                                 </div>   
                                 <div class="quicks" data-category="在线影院">
                                     <a href="https://www.mtyy1.cc/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/mtyy.ico" class="iconcss"> 麦田影院
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/mtyy.ico" class="iconcss" loading="lazy" decoding="async"> 麦田影院
                                     </a>
                                     <span class="quick-desc">资源齐全、没广告、速度快</span>
                                 </div>               
                                 <div class="quicks" data-category="动漫番剧">
                                     <a href="https://www.bimiacg.icu/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bimi.ico" class="iconcss"> 哔咪动画
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bimi.ico" class="iconcss" loading="lazy" decoding="async"> 哔咪动画
                                     </a>
                                     <span class="quick-desc">比较清晰的番剧网站</span>
                                 </div>
                                 <div class="quicks" data-category="动漫番剧">
                                     <a href="https://rentry.la/agefans" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/age.ico" class="iconcss">AGE动漫
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/age.ico" class="iconcss" loading="lazy" decoding="async">AGE动漫
                                     </a>
                                     <span class="quick-desc">比较稳定的番剧网站</span>
                                 </div>
                                 <div class="quicks" data-category="动漫番剧">
                                     <a href="https://www.yinhuadm.one/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sakura.ico" class="iconcss">樱花动漫
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sakura.ico" class="iconcss" loading="lazy" decoding="async">樱花动漫
                                     </a>
                                     <span class="quick-desc">感觉不是很好用了</span>
                                 </div>
                                 <div class="quicks" data-category="动漫番剧">
                                     <a href="https://fb.omoo.tv/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/omofun.ico" class="iconcss">Omofun
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/omofun.ico" class="iconcss" loading="lazy" decoding="async">Omofun
                                     </a>
                                     <span class="quick-desc">手机上倒是挺快的</span>
                                 </div>
                                 <div class="quicks" data-category="动漫番剧">
                                     <a href="https://kox.moe/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/kox.ico" class="iconcss"> KOX 漫画
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/kox.ico" class="iconcss" loading="lazy" decoding="async"> KOX 漫画
                                     </a>
                                     <span class="quick-desc">免费漫画网站</span>
                                 </div>
@@ -277,79 +278,79 @@
                         <div class="quick-alls">
                             <div class="quicks" data-category="图片工具">
                                     <a href="https://www.iloveimg.com/zh-cn" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iloveimg.png" class="iconcss"> iLoveimg
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iloveimg.png" class="iconcss" loading="lazy" decoding="async"> iLoveimg
                                     </a>
                                     <span class="quick-desc">可批量编辑图片的所有工具</span>
                                 </div>
                                 <div class="quicks" data-category="图片工具">
                                     <a href="https://cdkm.com/cn/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/cdkm.ico" class="iconcss"> CDKM
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/cdkm.ico" class="iconcss" loading="lazy" decoding="async"> CDKM
                                     </a>
                                     <span class="quick-desc">在线文件转换器</span>
                                 </div> 
                                 <div class="quicks" data-category="图片工具">
                                     <a href="https://www.koukoutu.com/removebgtool/all" target="_blank">
-                                        <img src="" class="iconcss"> AI抠图
+                                        <img src="./img/icon/fangdiu.png" class="iconcss" loading="lazy" decoding="async"> AI抠图
                                     </a>
                                     <span class="quick-desc">在线文件转换器</span>
                                 </div>  
                                 <div class="quicks" data-category="文件转换">
                                     <a href="https://rename.tools/zh" target="_blank">
-                                        <img src="" class="iconcss"> 批量重命名
+                                        <img src="./img/icon/fangdiu.png" class="iconcss" loading="lazy" decoding="async"> 批量重命名
                                     </a>
                                     <span class="quick-desc">在线文件转换器</span>
                                 </div>
                                 <div class="quicks" data-category="文件转换">
                                     <a href="https://docsmall.com/image-compress" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/docsmall.png" class="iconcss"> Docsmall
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/docsmall.png" class="iconcss" loading="lazy" decoding="async"> Docsmall
                                     </a>
                                     <span class="quick-desc">免费的在线图片与 PDF 处理工具</span>
                                 </div>
                                 <div class="quicks" data-category="文件转换">
                                     <a href="https://cn.office-converter.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/office.ico" class="iconcss"> 格式转换器
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/office.ico" class="iconcss" loading="lazy" decoding="async"> 格式转换器
                                     </a>
                                     <span class="quick-desc">文件格式转换</span>
                                 </div>
                                 <div class="quicks" data-category="图标库">
                                     <a href="https://fontello.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/fontello.ico" class="iconcss"> Fontello
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/fontello.ico" class="iconcss" loading="lazy" decoding="async"> Fontello
                                     </a>
                                     <span class="quick-desc">矢量图标库</span>
                                 </div>
                                 <div class="quicks" data-category="图标库">
                                     <a href="https://fontawesome.com.cn/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/fontswesome.ico" class="iconcss"> Fontawesome
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/fontswesome.ico" class="iconcss" loading="lazy" decoding="async"> Fontawesome
                                     </a>
                                     <span class="quick-desc">矢量图标库</span>
                                 </div>
                                 <div class="quicks" data-category="图标库">
                                     <a href="https://icons8.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/icons8.png" class="iconcss"> icons8
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/icons8.png" class="iconcss" loading="lazy" decoding="async"> icons8
                                     </a>
                                     <span class="quick-desc">矢量图标库</span>
                                 </div>
                                 <div class="quicks" data-category="图标库">
                                     <a href="https://www.iconfont.cn/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iconfont.png" class="iconcss"> iconFont
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iconfont.png" class="iconcss" loading="lazy" decoding="async"> iconFont
                                     </a>
                                     <span class="quick-desc">阿里巴巴矢量图标库</span>
                                 </div>
                                 <div class="quicks" data-category="图标库">
                                     <a href="https://www.flaticon.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/flaticon.ico" class="iconcss"> Flaticon
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/flaticon.ico" class="iconcss" loading="lazy" decoding="async"> Flaticon
                                     </a>
                                     <span class="quick-desc">矢量图标库</span>
                                 </div>
                                 <div class="quicks" data-category="图标库">
                                     <a href="https://icomoon.io/app/#/select" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/icomoon.ico" class="iconcss"> icomoon
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/icomoon.ico" class="iconcss" loading="lazy" decoding="async"> icomoon
                                     </a>
                                     <span class="quick-desc">字体文件合并</span>
                                 </div>
                                 <div class="quicks" data-category="音乐工具">
                                     <a href="https://www.tunemymusic.com/zh-CN" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/tunemymusic.png" class="iconcss"> Tunemymusic
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/tunemymusic.png" class="iconcss" loading="lazy" decoding="async"> Tunemymusic
                                     </a>
                                     <span class="quick-desc">不同的音乐平台迁移播放列表</span>
                                 </div>
@@ -368,133 +369,133 @@
                         <div class="quick-alls">
                             <div class="quicks" data-category="软件官网">
                                     <a href="https://adguard.com/zh_cn" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/adguard.ico" class="iconcss"> AdGuard
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/adguard.ico" class="iconcss" loading="lazy" decoding="async"> AdGuard
                                     </a>
                                     <span class="quick-desc">全球最先进的广告拦截</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://bitwarden.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bitwarden.ico" class="iconcss"> BitWarden
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bitwarden.ico" class="iconcss" loading="lazy" decoding="async"> BitWarden
                                     </a>
                                     <span class="quick-desc">强大的密码管理器</span>
                                 </div>
                                 <div class="quicks" data-category="社交论坛">
                                     <a href="https://www.iplaysoft.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iplaysoft.ico" class="iconcss"> 异次元
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iplaysoft.ico" class="iconcss" loading="lazy" decoding="async"> 异次元
                                     </a>
                                     <span class="quick-desc">推广优秀应用软件与互联网资源</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://pixpinapp.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixpin2.ico" class="iconcss"> PixPin
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixpin2.ico" class="iconcss" loading="lazy" decoding="async"> PixPin
                                     </a>
                                     <span class="quick-desc">强大并且免费的截图工具</span>
                                 </div> 
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://sms-activate.org/cn" target="_blank" data-skip-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sms.ico" class="iconcss"> SMS 虚拟号码
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sms.ico" class="iconcss" loading="lazy" decoding="async"> SMS 虚拟号码
                                     </a>
                                     <span class="quick-desc">注册国外网站所需要的号码</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://steampp.net/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/WattToolkit.ico" class="iconcss"> Watt Toolkit
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/WattToolkit.ico" class="iconcss" loading="lazy" decoding="async"> Watt Toolkit
                                     </a>
                                     <span class="quick-desc">Steam加速与多功能工具</span>
                                 </div>
                                 <div class="quicks" data-category="代码托管">
                                     <a href="https://github.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/github.png" class="iconcss"> Github
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/github.png" class="iconcss" loading="lazy" decoding="async"> Github
                                     </a>
                                     <span class="quick-desc">全球最大开源代码托管平台</span>
                                 </div>
                                 <div class="quicks" data-category="代码托管">
                                     <a href="https://vercel.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vercel.ico" class="iconcss"> Vercel
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vercel.ico" class="iconcss" loading="lazy" decoding="async"> Vercel
                                     </a>
                                     <span class="quick-desc">前端静态网站极速部署平台</span>
                                 </div>
                                 <div class="quicks" data-category="代码托管">
                                     <a href="https://railway.app" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/railway.ico" class="iconcss"> Railway
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/railway.ico" class="iconcss" loading="lazy" decoding="async"> Railway
                                     </a>
                                     <span class="quick-desc">云端一键部署与托管服务</span>
                                 </div>
                                 <div class="quicks" data-category="社交论坛">
                                     <a href="https://pixiv.net/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico" class="iconcss"> Pixiv
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico" class="iconcss" loading="lazy" decoding="async"> Pixiv
                                     </a>
                                     <span class="quick-desc">全球知名插画与同人作品社区</span>
                                 </div>
                                 <div class="quicks" data-category="智能AI">
                                     <a href="https://chat.openai.com/" target="_blank" data-skip-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico" class="iconcss"> ChatGPT
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico" class="iconcss" loading="lazy" decoding="async"> ChatGPT
                                     </a>
                                     <span class="quick-desc">Ai元老，ChatGPT</span>
                                 </div>
                                 <div class="quicks" data-category="智能AI">
                                     <a href="https://copilot.microsoft.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/copilot.ico" class="iconcss"> Copilot
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/copilot.ico" class="iconcss" loading="lazy" decoding="async"> Copilot
                                     </a>
                                     <span class="quick-desc">微软的智能Ai</span>
                                 </div>
                                 <div class="quicks" data-category="智能AI">
                                     <a href="https://claude.ai/login" target="_blank" data-skip-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/claude.ico" class="iconcss"> Claude
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/claude.ico" class="iconcss" loading="lazy" decoding="async"> Claude
                                     </a>
                                     <span class="quick-desc">Anthropic出品的AI支持多轮对话</span>
                                 </div>
                                 <div class="quicks" data-category="智能AI">
                                     <a href="https://platform.openai.com/account/api-keys" target="_blank" data-skip-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico" class="iconcss"> Key
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico" class="iconcss" loading="lazy" decoding="async"> Key
                                     </a>
                                     <span class="quick-desc">ChatGPT的Key网站</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://store.steampowered.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/steam.ico" class="iconcss"> Steam
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/steam.ico" class="iconcss" loading="lazy" decoding="async"> Steam
                                     </a>
                                     <span class="quick-desc">Steam官方网址</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://www.escapefromtarkov.com/" target="_blank" data-skip-check="true">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/takefu.ico" class="iconcss"> 逃离塔科夫
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/takefu.ico" class="iconcss" loading="lazy" decoding="async"> 逃离塔科夫
                                     </a>
                                     <span class="quick-desc">逃离塔科夫官方网址</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://accounts.krafton.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pubg.ico" class="iconcss"> KRAFTON
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pubg.ico" class="iconcss" loading="lazy" decoding="async"> KRAFTON
                                     </a>
                                     <span class="quick-desc">PUBG全球账号登录</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://www.minecraft.net/zh-hans" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/minecraft.webp" class="iconcss"> Minecraft
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/minecraft.webp" class="iconcss" loading="lazy" decoding="async"> Minecraft
                                     </a>
                                     <span class="quick-desc">MineCraft国际网站</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://arkgacha.kwer.top/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/arkgacha.ico" class="iconcss"> Arkgacha
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/arkgacha.ico" class="iconcss" loading="lazy" decoding="async"> Arkgacha
                                     </a>
                                     <span class="quick-desc">明日方舟抽卡分析</span>
                                 </div>
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://zh.khanacademy.org/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/khanacademy.ico" class="iconcss"> 可汗学院
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/khanacademy.ico" class="iconcss" loading="lazy" decoding="async"> 可汗学院
                                     </a>
                                     <span class="quick-desc">为爱发电的公益自学网</span>
                                 </div> 
                                 <div class="quicks" data-category="社交论坛">
                                     <a href="https://pubscholar.cn/" target="_blank" title="">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pubscholar.ico" class="iconcss"> PubScholar
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pubscholar.ico" class="iconcss" loading="lazy" decoding="async"> PubScholar
                                     </a>
                                     <span class="quick-desc">中科院公益学术平台</span>
                                 </div> 
                                 <div class="quicks" data-category="软件官网">
                                     <a href="https://uutool.cn/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/uutools.ico" class="iconcss"> UUtools
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/uutools.ico" class="iconcss" loading="lazy" decoding="async"> UUtools
                                     </a>
                                     <span class="quick-desc">便捷实用的在线工具集合</span>
                                 </div>
@@ -565,18 +566,18 @@
                                 </div>
                                 <div class="quicks" data-category="系统必备">
                                     <a href="https://www.tbtool.cn/" target="_blank">
-                                    <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/toolstuba.ico" class="iconcss"> 图吧工具箱</a>
+                                    <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/toolstuba.ico" class="iconcss" loading="lazy" decoding="async"> 图吧工具箱</a>
                                     <span class="quick-desc">图吧工具箱官网</span>
                                 </div>
                                 <div class="quicks" data-category="系统必备">
                                     <a href="https://www.amd.com/zh-cn/support/download/drivers.html" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/adm.ico" class="iconcss"> AMD驱动官网
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/adm.ico" class="iconcss" loading="lazy" decoding="async"> AMD驱动官网
                                     </a>
                                     <span class="quick-desc">AMD驱动官网</span>
                                 </div>
                                 <div class="quicks" data-category="修复工具">
                                     <a href="https://cn.dll-files.com" target="_blank">
-                                        <img src="" class="iconcss"> dll缺失修复
+                                        <img src="./img/icon/fangdiu.png" class="iconcss" loading="lazy" decoding="async"> dll缺失修复
                                     </a>
                                     <span class="quick-desc">解决电脑缺失dll文件</span>
                                 </div>
@@ -597,52 +598,52 @@
                                 </div>
                                 <div class="quickjl" data-s="JM天堂">
                                     <a href="https://18comic.vip" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/jmcomic.ico" class="iconcss">禁漫天堂
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/jmcomic.ico" class="iconcss" loading="lazy" decoding="async">禁漫天堂
                                     </a>
                                 </div>
                                 <div class="quickjl" data-s="bika">
                                     <a href="https://manhuabika.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bika.png" class="iconcss">BiKa
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bika.png" class="iconcss" loading="lazy" decoding="async">BiKa
                                     </a>
                                 </div>
                                 <div class="quickjl" data-s="pixiv">
                                     <a href="https://pixiv.net/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico" class="iconcss"> Pixiv
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico" class="iconcss" loading="lazy" decoding="async"> Pixiv
                                     </a>
                                 </div>
                                 <div class="quickjl" data-s="Xvideos">
                                     <a href="https://xvideos.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/xvideos.ico" class="iconcss"> Xvideos
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/xvideos.ico" class="iconcss" loading="lazy" decoding="async"> Xvideos
                                     </a>
                                 </div>
                                 <div class="quickjl" data-s="haijiao">
                                     <a href="https://www.haijiao.com/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/haijiao.ico" class="iconcss"> 海角社区
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/haijiao.ico" class="iconcss" loading="lazy" decoding="async"> 海角社区
                                     </a>
                                 </div>
                                 <div class="quickjl" data-s="ehentai">
                                     <a href="https://e-hentai.org/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/Ehentai.ico" class="iconcss"> E-hentai
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/Ehentai.ico" class="iconcss" loading="lazy" decoding="async"> E-hentai
                                     </a>
                                 </div>
                                 <div class="quickjl" data-s="cinwiki">
                                     <a href="https://cin.wiki/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/cinwiki.ico" class="iconcss"> CinWiKi
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/cinwiki.ico" class="iconcss" loading="lazy" decoding="async"> CinWiKi
                                     </a>
                                 </div>
                                 <div class="quickjl" data-s="AQDLT">
                                     <a href="https://vip.aqdm327.com:20844" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/aqdlt.png" class="iconcss">AQDLT
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/aqdlt.png" class="iconcss" loading="lazy" decoding="async">AQDLT
                                     </a>
                                 </div>
                                 <div class="quickjl" data-s="AQDLTFBY">
                                     <a href="https://rentry.org/aqd" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/aqdlt.png" class="iconcss">AQ发布页
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/aqdlt.png" class="iconcss" loading="lazy" decoding="async">AQ发布页
                                     </a>
                                 </div>
                                 <div class="quicks" data-category="动漫番剧">
                                     <a href="https://www.mengdaow.org/" target="_blank">
-                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/mengdao.ico" class="iconcss">萌道动漫
+                                        <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/mengdao.ico" class="iconcss" loading="lazy" decoding="async">萌道动漫
                                     </a>
                                     <span class="quick-desc">你变了</span>
                                 </div>
@@ -830,10 +831,6 @@
     <noscript>
         <div class="noscript fixed-top">请开启 JavaScript</div>
     </noscript>
-    <!-- JS -->
-    <script type="text/javascript" src="./js/main.js"></script>
-    <script type="text/javascript" src="./js/set.js"></script>
-    <script type="text/javascript" src="./js/js.cookie.js"></script>
 </body>
 
 </html>
