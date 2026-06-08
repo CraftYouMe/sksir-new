@@ -65,33 +65,71 @@ $(function () {
     $('#section').css("cssText", "opacity: 1;transition: ease 1.5s;");
     $('.cover').css("cssText", "opacity: 1;transition: ease 1.5s;");
 
-    //用户欢迎
-    iziToast.settings({
-        timeout: 3000,
-        backgroundColor: '#ffffff40',
-        titleColor: '#efefef',
-        messageColor: '#efefef',
-        progressBar: false,
-        close: false,
-        closeOnEscape: true,
-        position: 'topCenter',
-        transitionIn: 'bounceInDown',
-        transitionOut: 'flipOutX',
-        displayMode: 'replace',
-        layout: '1'
-    });
-    setTimeout(function () {
-        iziToast.show({
-            title: getHello(),
-            message: '欢迎来到 导航酱'
-        });
-    }, 800);
-
-    //中文字体缓加载-此处写入字体源文件
-    //先行加载简体中文子集，后续补全字集
-    //由于压缩过后的中文字体仍旧过大，可转移至对象存储或 CDN 加载
+    scheduleWelcomeToast();
+    scheduleMiSansFont();
 });
 var now = new Date(), hour = now.getHours()
+
+function runAfterLoadIdle(callback, timeout) {
+    var run = function () {
+        if ("requestIdleCallback" in window) {
+            window.requestIdleCallback(callback, { timeout: timeout || 2500 });
+        } else {
+            setTimeout(callback, timeout || 1200);
+        }
+    };
+
+    if (document.readyState === "complete") {
+        run();
+    } else {
+        window.addEventListener("load", run, { once: true });
+    }
+}
+
+function scheduleWelcomeToast() {
+    runAfterLoadIdle(function () {
+        setTimeout(function () {
+            iziToast.settings({
+                timeout: 3000,
+                backgroundColor: '#ffffff40',
+                titleColor: '#efefef',
+                messageColor: '#efefef',
+                progressBar: false,
+                close: false,
+                closeOnEscape: true,
+                position: 'topCenter',
+                transitionIn: 'bounceInDown',
+                transitionOut: 'flipOutX',
+                displayMode: 'replace',
+                layout: '1'
+            });
+            iziToast.show({
+                title: getHello(),
+                message: '欢迎来到 导航酱'
+            });
+        }, 600);
+    }, 1800);
+}
+
+function scheduleMiSansFont() {
+    if (!("FontFace" in window) || !document.fonts) return;
+
+    runAfterLoadIdle(function () {
+        var font = new FontFace(
+            "MiSans",
+            "url(https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/MiSans-Regular.woff2)",
+            { display: "swap" }
+        );
+
+        font.load().then(function (loadedFont) {
+            document.fonts.add(loadedFont);
+            document.documentElement.classList.add("font-misans");
+        }).catch(function () {
+            document.documentElement.classList.remove("font-misans");
+        });
+    }, 2200);
+}
+
 //进入问候
 function getHello() {
     var now = new Date(), hour = now.getHours();

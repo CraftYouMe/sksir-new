@@ -18,7 +18,7 @@
     <link rel="dns-prefetch" href="//busuanzi.ibruce.info">
     <link rel="dns-prefetch" href="//visitor-badge.laobi.icu">
     <link rel="dns-prefetch" href="//yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
-    <link rel="preload" as="image" href="./img/background1.jpg" fetchpriority="high">
+    <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
     <!-- 引入样式 -->
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" type="text/css" href="./css/font.css">
@@ -43,7 +43,7 @@
     </div>
     <!-- 背景图片 -->
     <div class="bg-all">
-        <img id="bg" src="./img/background1.jpg" fetchpriority="high" decoding="async" onerror="this.classList.add('error');"></img>
+        <img id="bg" data-fallback-src="./img/background1.jpg" decoding="async" alt="">
         <div class="cover"></div>
     </div>
     <!-- 主体内容 -->
@@ -751,7 +751,7 @@
                         <div class="mainConts">
                             <div class="set_blocks">
                                 <div class="set_tip">
-                                    <span class="set_text mobile">点击下方选项以切换壁纸，使用除默认壁纸以外的选项可能会导致页面载入缓慢</span>
+                                    <span class="set_text mobile">点击下方选项以切换壁纸，远程壁纸会在加载完成后淡入显示</span>
                                     <span class="set_text mobile">不建议使用以主色调为白色的壁纸，会导致本站部分元素无法辨认</span>
                                     <span class="set_text" id="wallpaper_text">请点击选项以查看各项说明，高亮项为选中，选中后刷新页面以生效</span>
                                 </div>
@@ -765,7 +765,7 @@
                                                             <input type="radio" id="radio1" class="set-wallpaper"
                                                                 name="wallpaper-type" value="1" style="display: none;">
                                                             <label class="form-radio-label" for="radio1">
-                                                                默认壁纸
+                                                                随机壁纸
                                                             </label>
                                                         </div>
                                                         <div class="form-radio">
@@ -778,7 +778,7 @@
                                                         <div class="form-radio mobile">
                                                             <input type="radio" id="radio5"
                                                                 class="set-wallpaper wallpaper-custom"
-                                                                name="wallpaper-type" value="3" style="display: none;">
+                                                                name="wallpaper-type" value="5" style="display: none;">
                                                             <label class="form-radio-label" for="radio5">
                                                                 自定义壁纸
                                                             </label>

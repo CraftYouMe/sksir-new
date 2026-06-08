@@ -72,14 +72,19 @@ section {
 #bg {
     transform: scale(1);
     filter: blur(0);
+    opacity: 0;
     position: fixed;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: opacity 1s, transform .25s, filter .25s;
+    transition: opacity .7s ease, transform .25s, filter .25s;
     backface-visibility: hidden;
+}
+
+#bg.is-loaded {
+    opacity: 1;
 }
 
 img.error {

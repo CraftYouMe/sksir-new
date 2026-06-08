@@ -126,7 +126,7 @@ function getSeDefault() {
 
 /**
  * 背景图片配置
- * type: "1" 默认壁纸, "2" 必应每日一图, "5" 自定义壁纸
+ * type: "1" 随机壁纸, "2" 必应每日一图, "5" 自定义壁纸
  * path: 自定义图片地址
  */
 var bg_img_preinstall = {
@@ -134,15 +134,26 @@ var bg_img_preinstall = {
     "path": "",
 };
 
+var bg_img_pictures = [
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image.jpg',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image2.PNG',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image3.JPG',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image4.PNG',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image5.JPG',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image6.PNG'
+];
+
 // 获取背景图片
 function getBgImg() {
-    var bg_img_local = Cookies.get('bg_img');
-    if (bg_img_local && bg_img_local !== "{}") {
-        return JSON.parse(bg_img_local);
-    } else {
-        setBgImg(bg_img_preinstall);
-        return bg_img_preinstall;
+    var bg_img_local = Cookies.getJSON('bg_img');
+    if (bg_img_local && bg_img_local.type) {
+        // 兼容旧版自定义壁纸曾写入的 type: "3"
+        if (bg_img_local.type === "3") bg_img_local.type = "5";
+        return bg_img_local;
     }
+
+    setBgImg(bg_img_preinstall);
+    return Object.assign({}, bg_img_preinstall);
 }
 
 // 设置背景图片
@@ -156,43 +167,75 @@ function setBgImg(bg_img) {
     return false;
 }
 
+function getRandomBgPicture() {
+    if (!bg_img_pictures.length) return $('#bg').data('fallback-src');
+
+    var lastSrc = localStorage.getItem('bg_img_last_src');
+    var availablePictures = bg_img_pictures.filter(function (src) {
+        return src !== lastSrc;
+    });
+    var pool = availablePictures.length ? availablePictures : bg_img_pictures;
+    var src = pool[Math.floor(Math.random() * pool.length)];
+
+    localStorage.setItem('bg_img_last_src', src);
+    return src;
+}
+
+function resolveBgImgSrc(bg_img) {
+    switch (bg_img["type"]) {
+        case "2":
+            return 'https://api.dujin.org/bing/1920.php';
+        case "5":
+            return bg_img["path"] || $('#bg').data('fallback-src');
+        case "1":
+        default:
+            return getRandomBgPicture();
+    }
+}
+
+function applyBgImg(src, fallbackSrc) {
+    var $bg = $('#bg');
+    var targetSrc = src || fallbackSrc;
+    var currentSrc = $bg.attr('src');
+
+    if (!targetSrc) return;
+    if (currentSrc === targetSrc && $bg.hasClass('is-loaded')) return;
+
+    $bg.removeClass('error is-loaded');
+
+    var img = new Image();
+    img.onload = function () {
+        $bg.attr('src', targetSrc);
+        requestAnimationFrame(function () {
+            $bg.addClass('is-loaded');
+        });
+    };
+    img.onerror = function () {
+        if (targetSrc !== fallbackSrc && fallbackSrc) {
+            applyBgImg(fallbackSrc, fallbackSrc);
+        } else {
+            $bg.addClass('error');
+        }
+    };
+    img.src = targetSrc;
+}
+
 // 设置-壁纸
 function setBgImgInit() {
     var bg_img = getBgImg();
-    $("input[name='wallpaper-type'][value=" + bg_img["type"] + "]").click();
-    if (bg_img["type"] === "5") {
+    var wallpaperType = bg_img["type"];
+    $("input[name='wallpaper-type'][value='" + wallpaperType + "']").prop("checked", true);
+
+    if (wallpaperType === "5") {
         $("#wallpaper-url").val(bg_img["path"]);
-        $("#wallpaper-button").fadeIn(100);
-        $("#wallpaper_url").fadeIn(100);
+        $("#wallpaper-button").show();
+        $("#wallpaper_url").show();
     } else {
-        $("#wallpaper_url").fadeOut(300);
-        $("#wallpaper-button").fadeOut(300);
+        $("#wallpaper_url").hide();
+        $("#wallpaper-button").hide();
     }
 
-    switch (bg_img["type"]) {
-        case "1":
-            // 默认壁纸轮播，每张图片尽量刷新到一次
-            var pictures = [
-                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image.jpg',
-                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image2.PNG',
-                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image3.JPG',
-                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image4.PNG',
-                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image5.JPG',
-                'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image6.PNG'
-            ];
-            // 记录上次索引
-            var idx = parseInt(localStorage.getItem('bg_img_idx') || '0', 10);
-            $('#bg').attr('src', pictures[idx]);
-            idx = (idx + 1) % pictures.length;
-            localStorage.setItem('bg_img_idx', idx);
-            break;
-        case "2":
-            $('#bg').attr('src', 'https://api.dujin.org/bing/1920.php');
-            break;
-        case "5":
-            $('#bg').attr('src', bg_img["path"]);
-            break;
-    }
+    applyBgImg(resolveBgImgSrc(bg_img), $('#bg').data('fallback-src'));
 }
 
 // 搜索框高亮
@@ -768,7 +811,7 @@ $(document).ready(function () {
         bg_img["type"] = type;
 
         if (type === "1") {
-            $('#wallpaper_text').html("显示默认壁纸，刷新页面以生效");
+            $('#wallpaper_text').html("随机显示一张预设壁纸，刷新页面以生效");
             setBgImg(bg_img);
             iziToast.show({
                 message: '壁纸设置成功，刷新生效',
@@ -783,7 +826,7 @@ $(document).ready(function () {
             });
         }
 
-        if (type === "3") {
+        if (type === "5") {
             $('#wallpaper_text').html("自定义壁纸地址，请输入正确地址，点击保存且刷新页面以生效");
             $("#wallpaper_url").fadeIn(100);
             $("#wallpaper-button").fadeIn(100);
@@ -800,7 +843,7 @@ $(document).ready(function () {
     // 自定义壁纸设置保存
     $(".wallpaper_save").click(function () {
         var url = $("#wallpaper-url").val();
-        var reg = /^https?:\/\/(?:[a-z0-9-]+\.)*[a-z0-9-]+(?:\.[a-z]{2,})+(?:\/\S*)?\.(?:jpe?g|png|gif)$/i;
+        var reg = /^https?:\/\/\S+\.(?:jpe?g|png|gif|webp|avif)(?:[?#]\S*)?$/i;
         if (!reg.test(url)) {
             iziToast.show({
                 message: '请输入正确的链接',
