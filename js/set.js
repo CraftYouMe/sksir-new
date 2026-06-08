@@ -121,8 +121,101 @@ function setSeList(se_list) {
 // 获得默认搜索引擎
 function getSeDefault() {
     var se_default = Cookies.get('se_default');
-    return se_default ? se_default : "2";
+    var normalized = normalizeSeDefault(se_default ? se_default : "2");
+    if (se_default && se_default !== normalized) {
+        Cookies.set('se_default', normalized, {
+            expires: 36500
+        });
+    }
+    return normalized;
 }
+
+function normalizeSeDefault(se_default) {
+    var aliases = {
+        baidu: "1",
+        bing: "2",
+        google: "3",
+        sogou: "4",
+        so: "5",
+        "360": "5",
+        weibo: "6",
+        zhihu: "7",
+        github: "8",
+        bilibili: "9",
+        taobao: "10",
+        jd: "11"
+    };
+
+    return aliases[se_default] || se_default || "2";
+}
+
+function getValidSeDefault(se_list) {
+    var se_default = getSeDefault();
+    if (se_list[se_default]) return se_default;
+
+    var fallback = se_list["2"] ? "2" : Object.keys(se_list)[0];
+    if (fallback) {
+        Cookies.set('se_default', fallback, {
+            expires: 36500
+        });
+    }
+    return fallback;
+}
+
+function setDefaultSearchEngine(rawValue) {
+    var key = normalizeSeDefault(rawValue);
+    var se_list = getSeList();
+    if (!se_list[key]) {
+        iziToast.show({
+            timeout: 2200,
+            class: "setting-toast",
+            title: "\u641c\u7d22\u8bbe\u7f6e",
+            message: "\u672a\u627e\u5230\u8fd9\u4e2a\u641c\u7d22\u5f15\u64ce"
+        });
+        return false;
+    }
+
+    Cookies.set('se_default', key, {
+        expires: 36500
+    });
+    setSeInit();
+    searchData();
+    seList();
+    return true;
+}
+
+var keywordRequestSeq = 0;
+
+function hideKeywordPanel() {
+    keywordRequestSeq++;
+    $("#keywords").empty().removeAttr("data-length").hide();
+}
+
+function canShowKeywordPanel(keyword, requestSeq) {
+    return requestSeq === keywordRequestSeq &&
+        $("body").hasClass("onsearch") &&
+        $(".search-engine").is(":hidden") &&
+        $(".wd").val() === keyword &&
+        keyword !== "";
+}
+
+document.addEventListener("click", function (event) {
+    var button = event.target.closest && event.target.closest(".set_se_default");
+    if (!button) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    if (setDefaultSearchEngine(button.value)) {
+        iziToast.show({
+            timeout: 1800,
+            class: "setting-toast",
+            title: "\u641c\u7d22\u8bbe\u7f6e",
+            message: "\u5df2\u7acb\u5373\u5207\u6362\u9ed8\u8ba4\u641c\u7d22\u5f15\u64ce"
+        });
+    }
+}, true);
 
 /**
  * 背景图片配置
@@ -241,6 +334,9 @@ function setBgImgInit() {
 // 搜索框高亮
 function focusWd() {
     $("body").addClass("onsearch");
+    requestAnimationFrame(updateKeywordPanel);
+    setTimeout(updateKeywordPanel, 180);
+    setTimeout(updateKeywordPanel, 320);
 }
 
 // 搜索框取消高亮
@@ -248,46 +344,72 @@ function blurWd() {
     $("body").removeClass("onsearch");
     //隐藏输入
     $(".wd").val("");
+    $(".search-engine").hide();
     //隐藏搜索建议
-    $("#keywords").hide();
+    hideKeywordPanel();
 }
 
 // 搜索建议提示
 function keywordReminder() {
     var keyword = $(".wd").val();
     if (keyword != "") {
+        var requestSeq = ++keywordRequestSeq;
         $.ajax({
             url: 'https://suggestion.baidu.com/su?wd=' + keyword,
             dataType: 'jsonp',
             jsonp: 'cb', //回调函数的参数名(键值)key
             success: function (data) {
+                if (!canShowKeywordPanel(keyword, requestSeq)) return;
+                if (!data.s || data.s.length === 0) {
+                    hideKeywordPanel();
+                    return;
+                }
                 //获取宽度
-                $("#keywords").css("width", $('.sou').width());
-                $("#keywords").empty().show();
+                updateKeywordPanel();
+                $("#keywords").empty();
                 $.each(data.s, function (i, val) {
-                    $('#keywords').append(`<div class="keyword" data-id="${i + 1}"><i class='iconfont icon-sousuo'></i>${val}</div>`);
+                    var $item = $("<div></div>", {
+                        class: "keyword",
+                        "data-id": i + 1
+                    });
+                    $("<i></i>", {
+                        class: "iconfont icon-sousuo"
+                    }).appendTo($item);
+                    $item.append(document.createTextNode(val));
+                    $('#keywords').append($item);
                 });
-                $("#keywords").attr("data-length", data.s["length"]);
-                $(".keyword").click(function () {
-                    $(".wd").val($(this).text());
-                    $("#search-submit").click();
-                });
+                $("#keywords").attr("data-length", data.s.length).show();
             },
             error: function () {
-                $("#keywords").empty().show();
-                $("#keywords").hide();
+                if (requestSeq === keywordRequestSeq) hideKeywordPanel();
             }
         })
     } else {
-        $("#keywords").empty().show();
-        $("#keywords").hide();
+        hideKeywordPanel();
     }
+}
+
+function updateKeywordPanel() {
+    var searchBox = $(".all-search")[0];
+    var searchWrap = $(".sou")[0];
+    if (!searchBox || !searchWrap) return;
+
+    var searchRect = searchBox.getBoundingClientRect();
+    var wrapRect = searchWrap.getBoundingClientRect();
+    var inset = Math.min(18, Math.max(10, Math.round(searchRect.height * 0.32)));
+    var panelWidth = Math.max(180, Math.round(searchRect.width - inset * 2));
+
+    $("#keywords").css({
+        width: panelWidth,
+        left: Math.round(searchRect.left - wrapRect.left + inset),
+        top: Math.round(searchRect.bottom - wrapRect.top - 1)
+    });
 }
 
 // 搜索框数据加载
 function searchData() {
-    var se_default = getSeDefault();
     var se_list = getSeList();
+    var se_default = getValidSeDefault(se_list);
     var defaultSe = se_list[se_default];
     if (defaultSe) {
         $(".search").attr("action", defaultSe["url"]);
@@ -318,8 +440,8 @@ function seList() {
 
 // 设置-搜索引擎列表加载
 function setSeInit() {
-    var se_default = getSeDefault();
     var se_list = getSeList();
+    var se_default = getValidSeDefault(se_list);
     var html = "";
     for (var i in se_list) {
         var tr = `<div class='se_list_div'><div class='se_list_num'>${i}</div>`;
@@ -451,7 +573,7 @@ $(document).ready(function () {
 
         // 自动提示隐藏
         if (!$(".sou").is(e.target) && $(".sou").has(e.target).length === 0) {
-            $("#keywords").hide();
+            hideKeywordPanel();
         }
     });
 
@@ -477,16 +599,6 @@ $(document).ready(function () {
     });
 
     // 搜索引擎列表点击
-    $(".search-engine-list").on("click", ".se-li", function () {
-        var url = $(this).attr('data-url');
-        var name = $(this).attr('data-name');
-        var icon = $(this).attr('data-icon');
-        $(".search").attr("action", url);
-        $(".wd").attr("name", name);
-        $("#icon-se").attr("class", icon);
-        $(".search-engine").slideUp(160);
-    });
-
     // 搜索引擎列表点击
     $(".search-engine-list").on("click", ".se-li", function () {
         var url = $(this).attr('data-url');
@@ -533,12 +645,12 @@ $(document).ready(function () {
 
     // 点击搜索引擎时隐藏自动提示
     $(document).on('click', '.se', function () {
-        $('#keywords').toggle();
+        hideKeywordPanel();
     });
 
     // 恢复自动提示
     $(document).on('click', '.se-li', function () {
-        $('#keywords').show();
+        hideKeywordPanel();
     });
 
     // 自动提示 (调用百度 api）
@@ -551,13 +663,13 @@ $(document).ready(function () {
     });
 
     // 点击自动提示的搜索建议
-    $("#keywords").on("click", ".wd", function () {
+    $("#keywords").on("click", ".keyword", function () {
         var wd = $(this).text();
         $(".wd").val(wd);
         $(".search").submit();
         //隐藏输入
         $(".wd").val("");
-        $("#keywords").hide();
+        hideKeywordPanel();
     });
 
     // 自动提示键盘方向键选择操作
@@ -599,6 +711,16 @@ $(document).ready(function () {
 
     // 修改默认搜索引擎
     $(".se_list_table").on("click", ".set_se_default", function () {
+        if (setDefaultSearchEngine($(this).val())) {
+            iziToast.show({
+                timeout: 1800,
+                class: "setting-toast",
+                title: "\u641c\u7d22\u8bbe\u7f6e",
+                message: "\u5df2\u7acb\u5373\u5207\u6362\u9ed8\u8ba4\u641c\u7d22\u5f15\u64ce"
+            });
+        }
+        return;
+
         var name = $(this).val();
         Cookies.set('se_default', name, {
             expires: 36500
@@ -615,9 +737,6 @@ $(document).ready(function () {
                     iziToast.show({
                         message: '设置成功'
                     });
-                    setTimeout(function () {
-                        window.location.reload()
-                    }, 1000);
                 }, true],
                 ['<button>取消</button>', function (instance, toast) {
                     instance.hide({
@@ -857,5 +976,15 @@ $(document).ready(function () {
                 message: '自定义壁纸设置成功，刷新生效',
             });
         }
+    });
+});
+
+$(function () {
+    $(document).on("focus click keyup", ".wd", function () {
+        updateKeywordPanel();
+    });
+
+    $(window).on("resize", function () {
+        if ($("#keywords").is(":visible")) updateKeywordPanel();
     });
 });

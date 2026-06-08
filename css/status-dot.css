@@ -3,6 +3,7 @@
    ============================= */
    .quicks {
     position: relative;
+    --quick-status-color: rgba(255, 255, 255, 0.75);
     overflow: hidden; /* 防止指示点溢出 */
   }
   
@@ -27,9 +28,9 @@
   .quicks::after {
     width: 6px;
     height: 6px;
-    background: currentColor;
+    background: var(--quick-status-color);
     opacity: 0.8;
-    box-shadow: 0 0 3px currentColor;
+    box-shadow: 0 0 3px var(--quick-status-color);
   }
 
   /* 只有 loading 时闪烁动画 */
@@ -40,20 +41,20 @@
   /* 悬浮高亮 */
   .quicks:hover::after {
     opacity: 1;
-    box-shadow: 0 0 4px currentColor;
+    box-shadow: 0 0 4px var(--quick-status-color);
   }
   
   /* 各状态主色调 */
-  .quicks.alive {    color: rgba(0, 255, 136, 0.75); }
-  .quicks.slow {    color: rgba(255, 200, 0, 0.75)}
-  .quicks.dead {     color: rgba(255, 68, 68, 0.75); }
-  .quicks.skip {     color: rgb(255, 255, 255); }
-  .quicks.loading {  color: rgba(157, 124, 255, 0.75); }
+  .quicks.alive {    --quick-status-color: rgba(0, 255, 136, 0.75); }
+  .quicks.slow {    --quick-status-color: rgba(255, 200, 0, 0.75)}
+  .quicks.dead {     --quick-status-color: rgba(255, 68, 68, 0.75); }
+  .quicks.skip {     --quick-status-color: rgb(255, 255, 255); }
+  .quicks.loading {  --quick-status-color: rgba(157, 124, 255, 0.75); }
   /* loading 额外环形 ::before */
   .quicks.loading::before {
     width: 10px;
     height: 10px;
-    border: 1px solid currentColor;
+    border: 1px solid var(--quick-status-color);
     opacity: 0.5;
   }
 

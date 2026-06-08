@@ -90,20 +90,21 @@ function scheduleWelcomeToast() {
     runAfterLoadIdle(function () {
         setTimeout(function () {
             iziToast.settings({
-                timeout: 3000,
-                backgroundColor: '#ffffff40',
-                titleColor: '#efefef',
-                messageColor: '#efefef',
-                progressBar: false,
+                timeout: 2800,
+                backgroundColor: 'transparent',
+                titleColor: '#ffffff',
+                messageColor: '#ffffff',
+                progressBar: true,
                 close: false,
                 closeOnEscape: true,
                 position: 'topCenter',
-                transitionIn: 'bounceInDown',
-                transitionOut: 'flipOutX',
+                transitionIn: 'fadeInDown',
+                transitionOut: 'fadeOutUp',
                 displayMode: 'replace',
                 layout: '1'
             });
             iziToast.show({
+                class: 'welcome-toast',
                 title: getHello(),
                 message: '欢迎来到 导航酱'
             });
@@ -159,6 +160,7 @@ $(function () {
     $(".mark .tab .tab-item").click(function () {
         $(this).addClass("active").siblings().removeClass("active");
         $(".products .mainCont").eq($(this).index()).css("display", "flex").siblings().css("display", "none");
+        setTimeout(refreshCategoryIndicators, 0);
     })
 })
 
@@ -227,10 +229,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 $(function () {
+    initCategoryRows();
+
     // 分类高亮及内容切换，只影响当前mainCont
     $('.category-row').on('click', '.category-item', function () {
         var $row = $(this).closest('.category-row');
         $(this).addClass('active').siblings().removeClass('active');
+        updateCategoryIndicator($row);
+
         var category = $(this).text().trim();
         var $mainCont = $row.closest('.mainCont');
         $mainCont.find('.quicks').each(function () {
@@ -241,4 +247,38 @@ $(function () {
             }
         });
     });
+
+    $(window).on('resize', function () {
+        refreshCategoryIndicators();
+    });
 });
+
+function initCategoryRows() {
+    $('.category-row').each(function () {
+        var $row = $(this);
+        if (!$row.children('.category-anim-bg').length) {
+            $row.prepend('<div class="category-anim-bg"></div>');
+        }
+        $row.addClass('has-anim-bg');
+        updateCategoryIndicator($row);
+    });
+}
+
+function updateCategoryIndicator($row) {
+    var $active = $row.children('.category-item.active').first();
+    var $indicator = $row.children('.category-anim-bg').first();
+    if (!$active.length || !$indicator.length) return;
+
+    requestAnimationFrame(function () {
+        $indicator.css({
+            width: $active.outerWidth(),
+            left: $active.position().left
+        });
+    });
+}
+
+function refreshCategoryIndicators() {
+    $('.category-row:visible').each(function () {
+        updateCategoryIndicator($(this));
+    });
+}
