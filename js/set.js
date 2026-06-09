@@ -464,11 +464,18 @@ function setSeInit() {
 }
 
 // 打开设置
+var bookmarkOpenTimer = null;
+
 function openSet() {
     $("#menu").addClass('on');
 
     openBox();
     $("#content").removeClass('bookmarks-open').addClass('setting-open');
+    if (bookmarkOpenTimer) {
+        clearTimeout(bookmarkOpenTimer);
+        bookmarkOpenTimer = null;
+    }
+    $(".mark").removeClass("is-visible");
 
     //隐藏书签打开设置
     $(".mark").css({
@@ -500,11 +507,26 @@ function closeSet() {
 
 // 书签显示
 function openBox() {
+    if (bookmarkOpenTimer) {
+        clearTimeout(bookmarkOpenTimer);
+        bookmarkOpenTimer = null;
+    }
     $("#content").addClass('box bookmarks-open').removeClass('setting-open');
+    $(".mark").removeClass("is-visible");
     $(".mark").css({
-        "display": "flex",
+        "display": "none",
     });
     //背景模糊
+    bookmarkOpenTimer = setTimeout(function () {
+        $(".mark").css({
+            "display": "flex",
+        });
+        if (typeof refreshCategoryIndicators === "function") {
+            refreshCategoryIndicators();
+        }
+        $(".mark").addClass("is-visible");
+        bookmarkOpenTimer = null;
+    }, 220);
     $('#bg').css({
         "transform": 'scale(1.08)',
         "filter": "blur(10px)",
@@ -514,7 +536,12 @@ function openBox() {
 
 // 书签关闭
 function closeBox() {
+    if (bookmarkOpenTimer) {
+        clearTimeout(bookmarkOpenTimer);
+        bookmarkOpenTimer = null;
+    }
     $("#content").removeClass('box bookmarks-open setting-open');
+    $(".mark").removeClass("is-visible");
     $(".mark").css({
         "display": "none",
     });

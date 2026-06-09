@@ -176,18 +176,24 @@ $(window).mousedown(function (event) {
 });
 
 // 奖励栏密码获取
-document.getElementById("passBtn").addEventListener("click", function () {
-    const password = "mypassword"; // 替换成你的密码
-    const passInput = document.getElementById("passInput").value.trim(); // 去除输入的空格
-    const passcodeElement = document.querySelector(".passcode");
-    const quickJlElement = document.querySelector(".quick-jl");
+document.addEventListener("DOMContentLoaded", function () {
+    const passBtn = document.getElementById("passBtn");
+    const passInputElement = document.getElementById("passInput");
+    if (!passBtn || !passInputElement) return;
 
-    if (passInput === password) {
-        if (passcodeElement) passcodeElement.style.display = "none";
-        if (quickJlElement) quickJlElement.style.visibility = "visible";
-    } else {
-        alert("密码不正确，请重新输入！");
-    }
+    passBtn.addEventListener("click", function () {
+        const password = "mypassword"; // 替换成你的密码
+        const passInput = passInputElement.value.trim(); // 去除输入的空格
+        const passcodeElement = document.querySelector(".passcode");
+        const quickJlElement = document.querySelector(".quick-jl");
+
+        if (passInput === password) {
+            if (passcodeElement) passcodeElement.style.display = "none";
+            if (quickJlElement) quickJlElement.style.visibility = "visible";
+        } else {
+            alert("密码不正确，请重新输入！");
+        }
+    });
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -236,7 +242,6 @@ function initCategoryRows() {
         if (!$row.children('.category-anim-bg').length) {
             $row.prepend('<div class="category-anim-bg"></div>');
         }
-        $row.addClass('has-anim-bg');
         updateCategoryIndicator($row);
     });
 }
@@ -245,13 +250,33 @@ function updateCategoryIndicator($row) {
     var $active = $row.children('.category-item.active').first();
     var $indicator = $row.children('.category-anim-bg').first();
     if (!$active.length || !$indicator.length) return;
+    if (!$row.is(':visible')) {
+        $row.removeClass('has-anim-bg');
+        return;
+    }
 
-    requestAnimationFrame(function () {
-        $indicator.css({
-            width: $active.outerWidth(),
-            left: $active.position().left
-        });
+    var width = $active.outerWidth();
+    if (!width) {
+        $row.removeClass('has-anim-bg');
+        return;
+    }
+
+    var hasIndicator = $row.hasClass('has-anim-bg');
+    if (!hasIndicator) {
+        $indicator.css('transition', 'none');
+    }
+
+    $indicator.css({
+        width: width,
+        left: $active.position().left
     });
+    $row.addClass('has-anim-bg');
+
+    if (!hasIndicator) {
+        requestAnimationFrame(function () {
+            $indicator.css('transition', '');
+        });
+    }
 }
 
 function refreshCategoryIndicators() {

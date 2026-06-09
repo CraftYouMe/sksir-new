@@ -124,11 +124,6 @@ img.error {
     width: calc(100% - 60px);
     position: relative;
     z-index: 2;
-    animation: fade;
-    -webkit-animation: fade 0.5s;
-    -moz-animation: fade 0.5s;
-    -o-animation: fade 0.5s;
-    -ms-animation: fade 0.5s;
     /* transform: translateY(-150%); */
 }
 
@@ -255,11 +250,6 @@ img.error {
     background: none;
     display: flex;
     justify-content: center;
-    animation: fade;
-    -webkit-animation: fade 0.5s;
-    -moz-animation: fade 0.5s;
-    -o-animation: fade 0.5s;
-    -ms-animation: fade 0.5s;
 }
 
 .wd::-webkit-input-placeholder {
@@ -490,6 +480,61 @@ img.error {
     -ms-animation: fade 0.75s;
 }
 
+.mark {
+    isolation: isolate;
+    overflow: hidden;
+    background: transparent;
+    animation: none;
+    -webkit-animation: none;
+    -moz-animation: none;
+    -o-animation: none;
+    -ms-animation: none;
+}
+
+.mark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: var(--main-background-color);
+    opacity: 0;
+    transform: scale(0.985);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+    pointer-events: none;
+}
+
+.mark > * {
+    position: relative;
+    z-index: 1;
+}
+
+.mark.is-visible {
+    pointer-events: auto;
+}
+
+.mark.is-visible::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mark.is-visible .products .mainCont.selected .quick-all,
+.mark.is-visible .products .mainCont.selected .quick-alls,
+.mark.is-visible .products .mainCont.selected .quick-jl {
+    animation: navContentIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes navContentIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .mark .tab,
 .set .tabs {
     height: 40px;
@@ -610,6 +655,14 @@ img.error {
     -moz-animation: fade 0.5s;
     -o-animation: fade 0.5s;
     -ms-animation: fade 0.5s;
+}
+
+.products .mainCont:has(.category-row) {
+    animation: none;
+    -webkit-animation: none;
+    -moz-animation: none;
+    -o-animation: none;
+    -ms-animation: none;
 }
 
 .products .mainCont.selected,
@@ -1914,6 +1967,7 @@ input[type="radio"]:checked+label {
     border: 1px solid rgba(179, 195, 214, 0.14);
     background: rgba(18, 24, 32, 0.48);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px rgba(0, 0, 0, 0.14);
+    animation: none;
 }
 
 .category-item {
@@ -1923,6 +1977,7 @@ input[type="radio"]:checked+label {
     box-shadow: none;
     font-weight: 600;
     transform: none !important;
+    animation: none;
 }
 
 .category-item:hover {
@@ -1935,17 +1990,25 @@ input[type="radio"]:checked+label {
 
 .category-item.active {
     color: #f7fbff;
-    background: rgba(120, 145, 176, 0.28);
-    border-color: rgba(190, 206, 226, 0.26);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
     font-weight: 700;
     transform: none !important;
+    animation: none;
 }
 
 .category-row .category-anim-bg {
     background: rgba(120, 145, 176, 0.30);
     box-shadow: none;
     opacity: 1;
+}
+
+.category-row.has-anim-bg .category-item.active,
+.category-row.has-anim-bg .category-item.active:hover {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
 }
 
 .category-item::before,

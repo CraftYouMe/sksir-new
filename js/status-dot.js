@@ -22,7 +22,12 @@
     "status-failed": "检测失败"
   };
 
+  function isElement(node) {
+    return node && node.nodeType === 1 && node.classList;
+  }
+
   function clearStatus(card) {
+    if (!isElement(card)) return;
     statusClasses.forEach(function (className) {
       card.classList.remove(className);
     });
@@ -32,6 +37,7 @@
   }
 
   function setStatus(card, className) {
+    if (!isElement(card)) return;
     clearStatus(card);
     card.classList.add(className);
     card.setAttribute("data-status-label", statusLabels[className]);
@@ -50,6 +56,7 @@
   }
 
   function isVisible(card) {
+    if (!isElement(card)) return false;
     if (!card.getClientRects().length) return false;
     var style = window.getComputedStyle(card);
     return style.display !== "none" && style.visibility !== "hidden";
@@ -63,6 +70,7 @@
   }
 
   function setButtonText(button, text) {
+    if (!isElement(button)) return;
     var textNode = button.querySelector(".status-check-text");
     if (textNode) {
       textNode.textContent = text;
@@ -72,12 +80,14 @@
   }
 
   function resetButton(button, text) {
+    if (!isElement(button)) return;
     button.disabled = false;
     button.classList.remove("is-checking");
     setButtonText(button, text || "检测状态");
   }
 
   async function checkLinkStatus(card) {
+    if (!isElement(card)) return;
     var link = card.querySelector("a");
     if (!link || !link.href) return;
     if (markSkippedStatus(card, link)) return;
@@ -145,6 +155,7 @@
     }
 
     cards.forEach(function (card) {
+      if (!isElement(card)) return;
       var link = card.querySelector("a");
       if (!link || !link.href) return;
 
@@ -165,6 +176,7 @@
     isChecking = true;
     runId++;
     var currentRunId = runId;
+    if (!isElement(button)) return;
     button.disabled = true;
     button.classList.add("is-checking");
     setButtonText(button, "检测中 0/" + pendingCards.length);
