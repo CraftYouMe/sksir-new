@@ -1,115 +1,192 @@
 (function () {
-  var hasStarted = false;
-  var queue = [];
-  var active = 0;
+  var isChecking = false;
   var maxConcurrent = 4;
+  var resetButtonTimer = null;
+  var runId = 0;
+  var statusClasses = [
+    "loading",
+    "skip",
+    "favorite",
+    "alive",
+    "slow",
+    "dead",
+    "status-checking",
+    "status-skipped",
+    "status-success",
+    "status-failed"
+  ];
+  var statusLabels = {
+    "status-checking": "检测中",
+    "status-skipped": "跳过检测",
+    "status-success": "检测成功",
+    "status-failed": "检测失败"
+  };
 
-  function markStaticStatus(card, link) {
-    if (link.hasAttribute("data-skip-check")) {
-      card.classList.add("skip");
-      return true;
+  function clearStatus(card) {
+    statusClasses.forEach(function (className) {
+      card.classList.remove(className);
+    });
+    card.removeAttribute("data-status-label");
+    card.removeAttribute("title");
+    card.removeAttribute("aria-label");
+  }
+
+  function setStatus(card, className) {
+    clearStatus(card);
+    card.classList.add(className);
+    card.setAttribute("data-status-label", statusLabels[className]);
+    card.setAttribute("title", statusLabels[className]);
+    card.setAttribute("aria-label", statusLabels[className]);
+  }
+
+  function shouldSkipCheck(link) {
+    return link.hasAttribute("data-skip-check") || link.hasAttribute("data-favorite-check");
+  }
+
+  function markSkippedStatus(card, link) {
+    if (!link || !shouldSkipCheck(link)) return false;
+    setStatus(card, "status-skipped");
+    return true;
+  }
+
+  function isVisible(card) {
+    if (!card.getClientRects().length) return false;
+    var style = window.getComputedStyle(card);
+    return style.display !== "none" && style.visibility !== "hidden";
+  }
+
+  function getVisibleCards() {
+    return Array.prototype.filter.call(
+      document.querySelectorAll(".mark .quicks, .mark .quickjl"),
+      isVisible
+    );
+  }
+
+  function setButtonText(button, text) {
+    var textNode = button.querySelector(".status-check-text");
+    if (textNode) {
+      textNode.textContent = text;
+    } else {
+      button.textContent = text;
     }
+  }
 
-    if (link.hasAttribute("data-favorite-check")) {
-      card.classList.add("favorite");
-      return true;
-    }
-
-    return false;
+  function resetButton(button, text) {
+    button.disabled = false;
+    button.classList.remove("is-checking");
+    setButtonText(button, text || "检测状态");
   }
 
   async function checkLinkStatus(card) {
     var link = card.querySelector("a");
     if (!link || !link.href) return;
-    if (markStaticStatus(card, link)) return;
+    if (markSkippedStatus(card, link)) return;
 
-    card.classList.add("loading");
+    setStatus(card, "status-checking");
 
     try {
       var url = encodeURIComponent(link.href);
       var res = await fetch("/api/check?url=" + url);
       var data = await res.json();
 
-      card.classList.remove("loading");
-      card.classList.remove("alive", "dead", "slow");
-
-      if (data.status === "alive") {
-        card.classList.add("alive");
-      } else if (data.status === "slow") {
-        card.classList.add("slow");
+      if (data.status === "alive" || data.status === "slow") {
+        setStatus(card, "status-success");
       } else {
-        card.classList.add("dead");
+        setStatus(card, "status-failed");
       }
     } catch (error) {
       console.error("Check link failed", link.href, error);
-      card.classList.remove("loading");
-      card.classList.remove("alive", "slow");
-      card.classList.add("dead");
+      setStatus(card, "status-failed");
     }
   }
 
-  function drainQueue() {
-    while (active < maxConcurrent && queue.length) {
-      active++;
-      checkLinkStatus(queue.shift()).finally(function () {
-        active--;
-        drainQueue();
-      });
-    }
+  function runQueue(cards, onProgress) {
+    return new Promise(function (resolve) {
+      var queue = cards.slice();
+      var active = 0;
+      var completed = 0;
+      var total = queue.length;
+
+      function drain() {
+        if (!queue.length && active === 0) {
+          resolve();
+          return;
+        }
+
+        while (active < maxConcurrent && queue.length) {
+          active++;
+          checkLinkStatus(queue.shift()).finally(function () {
+            active--;
+            completed++;
+            onProgress(completed, total);
+            drain();
+          });
+        }
+      }
+
+      drain();
+    });
   }
 
-  function enqueueStatusChecks() {
-    if (hasStarted) return;
-    hasStarted = true;
+  async function startManualStatusChecks(event) {
+    if (isChecking) return;
 
-    document.querySelectorAll(".quicks, .quickjl").forEach(function (card) {
+    var button = event && event.currentTarget
+      ? event.currentTarget
+      : document.querySelector(".mainCont.selected .status-check-btn");
+    if (!button) return;
+
+    var cards = getVisibleCards();
+    var pendingCards = [];
+
+    if (resetButtonTimer) {
+      clearTimeout(resetButtonTimer);
+      resetButtonTimer = null;
+    }
+
+    cards.forEach(function (card) {
       var link = card.querySelector("a");
       if (!link || !link.href) return;
 
-      if (!markStaticStatus(card, link)) {
-        queue.push(card);
+      if (!markSkippedStatus(card, link)) {
+        setStatus(card, "status-checking");
+        pendingCards.push(card);
       }
     });
 
-    drainQueue();
-  }
-
-  function scheduleStatusChecks() {
-    if (hasStarted) return;
-
-    var run = function () {
-      setTimeout(enqueueStatusChecks, 300);
-    };
-
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(run, { timeout: 1500 });
-    } else {
-      run();
+    if (!cards.length || !pendingCards.length) {
+      resetButton(button, !cards.length ? "无可检测" : "已跳过");
+      resetButtonTimer = setTimeout(function () {
+        resetButton(button);
+      }, 1400);
+      return;
     }
-  }
 
-  window.startLinkStatusChecks = scheduleStatusChecks;
+    isChecking = true;
+    runId++;
+    var currentRunId = runId;
+    button.disabled = true;
+    button.classList.add("is-checking");
+    setButtonText(button, "检测中 0/" + pendingCards.length);
 
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".quicks, .quickjl").forEach(function (card) {
-      var link = card.querySelector("a");
-      if (link) markStaticStatus(card, link);
+    await runQueue(pendingCards, function (completed, total) {
+      setButtonText(button, "检测中 " + completed + "/" + total);
     });
 
-    var timeText = document.getElementById("time_text");
-    if (timeText) {
-      timeText.addEventListener("click", scheduleStatusChecks, { once: true });
-    }
+    if (currentRunId !== runId) return;
 
-    var mark = document.querySelector(".mark");
-    if (mark && "MutationObserver" in window) {
-      var observer = new MutationObserver(function () {
-        if (getComputedStyle(mark).display !== "none") {
-          scheduleStatusChecks();
-          observer.disconnect();
-        }
-      });
-      observer.observe(mark, { attributes: true, attributeFilter: ["style", "class"] });
-    }
+    isChecking = false;
+    resetButton(button, "检测完成");
+    resetButtonTimer = setTimeout(function () {
+      resetButton(button);
+    }, 1600);
+  }
+
+  window.startLinkStatusChecks = startManualStatusChecks;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".status-check-btn").forEach(function (button) {
+      button.addEventListener("click", startManualStatusChecks);
+    });
   });
 })();

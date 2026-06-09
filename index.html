@@ -31,7 +31,6 @@
     <script defer src="./js/main.js"></script>
     <script defer src="./js/set.js"></script>
     <script defer src="./js/status-dot.js"></script>
-    <script async defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <!-- IE Out -->
 </head>
 
@@ -122,102 +121,118 @@
                     <div class="content products">
                         <!-- 常用 -->
                         <div class="mainCont selected">
+                            <div class="category-tools">
+                                <div class="category-row category-row-common">
+                                    <div class="category-item active">全部</div>
+                                    <div class="category-item">常用入口</div>
+                                    <div class="category-item">AI工具</div>
+                                    <div class="category-item">动漫影视</div>
+                                    <div class="category-item">工具服务</div>
+                                    <div class="category-item">开发建站</div>
+                                    <div class="category-item">创作社区</div>
+                                </div>
+                                <div class="status-actions">
+                                    <button class="status-check-btn" type="button" title="检测当前显示的网站状态">
+                                        <span class="status-check-text">检测状态</span>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="quick-alls">
-                                <div class="quicks">
+                                <div class="quicks" data-category="常用入口">
                                     <a href="https://BiliBili.com" target="_blank" data-favorite-check="true">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bilibili.ico" class="iconcss" loading="lazy" decoding="async"> BiliBili
                                     </a>
                                     <span class="quick-desc">哔哩哔哩 (゜-゜)つロ 干杯~</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="AI工具">
                                     <a href="https://www.deepseek.com/" target="_blank" data-favorite-check="true">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepseek.ico" class="iconcss" loading="lazy" decoding="async"> Deepseek
                                     </a>
                                     <span class="quick-desc">探索未至之境</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="动漫影视">
                                     <a href="https://rentry.la/agefans" target="_blank" data-favorite-check="true">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/age.ico" class="iconcss" loading="lazy" decoding="async"> AGE动漫
                                     </a>
                                     <span class="quick-desc">比较稳定的看动漫网站</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="动漫影视">
                                     <a href="https://www.bimiacg.icu/" target="_blank" data-favorite-check="true">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bimi.ico" class="iconcss" loading="lazy" decoding="async"> 哔咪动画
                                     </a>
                                     <span class="quick-desc">比较清晰的番剧网站</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="常用入口">
                                     <a href="https://fixunlink.com/" target="_blank" data-favorite-check="true">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/quanqiu.ico" class="iconcss" loading="lazy" decoding="async"> 全球通
                                     </a>
                                     <span class="quick-desc">科学上网</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="开发建站">
                                     <a href="https://github.com/" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/github.png" class="iconcss" loading="lazy" decoding="async"> Github
                                     </a>
                                     <span class="quick-desc">世界上最大的代码托管平台</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="AI工具">
                                     <a href="https://chat.openai.com/" target="_blank" data-skip-check="true">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico" class="iconcss" loading="lazy" decoding="async"> ChatGPT
                                     </a>
                                     <span class="quick-desc">Ai元老，ChatGPT</span>
                                 </div>
                                 
-                                <div class="quicks">
+                                <div class="quicks" data-category="工具服务">
                                     <a href="https://www.deepl.com/" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepl.png" class="iconcss" loading="lazy" decoding="async"> DeepL
                                     </a>
                                     <span class="quick-desc">翻译网站，有点慢</span>
                                 </div>
 
-                                <div class="quicks">
+                                <div class="quicks" data-category="工具服务">
                                     <a href="https://uutool.cn/" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/uutools.ico" class="iconcss" loading="lazy" decoding="async"> UUtools
                                     </a>
                                     <span class="quick-desc">便捷实用的在线工具集合</span>
                                 </div>
 
-                                <div class="quicks">
+                                <div class="quicks" data-category="动漫影视">
                                     <a href="https://www.yinhuadm.one/" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sakura.ico" class="iconcss" loading="lazy" decoding="async"> 樱花动漫
                                     </a>
                                     <span class="quick-desc">感觉不是很好用了</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="开发建站">
                                     <a href="https://blog.sksir.top" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/blog.ico" class="iconcss" loading="lazy" decoding="async"> Blog
                                     </a>
                                     <span class="quick-desc">远一的博客，不怎么更新</span>
                                 </div>
 
-                                <div class="quicks">
+                                <div class="quicks" data-category="开发建站">
                                     <a href="https://vercel.com/" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vercel.ico" class="iconcss" loading="lazy" decoding="async"> Vercel
                                     </a>
                                     <span class="quick-desc">静态网页托管</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="开发建站">
                                     <a href="https://railway.app" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/railway.ico" class="iconcss" loading="lazy" decoding="async"> Railway
                                     </a>
                                     <span class="quick-desc">静态网页托管</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="创作社区">
                                     <a href="https://pixiv.net/" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico" class="iconcss" loading="lazy" decoding="async"> Pixiv
                                     </a>
                                     <span class="quick-desc">插画世界</span>
                                 </div>
-                                <div class="quicks">
+                                <div class="quicks" data-category="AI工具">
                                     <a href="https://freemodel.dev/" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vite.svg" class="iconcss" loading="lazy" decoding="async"> Freemodel AI
                                     </a>
                                     <span class="quick-desc">最前沿的AI模型</span>
                                 </div> 
-                                <div class="quicks" data-category="软件官网">
+                                <div class="quicks" data-category="工具服务">
                                     <a href="https://hero-sms.com/cn" target="_blank" data-skip-check="true">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/herosms.png" class="iconcss" loading="lazy" decoding="async"> HERO SMS
                                     </a>
@@ -227,12 +242,19 @@
                         </div>
                         <!-- 影视 -->
                         <div class="mainCont">
-                            <div class="category-row category-row-tool">
-                            <div class="category-item active">全部</div>
-                            <div class="category-item">动漫番剧</div>
-                            <div class="category-item">在线影院</div>
-                           <!-- <div class="category-item">特色站点</div>-->
-                        </div>
+                            <div class="category-tools">
+                                <div class="category-row category-row-tool">
+                                    <div class="category-item active">全部</div>
+                                    <div class="category-item">动漫番剧</div>
+                                    <div class="category-item">在线影院</div>
+                                    <!-- <div class="category-item">特色站点</div>-->
+                                </div>
+                                <div class="status-actions">
+                                    <button class="status-check-btn" type="button" title="检测当前显示的网站状态">
+                                        <span class="status-check-text">检测状态</span>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="quick-alls">
                                 <div class="quicks" data-category="在线影院">
                                     <a href="https://www.libvio.app" target="_blank">
@@ -280,15 +302,22 @@
                         </div>
                         <!-- 工具 -->
                         <div class="mainCont">
-                            <div class="category-row category-row-tool">
-                            <div class="category-item active">全部</div>
-                            <div class="category-item">图片工具</div>
-                            <div class="category-item">文件转换</div>
-                            <div class="category-item">图标库</div>
-                            <div class="category-item">音乐工具</div>
-                        </div>
-                        <div class="quick-alls">
-                            <div class="quicks" data-category="图片工具">
+                            <div class="category-tools">
+                                <div class="category-row category-row-tool">
+                                    <div class="category-item active">全部</div>
+                                    <div class="category-item">图片工具</div>
+                                    <div class="category-item">文件转换</div>
+                                    <div class="category-item">图标库</div>
+                                    <div class="category-item">音乐工具</div>
+                                </div>
+                                <div class="status-actions">
+                                    <button class="status-check-btn" type="button" title="检测当前显示的网站状态">
+                                        <span class="status-check-text">检测状态</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="quick-alls">
+                                <div class="quicks" data-category="图片工具">
                                     <a href="https://www.iloveimg.com/zh-cn" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iloveimg.png" class="iconcss" loading="lazy" decoding="async"> iLoveimg
                                     </a>
@@ -370,16 +399,23 @@
                         </div>
                         <!-- 收藏 -->
                         <div class="mainCont">
-                            <div class="category-row category-row-favorite">
-                            <div class="category-item active">全部</div>
-                            <div class="category-item">软件官网</div>
-                            <div class="category-item">社交论坛</div>
-                            <div class="category-item">代码托管</div>
-                            <div class="category-item">智能AI</div>
-                            <div class="category-item">快捷下载</div>
-                        </div>
-                        <div class="quick-alls">
-                            <div class="quicks" data-category="软件官网">
+                            <div class="category-tools">
+                                <div class="category-row category-row-favorite">
+                                    <div class="category-item active">全部</div>
+                                    <div class="category-item">软件官网</div>
+                                    <div class="category-item">社交论坛</div>
+                                    <div class="category-item">代码托管</div>
+                                    <div class="category-item">智能AI</div>
+                                    <div class="category-item">快捷下载</div>
+                                </div>
+                                <div class="status-actions">
+                                    <button class="status-check-btn" type="button" title="检测当前显示的网站状态">
+                                        <span class="status-check-text">检测状态</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="quick-alls">
+                                <div class="quicks" data-category="软件官网">
                                     <a href="https://adguard.com/zh_cn" target="_blank">
                                         <img src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/adguard.ico" class="iconcss" loading="lazy" decoding="async"> AdGuard
                                     </a>
@@ -563,12 +599,19 @@
                         </div>
                         <!-- 开荒 -->
                         <div class="mainCont">
-                            <div class="category-row category-row-tool">
-                            <div class="category-item active">全部</div>
-                            <div class="category-item">系统必备</div>
-                            <div class="category-item">修复工具</div>
-                            <div class="category-item">激活工具</div>
-                        </div>
+                            <div class="category-tools">
+                                <div class="category-row category-row-tool">
+                                    <div class="category-item active">全部</div>
+                                    <div class="category-item">系统必备</div>
+                                    <div class="category-item">修复工具</div>
+                                    <div class="category-item">激活工具</div>
+                                </div>
+                                <div class="status-actions">
+                                    <button class="status-check-btn" type="button" title="检测当前显示的网站状态">
+                                        <span class="status-check-text">检测状态</span>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="quick-alls">
                                 <div class="quicks" data-category="系统必备">
                                     <a href="http://www.cyhaoka.vip/" target="_blank">

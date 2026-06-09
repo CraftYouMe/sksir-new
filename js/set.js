@@ -468,6 +468,7 @@ function openSet() {
     $("#menu").addClass('on');
 
     openBox();
+    $("#content").removeClass('bookmarks-open').addClass('setting-open');
 
     //隐藏书签打开设置
     $(".mark").css({
@@ -483,6 +484,7 @@ function closeSet() {
     $("#menu").removeClass('on');
 
     closeBox();
+    $("#content").removeClass('setting-open');
 
 
     //隐藏设置
@@ -498,13 +500,9 @@ function closeSet() {
 
 // 书签显示
 function openBox() {
-    $("#content").addClass('box');
+    $("#content").addClass('box bookmarks-open').removeClass('setting-open');
     $(".mark").css({
         "display": "flex",
-    });
-    //时间上移
-    $(".tool-all").css({
-        "transform": 'translateY(-220%)'
     });
     //背景模糊
     $('#bg').css({
@@ -516,13 +514,9 @@ function openBox() {
 
 // 书签关闭
 function closeBox() {
-    $("#content").removeClass('box');
+    $("#content").removeClass('box bookmarks-open setting-open');
     $(".mark").css({
         "display": "none",
-    });
-    //时间下移
-    $(".tool-all").css({
-        "transform": 'translateY(-120%)'
     });
     //背景模糊
     $('#bg').css({
@@ -579,7 +573,7 @@ $(document).ready(function () {
 
     // 时间点击
     $("#time_text").click(function () {
-        if ($("#content").attr("class") === "box") {
+        if ($("#content").hasClass("box")) {
             closeBox();
             closeSet();
             blurWd();
@@ -588,17 +582,14 @@ $(document).ready(function () {
             // 隐藏引擎按钮
             $('.se').hide();
             $('#menu').hide();
+            $('.power').show();
         } else {
             openBox();
             $('#menu').show();
-            // 添加时间向上移动的样式
-            $(".tool-all").css({
-                "transform": 'translateY(-220%)'
-            });
+            $('.power').hide();
         }
     });
 
-    // 搜索引擎列表点击
     // 搜索引擎列表点击
     $(".search-engine-list").on("click", ".se-li", function () {
         var url = $(this).attr('data-url');
@@ -641,6 +632,7 @@ $(document).ready(function () {
         // 隐藏引擎按钮
         $('.se').hide();
         $('#menu').hide();
+        $('.power').show();
     });
 
     // 点击搜索引擎时隐藏自动提示

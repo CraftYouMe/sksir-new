@@ -1,25 +1,5 @@
 $(document).ready(function () {
-    var time_key = "my_time";  // 定义本地存储的 key
-
-    var saved_time = localStorage.getItem(time_key);
-    if (!saved_time) {
-        saved_time = Date.now();
-        localStorage.setItem(time_key, saved_time);
-    }
-    saved_time = parseInt(saved_time);
-
-    var t = setTimeout(function() {
-        time();
-    }, 0);
-
-    // 添加 visibilitychange 事件的处理函数
-    document.addEventListener("visibilitychange", function() {
-        if (document.visibilityState === 'visible') {
-            // 如果页面已唤醒，重新计算时间差
-            saved_time = Date.now();
-            localStorage.setItem(time_key, saved_time);
-        }
-    });
+    var t = setTimeout(time, 0);
 
     function time() {
         if (typeof t !== "undefined") {
@@ -27,21 +7,12 @@ $(document).ready(function () {
         }
         var now = Date.now();
         var dt = new Date(now);
-        var saved_dt = new Date(saved_time);
-        var diff = now - saved_time;
         var mm = dt.getMonth() + 1;
         var d = dt.getDate();
         var weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
         var day = dt.getDay();
-        var h = saved_dt.getHours();
-        var m = saved_dt.getMinutes() + Math.floor(diff / (60 * 1000));
-        // 如果分钟数超过60，将小时数加上相应的量，并减去60
-        if (m >= 60) {
-            h += Math.floor(m / 60);
-            m = m % 60;
-        }
-        saved_time = now;
-        localStorage.setItem(time_key, saved_time);
+        var h = dt.getHours();
+        var m = dt.getMinutes();
         if (h < 10) {
             h = "0" + h;
         }
@@ -159,7 +130,13 @@ function getHello() {
 $(function () {
     $(".mark .tab .tab-item").click(function () {
         $(this).addClass("active").siblings().removeClass("active");
-        $(".products .mainCont").eq($(this).index()).css("display", "flex").siblings().css("display", "none");
+        $(".products .mainCont")
+            .eq($(this).index())
+            .addClass("selected")
+            .css("display", "flex")
+            .siblings()
+            .removeClass("selected")
+            .css("display", "none");
         setTimeout(refreshCategoryIndicators, 0);
     })
 })

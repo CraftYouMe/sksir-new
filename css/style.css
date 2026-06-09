@@ -175,8 +175,10 @@ img.error {
 }
 
 /*时间上移*/
-.onsearch .tool-all {
-    transform: translateY(-220%) !important;
+.onsearch .tool-all,
+#content.bookmarks-open .tool-all,
+#content.setting-open .tool-all {
+    --time-block-offset: -210%;
 }
 
 /*搜索引擎选择上移*/
@@ -187,12 +189,16 @@ img.error {
 
 /*时间*/
 .tool-all {
+    --time-block-offset: -120%;
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translateY(-120%);
+    transform: translate3d(0, var(--time-block-offset), 0);
     z-index: 3;
+    transition: transform 0.82s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .time {
@@ -1408,6 +1414,16 @@ input[type="radio"]:checked+label {
     text-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
 }
 
+.category-tools {
+    width: calc(100% - 56px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 28px 14px 28px;
+    box-sizing: border-box;
+}
+
 .category-row {
     width: max-content;
     max-width: calc(100% - 56px);
@@ -1432,6 +1448,22 @@ input[type="radio"]:checked+label {
     overflow: hidden;
     animation: fadeInCategoryRow 0.42s cubic-bezier(.2,.8,.2,1);
     margin-left: 28px;
+}
+
+.category-tools > .category-row {
+    flex: 0 1 auto;
+    width: max-content;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.category-tools > .category-row::-webkit-scrollbar {
+    display: none;
 }
 
 .category-row::before {
@@ -1490,6 +1522,7 @@ input[type="radio"]:checked+label {
 }
 
 .category-item {
+    flex: 0 0 auto;
     height: 26px;
     display: flex;
     align-items: center;
