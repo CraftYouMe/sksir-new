@@ -14,11 +14,13 @@
     <title>导航酱 - 但行好事，莫问前程</title>
     <link rel="icon" href="apple-touch-icon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="preload" as="image" href="./img/background1.jpg" fetchpriority="high">
     <link rel="preconnect" href="https://lf26-cdn-tos.bytecdntp.com" crossorigin>
     <link rel="dns-prefetch" href="//busuanzi.ibruce.info">
     <link rel="dns-prefetch" href="//visitor-badge.laobi.icu">
     <link rel="dns-prefetch" href="//yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
     <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
+    <meta name="theme-color" content="#111820">
     <!-- 引入样式 -->
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" type="text/css" href="./css/font.css">
@@ -42,7 +44,7 @@
     </div>
     <!-- 背景图片 -->
     <div class="bg-all">
-        <img id="bg" data-fallback-src="./img/background1.jpg" decoding="async" alt="">
+        <img id="bg" class="is-loaded" src="./img/background1.jpg" data-fallback-src="./img/background1.jpg" fetchpriority="high" decoding="async" alt="">
         <div class="cover"></div>
     </div>
     <!-- 主体内容 -->
@@ -55,6 +57,25 @@
                         <span id="time_text"><span id="point"></span></span>
                         <span id="day"></span>
                     </div>
+                    <script>
+                        (function () {
+                            function pad(value) {
+                                return value < 10 ? "0" + value : String(value);
+                            }
+
+                            var now = new Date();
+                            var weekdays = ["\u5468\u65e5", "\u5468\u4e00", "\u5468\u4e8c", "\u5468\u4e09", "\u5468\u56db", "\u5468\u4e94", "\u5468\u516d"];
+                            var timeText = document.getElementById("time_text");
+                            var dayText = document.getElementById("day");
+
+                            if (timeText) {
+                                timeText.innerHTML = pad(now.getHours()) + '<span id="point">:</span>' + pad(now.getMinutes());
+                            }
+                            if (dayText) {
+                                dayText.innerHTML = (now.getMonth() + 1) + "&nbsp;\u6708&nbsp;" + now.getDate() + "&nbsp;\u65e5&nbsp;" + weekdays[now.getDay()];
+                            }
+                        }());
+                    </script>
                 </div>
                 <!-- 搜索框 -->
                 <div class="close_sou"></div>

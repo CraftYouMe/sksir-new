@@ -1,7 +1,8 @@
 @charset "utf-8";
 
 :root {
-    --body-background-color: #333333;
+    --body-background-color: #111820;
+    --fallback-background-image: url("../img/background1.jpg");
     --main-text-color: #efefef;
     --main-text-form-color: #333333;
     --main-text-form-hover-color: #efefef;
@@ -29,6 +30,11 @@ body {
     height: 100%;
     margin: 0;
     background-color: var(--body-background-color);
+    background-image:
+        linear-gradient(135deg, rgba(13, 19, 25, 0.84), rgba(22, 33, 40, 0.58)),
+        var(--fallback-background-image);
+    background-position: center;
+    background-size: cover;
     -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none;
     user-select: none;
@@ -66,6 +72,10 @@ section {
     left: 0;
     width: 100%;
     height: calc(100% - 0px);
+    background-color: var(--body-background-color);
+    background-image: var(--fallback-background-image);
+    background-position: center;
+    background-size: cover;
     transition: .25s;
 }
 
@@ -85,6 +95,10 @@ section {
 
 #bg.is-loaded {
     opacity: 1;
+}
+
+#bg.is-switching {
+    opacity: 0;
 }
 
 img.error {

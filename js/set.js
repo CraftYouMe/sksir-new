@@ -294,13 +294,20 @@ function applyBgImg(src, fallbackSrc) {
     if (!targetSrc) return;
     if (currentSrc === targetSrc && $bg.hasClass('is-loaded')) return;
 
-    $bg.removeClass('error is-loaded');
+    $bg.removeClass('error');
+    if (!currentSrc) {
+        $bg.removeClass('is-loaded');
+    }
 
     var img = new Image();
     img.onload = function () {
+        if ($bg.attr('src') === targetSrc && $bg.hasClass('is-loaded')) return;
+        if ($bg.hasClass('is-loaded')) {
+            $bg.addClass('is-switching');
+        }
         $bg.attr('src', targetSrc);
         requestAnimationFrame(function () {
-            $bg.addClass('is-loaded');
+            $bg.addClass('is-loaded').removeClass('is-switching');
         });
     };
     img.onerror = function () {
