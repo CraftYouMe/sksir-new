@@ -86,17 +86,44 @@ function scheduleWelcomeToast() {
 function scheduleMiSansFont() {
     if (!("FontFace" in window) || !document.fonts) return;
 
+    var cacheKey = "misans-font-ready";
+    var storage = {
+        get: function () {
+            try {
+                return localStorage.getItem(cacheKey);
+            } catch (e) {
+                return null;
+            }
+        },
+        set: function () {
+            try {
+                localStorage.setItem(cacheKey, "1");
+            } catch (e) {}
+        },
+        remove: function () {
+            try {
+                localStorage.removeItem(cacheKey);
+            } catch (e) {}
+        }
+    };
+
+    if (storage.get() === "1") {
+        document.documentElement.classList.add("font-misans");
+        return;
+    }
+
     runAfterLoadIdle(function () {
         var font = new FontFace(
             "MiSans",
             "url(https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/MiSans-Regular.woff2)",
-            { display: "swap" }
+            { display: "optional" }
         );
 
         font.load().then(function (loadedFont) {
             document.fonts.add(loadedFont);
-            document.documentElement.classList.add("font-misans");
+            storage.set();
         }).catch(function () {
+            storage.remove();
             document.documentElement.classList.remove("font-misans");
         });
     }, 2200);

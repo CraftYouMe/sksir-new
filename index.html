@@ -20,6 +20,15 @@
     <link rel="dns-prefetch" href="//yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
     <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
     <meta name="theme-color" content="#333333">
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem("misans-font-ready") === "1") {
+                    document.documentElement.classList.add("font-misans");
+                }
+            } catch (e) {}
+        }());
+    </script>
     <!-- 引入样式 -->
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" type="text/css" href="./css/font.css">
