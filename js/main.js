@@ -39,6 +39,7 @@ $(function () {
     scheduleWelcomeToast();
     scheduleMiSansFont();
     scheduleVisitorBadge();
+    scheduleStaticCache();
 });
 var now = new Date(), hour = now.getHours()
 
@@ -151,6 +152,17 @@ function scheduleVisitorBadge() {
         link.appendChild(img);
         document.body.appendChild(link);
     }, 2600);
+}
+
+function scheduleStaticCache() {
+    if (!("serviceWorker" in navigator)) return;
+    if (!/^https?:$/.test(window.location.protocol)) return;
+
+    runAfterLoadIdle(function () {
+        navigator.serviceWorker.register("./sw.js").catch(function (error) {
+            console.warn("Service worker registration failed", error);
+        });
+    }, 3200);
 }
 
 //进入问候

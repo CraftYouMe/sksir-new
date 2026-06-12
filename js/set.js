@@ -228,12 +228,12 @@ var bg_img_preinstall = {
 };
 
 var bg_img_pictures = [
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image.jpg',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image2.PNG',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image3.JPG',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image4.PNG',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image5.JPG',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/background-image6.PNG'
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image1.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image2.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image3.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image4.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image5.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image6.webp'
 ];
 
 // 获取背景图片
@@ -261,7 +261,7 @@ function setBgImg(bg_img) {
 }
 
 function getRandomBgPicture() {
-    if (!bg_img_pictures.length) return $('#bg').data('fallback-src');
+    if (!bg_img_pictures.length) return "";
 
     var lastSrc = localStorage.getItem('bg_img_last_src');
     var availablePictures = bg_img_pictures.filter(function (src) {
@@ -279,27 +279,22 @@ function resolveBgImgSrc(bg_img) {
         case "2":
             return 'https://api.dujin.org/bing/1920.php';
         case "5":
-            return bg_img["path"] || $('#bg').data('fallback-src');
+            return bg_img["path"] || "";
         case "1":
         default:
             return getRandomBgPicture();
     }
 }
 
-function resolveDeferredBgImgSrc(bg_img) {
-    if (bg_img["type"] === "1" || bg_img["type"] === "2") {
-        return resolveBgImgSrc(bg_img);
-    }
-
-    return null;
-}
-
-function applyBgImg(src, fallbackSrc) {
+function applyBgImg(src) {
     var $bg = $('#bg');
-    var targetSrc = src || fallbackSrc;
+    var targetSrc = src;
     var currentSrc = $bg.attr('src');
 
-    if (!targetSrc) return;
+    if (!targetSrc) {
+        $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
+        return;
+    }
     if (currentSrc === targetSrc && $bg.hasClass('is-loaded')) return;
 
     $bg.removeClass('error is-loaded');
@@ -312,11 +307,7 @@ function applyBgImg(src, fallbackSrc) {
         });
     };
     img.onerror = function () {
-        if (targetSrc !== fallbackSrc && fallbackSrc) {
-            applyBgImg(fallbackSrc, fallbackSrc);
-        } else {
-            $bg.addClass('error');
-        }
+        $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
     };
     img.src = targetSrc;
 }
@@ -325,7 +316,6 @@ function applyBgImg(src, fallbackSrc) {
 function setBgImgInit() {
     var bg_img = getBgImg();
     var wallpaperType = bg_img["type"];
-    var fallbackSrc = $('#bg').data('fallback-src');
     $("input[name='wallpaper-type'][value='" + wallpaperType + "']").prop("checked", true);
 
     if (wallpaperType === "5") {
@@ -337,16 +327,7 @@ function setBgImgInit() {
         $("#wallpaper-button").hide();
     }
 
-    if (wallpaperType === "5" && bg_img["path"]) {
-        applyBgImg(bg_img["path"], fallbackSrc);
-        return;
-    }
-
-    applyBgImg(fallbackSrc, fallbackSrc);
-    runAfterLoadIdle(function () {
-        var deferredSrc = resolveDeferredBgImgSrc(bg_img);
-        if (deferredSrc) applyBgImg(deferredSrc, fallbackSrc);
-    }, 1800);
+    applyBgImg(resolveBgImgSrc(bg_img));
 }
 
 // 搜索框高亮
