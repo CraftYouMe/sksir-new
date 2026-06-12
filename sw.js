@@ -24,9 +24,7 @@ const PRECACHE_URLS = [
 ];
 
 const CACHE_FIRST_HOSTS = new Set([
-  "yuanone-blog-picture.oss-cn-beijing.aliyuncs.com",
-  "cdn.bootcdn.net",
-  "lf26-cdn-tos.bytecdntp.com"
+  "yuanone-blog-picture.oss-cn-beijing.aliyuncs.com"
 ]);
 
 const CACHE_FIRST_EXTENSIONS = /\.(?:css|js|woff2?|ttf|png|jpe?g|gif|webp|avif|svg|ico)(?:[?#].*)?$/i;

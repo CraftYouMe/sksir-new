@@ -1,9 +1,4 @@
 (function () {
-    var cssUrl = "https://cdn.bootcdn.net/ajax/libs/izitoast/1.4.0/css/iziToast.min.css";
-    var scriptUrl = "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-y/izitoast/1.4.0/js/iziToast.min.js";
-    var queue = [];
-    var loading = false;
-    var fallbackTimer = null;
     var defaultSettings = {};
 
     function merge() {
@@ -17,7 +12,7 @@
         return result;
     }
 
-    function ensureFallbackStyles() {
+    function ensureStyles() {
         if (document.getElementById("toast-fallback-style")) return;
 
         var style = document.createElement("style");
@@ -37,7 +32,7 @@
         document.head.appendChild(style);
     }
 
-    function getFallbackContainer() {
+    function getContainer() {
         var container = document.querySelector(".toast-fallback-wrap");
         if (!container) {
             container = document.createElement("div");
@@ -47,23 +42,28 @@
         return container;
     }
 
-    function flush(toastApi) {
-        queue.splice(0).forEach(function (call) {
-            if (typeof toastApi[call.method] === "function") {
-                toastApi[call.method].apply(toastApi, call.args);
-            }
-        });
+    function normalizeButton(templateHtml) {
+        var template = document.createElement("div");
+        template.innerHTML = templateHtml || "<button>OK</button>";
+        var button = template.firstElementChild || document.createElement("button");
+        if (button.tagName.toLowerCase() !== "button") {
+            var wrappedButton = document.createElement("button");
+            wrappedButton.textContent = button.textContent || "OK";
+            button = wrappedButton;
+        }
+        button.type = "button";
+        return button;
     }
 
-    var fallbackToast = {
+    var toastApi = {
         settings: function (options) {
             defaultSettings = merge(defaultSettings, options);
         },
         show: function (options) {
-            ensureFallbackStyles();
+            ensureStyles();
 
             var opts = merge(defaultSettings, options);
-            var container = getFallbackContainer();
+            var container = getContainer();
             if (opts.displayMode === "replace") {
                 container.innerHTML = "";
             }
@@ -89,18 +89,10 @@
                 var buttons = document.createElement("div");
                 buttons.className = "toast-fallback-buttons";
                 opts.buttons.forEach(function (buttonConfig) {
-                    var template = document.createElement("div");
-                    template.innerHTML = buttonConfig[0] || "<button>OK</button>";
-                    var button = template.firstElementChild || document.createElement("button");
-                    if (button.tagName.toLowerCase() !== "button") {
-                        var wrappedButton = document.createElement("button");
-                        wrappedButton.textContent = button.textContent || "OK";
-                        button = wrappedButton;
-                    }
-                    button.type = "button";
+                    var button = normalizeButton(buttonConfig[0]);
                     button.addEventListener("click", function () {
                         if (typeof buttonConfig[1] === "function") {
-                            buttonConfig[1](fallbackToast, toast, "buttonName");
+                            buttonConfig[1](toastApi, toast, "buttonName");
                         }
                     });
                     buttons.appendChild(button);
@@ -112,7 +104,7 @@
 
             if (opts.timeout !== false && opts.timeout !== 0) {
                 setTimeout(function () {
-                    fallbackToast.hide({}, toast);
+                    toastApi.hide({}, toast);
                 }, opts.timeout || 3000);
             }
 
@@ -129,72 +121,5 @@
         }
     };
 
-    function activateFallback() {
-        var realToast = window.iziToast;
-        if (realToast && realToast !== toastProxy && typeof realToast.show === "function") {
-            flush(realToast);
-            return;
-        }
-
-        window.iziToast = fallbackToast;
-        flush(fallbackToast);
-    }
-
-    function ensureToastAssets() {
-        if (loading) return;
-        loading = true;
-
-        if (!document.querySelector('link[data-izitoast-css]')) {
-            var link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.href = cssUrl;
-            link.dataset.izitoastCss = "true";
-            document.head.appendChild(link);
-        }
-
-        var script = document.createElement("script");
-        script.src = scriptUrl;
-        script.async = true;
-        script.onload = function () {
-            if (fallbackTimer) clearTimeout(fallbackTimer);
-            var realToast = window.iziToast;
-            if (!realToast || realToast === toastProxy) {
-                activateFallback();
-                return;
-            }
-
-            flush(realToast);
-        };
-        script.onerror = activateFallback;
-        document.head.appendChild(script);
-
-        fallbackTimer = setTimeout(activateFallback, 3500);
-    }
-
-    function enqueue(method, args) {
-        queue.push({
-            method: method,
-            args: Array.prototype.slice.call(args)
-        });
-        ensureToastAssets();
-    }
-
-    var toastProxy = {
-        settings: function () {
-            queue.push({
-                method: "settings",
-                args: Array.prototype.slice.call(arguments)
-            });
-        },
-        show: function () {
-            enqueue("show", arguments);
-        },
-        hide: function () {
-            enqueue("hide", arguments);
-        }
-    };
-
-    if (!window.iziToast) {
-        window.iziToast = toastProxy;
-    }
+    window.iziToast = toastApi;
 })();
