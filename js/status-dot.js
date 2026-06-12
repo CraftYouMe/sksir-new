@@ -196,9 +196,17 @@
 
   window.startLinkStatusChecks = startManualStatusChecks;
 
-  document.addEventListener("DOMContentLoaded", function () {
+  function bindStatusButtons() {
     document.querySelectorAll(".status-check-btn").forEach(function (button) {
+      if (button.dataset.statusButtonBound === "1") return;
+      button.dataset.statusButtonBound = "1";
       button.addEventListener("click", startManualStatusChecks);
     });
-  });
+  }
+
+  document.addEventListener("DOMContentLoaded", bindStatusButtons);
+  document.addEventListener("nav-sites-rendered", bindStatusButtons);
+  if (document.readyState !== "loading") {
+    bindStatusButtons();
+  }
 })();

@@ -286,6 +286,14 @@ function resolveBgImgSrc(bg_img) {
     }
 }
 
+function resolveDeferredBgImgSrc(bg_img) {
+    if (bg_img["type"] === "1" || bg_img["type"] === "2") {
+        return resolveBgImgSrc(bg_img);
+    }
+
+    return null;
+}
+
 function applyBgImg(src, fallbackSrc) {
     var $bg = $('#bg');
     var targetSrc = src || fallbackSrc;
@@ -317,6 +325,7 @@ function applyBgImg(src, fallbackSrc) {
 function setBgImgInit() {
     var bg_img = getBgImg();
     var wallpaperType = bg_img["type"];
+    var fallbackSrc = $('#bg').data('fallback-src');
     $("input[name='wallpaper-type'][value='" + wallpaperType + "']").prop("checked", true);
 
     if (wallpaperType === "5") {
@@ -328,7 +337,16 @@ function setBgImgInit() {
         $("#wallpaper-button").hide();
     }
 
-    applyBgImg(resolveBgImgSrc(bg_img), $('#bg').data('fallback-src'));
+    if (wallpaperType === "5" && bg_img["path"]) {
+        applyBgImg(bg_img["path"], fallbackSrc);
+        return;
+    }
+
+    applyBgImg(fallbackSrc, fallbackSrc);
+    runAfterLoadIdle(function () {
+        var deferredSrc = resolveDeferredBgImgSrc(bg_img);
+        if (deferredSrc) applyBgImg(deferredSrc, fallbackSrc);
+    }, 1800);
 }
 
 // 搜索框高亮
@@ -521,6 +539,7 @@ function openBox() {
         $(".mark").css({
             "display": "flex",
         });
+        loadVisibleNavIcons();
         if (typeof refreshCategoryIndicators === "function") {
             refreshCategoryIndicators();
         }
@@ -532,6 +551,12 @@ function openBox() {
         "filter": "blur(10px)",
         "transition": "ease 0.3s",
     });
+}
+
+function loadVisibleNavIcons() {
+    if (typeof window.loadDeferredNavIcons !== "function") return;
+    var selectedPanel = document.querySelector(".products .mainCont.selected");
+    window.loadDeferredNavIcons(selectedPanel || document);
 }
 
 // 书签关闭

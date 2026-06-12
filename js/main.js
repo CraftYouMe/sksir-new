@@ -38,6 +38,7 @@ $(function () {
 
     scheduleWelcomeToast();
     scheduleMiSansFont();
+    scheduleVisitorBadge();
 });
 var now = new Date(), hour = now.getHours()
 
@@ -109,7 +110,6 @@ function scheduleMiSansFont() {
 
     if (storage.get() === "1") {
         document.documentElement.classList.add("font-misans");
-        return;
     }
 
     runAfterLoadIdle(function () {
@@ -121,12 +121,36 @@ function scheduleMiSansFont() {
 
         font.load().then(function (loadedFont) {
             document.fonts.add(loadedFont);
+            document.documentElement.classList.add("font-misans");
             storage.set();
         }).catch(function () {
             storage.remove();
             document.documentElement.classList.remove("font-misans");
         });
     }, 2200);
+}
+
+function scheduleVisitorBadge() {
+    runAfterLoadIdle(function () {
+        if (document.getElementById("visitor-badge")) return;
+
+        var link = document.createElement("a");
+        link.id = "visitor-badge";
+        link.href = "https://visitor-badge.laobi.icu";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.style.cssText = "position:fixed;top:14px;left:14px;z-index:9999;";
+
+        var img = document.createElement("img");
+        img.src = "https://visitor-badge.laobi.icu/badge?page_id=sksir-new";
+        img.alt = "visitor badge";
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.setAttribute("fetchpriority", "low");
+
+        link.appendChild(img);
+        document.body.appendChild(link);
+    }, 2600);
 }
 
 //进入问候
@@ -155,7 +179,7 @@ function getHello() {
     
 //Tab书签页
 $(function () {
-    $(".mark .tab .tab-item").click(function () {
+    $(".mark .tab").on("click", ".tab-item", function () {
         $(this).addClass("active").siblings().removeClass("active");
         $(".products .mainCont")
             .eq($(this).index())
@@ -164,6 +188,9 @@ $(function () {
             .siblings()
             .removeClass("selected")
             .css("display", "none");
+        if (typeof loadVisibleNavIcons === "function") {
+            loadVisibleNavIcons();
+        }
         setTimeout(refreshCategoryIndicators, 0);
     })
 })
@@ -203,7 +230,7 @@ $(window).mousedown(function (event) {
 });
 
 // 奖励栏密码获取
-document.addEventListener("DOMContentLoaded", function () {
+runWhenNavSitesReady(function () {
     const passBtn = document.getElementById("passBtn");
     const passInputElement = document.getElementById("passInput");
     if (!passBtn || !passInputElement) return;
@@ -223,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+runWhenNavSitesReady(function() {
   document.querySelectorAll('.quicks').forEach(function(card) {
     card.addEventListener('click', function(e) {
       // 如果点击的是a标签本身，浏览器会自动跳转，无需处理
@@ -238,11 +265,22 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+function runWhenNavSitesReady(callback) {
+    if (document.querySelector(".mark .mainCont")) {
+        callback();
+        return;
+    }
+
+    document.addEventListener("nav-sites-rendered", callback, { once: true });
+}
+
 $(function () {
-    initCategoryRows();
+    runWhenNavSitesReady(function () {
+        initCategoryRows();
+    });
 
     // 分类高亮及内容切换，只影响当前mainCont
-    $('.category-row').on('click', '.category-item', function () {
+    $('.products').on('click', '.category-row .category-item', function () {
         var $row = $(this).closest('.category-row');
         $(this).addClass('active').siblings().removeClass('active');
         updateCategoryIndicator($row);

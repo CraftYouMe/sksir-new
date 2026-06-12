@@ -7,14 +7,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: "MiSans";
-  src: url("https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/MiSans-Regular.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: optional;
-}
-
 html.font-misans body,
 html.font-misans input,
 html.font-misans button,
