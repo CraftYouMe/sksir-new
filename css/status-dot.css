@@ -143,3 +143,18 @@
     font-size: 0.78rem;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .status-check-btn,
+  .quicks.status-checking::after,
+  .quickjl.status-checking::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .status-check-btn {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: rgba(18, 24, 32, 0.88);
+  }
+}

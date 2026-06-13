@@ -125,3 +125,20 @@ div.loaded div.spinner-box {
         transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
     }
 }
+
+@media (prefers-reduced-motion: reduce) {
+    #loading-box .loading-left-bg,
+    #loading-box .loading-right-bg,
+    .loader,
+    .inner {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    #loading-box .loading-left-bg,
+    #loading-box .loading-right-bg {
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        background-color: rgb(81 81 81 / 92%);
+    }
+}

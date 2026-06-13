@@ -27,6 +27,7 @@
             ".toast-fallback-buttons button{height:30px;padding:0 14px;border:1px solid rgba(179,195,214,.22);border-radius:999px;background:rgba(120,145,176,.30);color:#f7fbff;font-weight:700;cursor:pointer}",
             ".toast-fallback-buttons button:hover{background:rgba(145,166,193,.38)}",
             "@media (max-width:480px){.toast-fallback{min-width:0;width:calc(100vw - 32px);padding:10px 22px;justify-content:flex-start;flex-wrap:wrap;border-radius:24px}.toast-fallback-title+.toast-fallback-message{padding-left:0;border-left:0}.toast-fallback-buttons{width:100%;justify-content:flex-end;margin:2px 0 0 0}}",
+            "@media (prefers-reduced-motion:reduce){.toast-fallback,.toast-fallback *{animation:none!important;transition:none!important}.toast-fallback{background:rgba(20,26,32,.92);backdrop-filter:none!important;-webkit-backdrop-filter:none!important}}",
             "@keyframes toastFallbackIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}"
         ].join("");
         document.head.appendChild(style);

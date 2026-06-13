@@ -2058,3 +2058,73 @@ input[type="radio"]:checked+label {
 .iziToast.setting-toast .iziToast-progressbar > div {
     background: rgba(170, 190, 214, 0.86) !important;
 }
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        -webkit-animation: none !important;
+        -moz-animation: none !important;
+        -o-animation: none !important;
+        -ms-animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+
+    *,
+    *::before,
+    *::after {
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+
+    #bg,
+    .onsearch #bg {
+        filter: none !important;
+        transform: scale(1) !important;
+    }
+
+    .tool-all,
+    #bg,
+    .mark::before,
+    .category-row::before,
+    .category-item::before,
+    .category-item::after,
+    .toast-fallback,
+    .quick,
+    .quicks,
+    .quickjl {
+        will-change: auto !important;
+        transform: none !important;
+    }
+
+    .tool-all {
+        transform: translate3d(0, var(--time-block-offset), 0) !important;
+    }
+
+    .toast-fallback-wrap {
+        transform: translateX(-50%) !important;
+    }
+
+    .all-search,
+    .search-engine,
+    #keywords,
+    .mark,
+    .set,
+    .passcode,
+    .category-row,
+    .status-check-btn,
+    .iziToast,
+    .iziToast.welcome-toast,
+    .iziToast.setting-toast,
+    .toast-fallback {
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        background: rgba(18, 24, 32, 0.88) !important;
+    }
+
+    #point {
+        opacity: 1 !important;
+    }
+}

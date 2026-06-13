@@ -257,7 +257,22 @@ runWhenNavSitesReady(function () {
             if (passcodeElement) passcodeElement.style.display = "none";
             if (quickJlElement) quickJlElement.style.visibility = "visible";
         } else {
-            alert("密码不正确，请重新输入！");
+            iziToast.show({
+                timeout: 2200,
+                class: "setting-toast",
+                title: "密码错误",
+                message: "请重新输入",
+                backgroundColor: "transparent",
+                close: false,
+                closeOnEscape: true,
+                position: "topCenter",
+                transitionIn: "fadeInDown",
+                transitionOut: "fadeOutUp",
+                displayMode: "replace",
+                layout: "1"
+            });
+            passInputElement.focus();
+            passInputElement.select();
         }
     });
 });

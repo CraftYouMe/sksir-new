@@ -228,7 +228,7 @@ var bg_img_preinstall = {
 };
 
 var bg_img_pictures = [
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image1.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background1.webp',
     'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image2.webp',
     'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image3.webp',
     'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image4.webp',
