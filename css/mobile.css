@@ -95,6 +95,10 @@
 /*小于512px时*/
 @media (max-width: 512px) {
 
+    .tool-all {
+        --time-block-height: 92px;
+    }
+
     /*文字大小*/
     #time_text {
         font-size: 2.75rem;
