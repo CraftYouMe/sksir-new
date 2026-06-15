@@ -15,6 +15,7 @@
     <link rel="icon" href="apple-touch-icon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="theme-color" content="#333333">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script>
         (function () {
             function isIosSafari() {
@@ -27,9 +28,20 @@
 
             function setIosAppHeight() {
                 var viewport = window.visualViewport;
-                var height = viewport && viewport.height ? viewport.height : window.innerHeight;
-                if (!height) return;
-                document.documentElement.style.setProperty("--app-height", Math.ceil(height) + "px");
+                var root = document.documentElement;
+                var visibleHeight = viewport && viewport.height ? viewport.height : window.innerHeight;
+                var layoutHeight = Math.max(
+                    visibleHeight || 0,
+                    window.innerHeight || 0,
+                    root.clientHeight || 0,
+                    window.screen && window.screen.height ? window.screen.height : 0
+                );
+                if (visibleHeight) {
+                    root.style.setProperty("--app-height", Math.ceil(visibleHeight) + "px");
+                }
+                if (layoutHeight) {
+                    root.style.setProperty("--app-bg-height", Math.ceil(layoutHeight) + "px");
+                }
             }
 
             var iosSafari = isIosSafari();
