@@ -25,28 +25,95 @@
                 return isIOS && isSafari;
             }
 
-            function setIosAppHeight() {
-                if (document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+            var iosHeightTimer = 0;
+            var iosKeyboardTimer = 0;
+            var iosKeyboardLocked = false;
+            var iosLastAppHeight = 0;
+            var iosKeyboardReleaseTries = 0;
+
+            function isFormControl(element) {
+                return element && /^(INPUT|TEXTAREA|SELECT)$/.test(element.tagName);
+            }
+
+            function getIosViewportHeight() {
+                var viewport = window.visualViewport;
+                return viewport && viewport.height ? viewport.height : window.innerHeight;
+            }
+
+            function setIosAppHeight(allowShrink) {
+                if (!allowShrink && (iosKeyboardLocked || isFormControl(document.activeElement))) {
+                    return false;
+                }
+                var height = Math.ceil(getIosViewportHeight());
+                if (!height) return false;
+                if (!allowShrink && iosLastAppHeight && height < iosLastAppHeight - 24) {
+                    return false;
+                }
+                iosLastAppHeight = height;
+                document.documentElement.style.setProperty("--app-height", height + "px");
+                return true;
+            }
+
+            function scheduleIosAppHeight(delay, allowShrink) {
+                clearTimeout(iosHeightTimer);
+                iosHeightTimer = setTimeout(function () {
+                    setIosAppHeight(allowShrink);
+                }, delay || 0);
+            }
+
+            function releaseIosKeyboardLock() {
+                clearTimeout(iosKeyboardTimer);
+                iosKeyboardLocked = false;
+                if (!setIosAppHeight(false)) {
+                    iosKeyboardReleaseTries += 1;
+                    if (iosKeyboardReleaseTries < 6) {
+                        iosKeyboardTimer = setTimeout(releaseIosKeyboardLock, 180);
+                    } else {
+                        setIosAppHeight(true);
+                        iosKeyboardReleaseTries = 0;
+                    }
                     return;
                 }
-                var viewport = window.visualViewport;
-                var height = viewport && viewport.height ? viewport.height : window.innerHeight;
-                if (!height) return;
-                document.documentElement.style.setProperty("--app-height", Math.ceil(height) + "px");
+                iosKeyboardReleaseTries = 0;
+                requestAnimationFrame(function () {
+                    setIosAppHeight(false);
+                });
             }
 
             var iosSafari = isIosSafari();
             if (iosSafari) {
                 document.documentElement.classList.add("ios-safari");
-                setIosAppHeight();
-                window.addEventListener("resize", setIosAppHeight, { passive: true });
-                window.addEventListener("orientationchange", setIosAppHeight, { passive: true });
-                document.addEventListener("focusout", function () {
-                    setTimeout(setIosAppHeight, 120);
+                setIosAppHeight(true);
+                window.addEventListener("resize", function () {
+                    scheduleIosAppHeight(80, false);
+                }, { passive: true });
+                window.addEventListener("orientationchange", function () {
+                    iosKeyboardLocked = false;
+                    iosLastAppHeight = 0;
+                    scheduleIosAppHeight(360, true);
+                }, { passive: true });
+                document.addEventListener("focusin", function (event) {
+                    if (isFormControl(event.target)) {
+                        iosKeyboardLocked = true;
+                        iosKeyboardReleaseTries = 0;
+                        clearTimeout(iosHeightTimer);
+                        clearTimeout(iosKeyboardTimer);
+                    }
+                }, true);
+                document.addEventListener("focusout", function (event) {
+                    if (isFormControl(event.target)) {
+                        iosKeyboardLocked = true;
+                        clearTimeout(iosKeyboardTimer);
+                        iosKeyboardTimer = setTimeout(releaseIosKeyboardLock, 520);
+                    }
                 }, true);
                 if (window.visualViewport) {
-                    window.visualViewport.addEventListener("resize", setIosAppHeight, { passive: true });
-                    window.visualViewport.addEventListener("scroll", setIosAppHeight, { passive: true });
+                    window.visualViewport.addEventListener("resize", function () {
+                        scheduleIosAppHeight(80, false);
+                    }, { passive: true });
+                    window.visualViewport.addEventListener("scroll", function () {
+                        scheduleIosAppHeight(80, false);
+                    }, { passive: true });
                 }
             }
 
@@ -339,7 +406,7 @@
                 <span class="footer-separator" aria-hidden="true">&middot;</span>
                 <span class="footer-note">自用导航</span>
                 <span class="footer-separator" aria-hidden="true">&middot;</span>
-                <span id="app-version" class="app-version" data-version="2026.06.16.1">v2026.06.16.1</span>
+                <span id="app-version" class="app-version" data-version="2026.06.16.2">v2026.06.16.2</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>
