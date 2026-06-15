@@ -1,4 +1,4 @@
-const CACHE_VERSION = "nav-cache-v1";
+const CACHE_VERSION = "nav-cache-2026.06.15.1";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -32,7 +32,11 @@ const CACHE_FIRST_EXTENSIONS = /\.(?:css|js|woff2?|ttf|png|jpe?g|gif|webp|avif|s
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then((cache) => {
+        return cache.addAll(PRECACHE_URLS.map((url) => {
+          return new Request(url, { cache: "reload" });
+        }));
+      })
       .then(() => self.skipWaiting())
   );
 });
@@ -63,7 +67,12 @@ function cacheFirst(request) {
   return caches.match(request).then((cachedResponse) => {
     if (cachedResponse) return cachedResponse;
 
-    return fetch(request).then((networkResponse) => {
+    var fetchRequest = request;
+    if (new URL(request.url).origin === self.location.origin) {
+      fetchRequest = new Request(request, { cache: "reload" });
+    }
+
+    return fetch(fetchRequest).then((networkResponse) => {
       if (!networkResponse || (!networkResponse.ok && networkResponse.type !== "opaque")) {
         return networkResponse;
       }

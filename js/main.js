@@ -40,6 +40,7 @@ $(function () {
     scheduleMiSansFont();
     scheduleVisitorBadge();
     scheduleStaticCache();
+    scheduleUpdateCheck();
 });
 var now = new Date(), hour = now.getHours()
 
@@ -159,10 +160,116 @@ function scheduleStaticCache() {
     if (!/^https?:$/.test(window.location.protocol)) return;
 
     runAfterLoadIdle(function () {
-        navigator.serviceWorker.register("./sw.js").catch(function (error) {
+        navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" }).catch(function (error) {
             console.warn("Service worker registration failed", error);
         });
     }, 3200);
+}
+
+function scheduleUpdateCheck() {
+    if (!window.fetch || !window.Promise) return;
+    if (!/^https?:$/.test(window.location.protocol)) return;
+
+    runAfterLoadIdle(function () {
+        var updateButton = document.getElementById("update-check");
+        if (!updateButton) return;
+
+        var versionUrl = "./data/app-version.json?t=" + Date.now();
+        fetch(versionUrl, {
+            cache: "no-store",
+            credentials: "same-origin",
+            headers: {
+                "Accept": "application/json"
+            }
+        }).then(function (response) {
+            if (!response.ok) throw new Error("Version check failed");
+            return response.json();
+        }).then(function (versionInfo) {
+            var latestVersion = versionInfo && String(versionInfo.version || "").trim();
+            if (!latestVersion) return;
+
+            var storageKey = "sksir-new-app-version";
+            var currentVersion = getStoredAppVersion(storageKey);
+            if (!currentVersion) {
+                setStoredAppVersion(storageKey, latestVersion);
+                return;
+            }
+
+            if (currentVersion !== latestVersion) {
+                showUpdateButton(updateButton, storageKey, latestVersion);
+            }
+        }).catch(function (error) {
+            console.warn("Update check failed", error);
+        });
+    }, 4200);
+}
+
+function getStoredAppVersion(storageKey) {
+    try {
+        return localStorage.getItem(storageKey);
+    } catch (e) {
+        return null;
+    }
+}
+
+function setStoredAppVersion(storageKey, version) {
+    try {
+        localStorage.setItem(storageKey, version);
+    } catch (e) {}
+}
+
+function showUpdateButton(updateButton, storageKey, latestVersion) {
+    var separator = updateButton.previousElementSibling;
+    updateButton.hidden = false;
+    if (separator && separator.classList.contains("footer-separator")) {
+        separator.hidden = false;
+    }
+    updateButton.textContent = "\u53d1\u73b0\u65b0\u7248\u672c\uff0c\u70b9\u51fb\u5237\u65b0";
+
+    updateButton.onclick = function () {
+        updateButton.disabled = true;
+        updateButton.textContent = "\u6b63\u5728\u66f4\u65b0...";
+
+        clearSiteCaches().then(function () {
+            setStoredAppVersion(storageKey, latestVersion);
+            reloadForFreshAssets(latestVersion);
+        }).catch(function (error) {
+            console.warn("Refresh cache failed", error);
+            updateButton.disabled = false;
+            updateButton.textContent = "\u66f4\u65b0\u5931\u8d25\uff0c\u518d\u8bd5\u4e00\u6b21";
+        });
+    };
+}
+
+function clearSiteCaches() {
+    var tasks = [];
+
+    if ("caches" in window) {
+        tasks.push(caches.keys().then(function (keys) {
+            return Promise.all(keys.filter(function (key) {
+                return key.indexOf("nav-cache-") === 0;
+            }).map(function (key) {
+                return caches.delete(key);
+            }));
+        }));
+    }
+
+    if ("serviceWorker" in navigator) {
+        tasks.push(navigator.serviceWorker.getRegistration().then(function (registration) {
+            if (!registration) return null;
+            return registration.update().catch(function () {
+                return null;
+            });
+        }));
+    }
+
+    return Promise.all(tasks);
+}
+
+function reloadForFreshAssets(version) {
+    var url = new URL(window.location.href);
+    url.searchParams.set("site_update", version || String(Date.now()));
+    window.location.replace(url.toString());
 }
 
 //进入问候
