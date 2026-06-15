@@ -99,6 +99,11 @@ function scheduleWelcomeToast() {
 }
 
 function scheduleMiSansFont() {
+    if (document.documentElement.classList.contains("ios-safari")) {
+        document.documentElement.classList.remove("font-misans");
+        return;
+    }
+
     if (!("FontFace" in window) || !document.fonts) return;
 
     var cacheKey = "misans-font-ready";

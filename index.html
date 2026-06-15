@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta content="jsthon" name="yuanone" />
     <meta
       content="远一自用的导航网站，收录了自己常用网站。分类合理，内容齐全。处处细微，一切都是理所当然。"
@@ -17,8 +17,35 @@
     <meta name="theme-color" content="#333333">
     <script>
         (function () {
+            function isIosSafari() {
+                var ua = navigator.userAgent || "";
+                var platform = navigator.platform || "";
+                var isIOS = /iP(hone|ad|od)/.test(ua) || (platform === "MacIntel" && navigator.maxTouchPoints > 1);
+                var isSafari = /Safari/.test(ua) && !/(CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo)/.test(ua);
+                return isIOS && isSafari;
+            }
+
+            function setIosAppHeight() {
+                var viewport = window.visualViewport;
+                var height = viewport && viewport.height ? viewport.height : window.innerHeight;
+                if (!height) return;
+                document.documentElement.style.setProperty("--app-height", Math.ceil(height) + "px");
+            }
+
+            var iosSafari = isIosSafari();
+            if (iosSafari) {
+                document.documentElement.classList.add("ios-safari");
+                setIosAppHeight();
+                window.addEventListener("resize", setIosAppHeight, { passive: true });
+                window.addEventListener("orientationchange", setIosAppHeight, { passive: true });
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener("resize", setIosAppHeight, { passive: true });
+                    window.visualViewport.addEventListener("scroll", setIosAppHeight, { passive: true });
+                }
+            }
+
             try {
-                if (localStorage.getItem("misans-font-ready") === "1") {
+                if (!iosSafari && localStorage.getItem("misans-font-ready") === "1") {
                     document.documentElement.classList.add("font-misans");
                 }
             } catch (e) {}
