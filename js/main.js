@@ -36,13 +36,27 @@ $(function () {
     $('#section').css("cssText", "opacity: 1;transition: ease 1.5s;");
     $('.cover').css("cssText", "opacity: 1;transition: ease 1.5s;");
 
-    scheduleWelcomeToast();
-    scheduleMiSansFont();
     scheduleVisitorBadge();
-    scheduleStaticCache();
+    scheduleWelcomeToast();
     scheduleUpdateCheck();
+    scheduleMiSansFont();
+    scheduleStaticCache();
 });
 var now = new Date(), hour = now.getHours()
+
+function runAfterFirstPaint(callback, delay) {
+    var run = function () {
+        setTimeout(callback, delay || 0);
+    };
+
+    if ("requestAnimationFrame" in window) {
+        window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(run);
+        });
+    } else {
+        run();
+    }
+}
 
 function runAfterLoadIdle(callback, timeout) {
     var run = function () {
@@ -61,29 +75,27 @@ function runAfterLoadIdle(callback, timeout) {
 }
 
 function scheduleWelcomeToast() {
-    runAfterLoadIdle(function () {
-        setTimeout(function () {
-            iziToast.settings({
-                timeout: 2800,
-                backgroundColor: 'transparent',
-                titleColor: '#ffffff',
-                messageColor: '#ffffff',
-                progressBar: true,
-                close: false,
-                closeOnEscape: true,
-                position: 'topCenter',
-                transitionIn: 'fadeInDown',
-                transitionOut: 'fadeOutUp',
-                displayMode: 'replace',
-                layout: '1'
-            });
-            iziToast.show({
-                class: 'welcome-toast',
-                title: getHello(),
-                message: '欢迎来到 导航酱'
-            });
-        }, 600);
-    }, 1800);
+    runAfterFirstPaint(function () {
+        iziToast.settings({
+            timeout: 2800,
+            backgroundColor: 'transparent',
+            titleColor: '#ffffff',
+            messageColor: '#ffffff',
+            progressBar: true,
+            close: false,
+            closeOnEscape: true,
+            position: 'topCenter',
+            transitionIn: 'fadeInDown',
+            transitionOut: 'fadeOutUp',
+            displayMode: 'replace',
+            layout: '1'
+        });
+        iziToast.show({
+            class: 'welcome-toast',
+            title: getHello(),
+            message: '欢迎来到 导航酱'
+        });
+    }, 450);
 }
 
 function scheduleMiSansFont() {
@@ -133,7 +145,7 @@ function scheduleMiSansFont() {
 }
 
 function scheduleVisitorBadge() {
-    runAfterLoadIdle(function () {
+    runAfterFirstPaint(function () {
         if (document.getElementById("visitor-badge")) return;
 
         var link = document.createElement("a");
@@ -146,13 +158,12 @@ function scheduleVisitorBadge() {
         var img = document.createElement("img");
         img.src = "https://visitor-badge.laobi.icu/badge?page_id=sksir-new";
         img.alt = "visitor badge";
-        img.loading = "lazy";
+        img.loading = "eager";
         img.decoding = "async";
-        img.setAttribute("fetchpriority", "low");
 
         link.appendChild(img);
         document.body.appendChild(link);
-    }, 2600);
+    }, 250);
 }
 
 function scheduleStaticCache() {
@@ -170,7 +181,7 @@ function scheduleUpdateCheck() {
     if (!window.fetch || !window.Promise) return;
     if (!/^https?:$/.test(window.location.protocol)) return;
 
-    runAfterLoadIdle(function () {
+    runAfterFirstPaint(function () {
         var updateButton = document.getElementById("update-check");
         if (!updateButton) return;
 
@@ -178,6 +189,7 @@ function scheduleUpdateCheck() {
         fetch(versionUrl, {
             cache: "no-store",
             credentials: "same-origin",
+            priority: "high",
             headers: {
                 "Accept": "application/json"
             }
@@ -196,12 +208,12 @@ function scheduleUpdateCheck() {
             }
 
             if (currentVersion !== latestVersion) {
-                showUpdateButton(updateButton, storageKey, latestVersion);
+                showUpdateButtonAfterIntro(updateButton, storageKey, latestVersion);
             }
         }).catch(function (error) {
             console.warn("Update check failed", error);
         });
-    }, 4200);
+    }, 0);
 }
 
 function getStoredAppVersion(storageKey) {
@@ -216,6 +228,14 @@ function setStoredAppVersion(storageKey, version) {
     try {
         localStorage.setItem(storageKey, version);
     } catch (e) {}
+}
+
+function showUpdateButtonAfterIntro(updateButton, storageKey, latestVersion) {
+    var elapsed = window.performance && window.performance.now ? window.performance.now() : 0;
+    var introDelay = Math.max(0, 900 - elapsed);
+    setTimeout(function () {
+        showUpdateButton(updateButton, storageKey, latestVersion);
+    }, introDelay);
 }
 
 function showUpdateButton(updateButton, storageKey, latestVersion) {
