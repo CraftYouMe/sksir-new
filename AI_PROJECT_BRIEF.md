@@ -27,7 +27,7 @@ Use `apply_patch` for manual edits.
 
 ## Key Files
 
-- `index.html`: main page structure, early iOS Safari height setup, script/style loading.
+- `index.html`: main page structure, early iOS Safari height/keyboard setup, script/style loading.
 - `css/style.css`: main desktop/base styles.
 - `css/mobile.css`: mobile and iOS Safari overrides.
 - `css/font.css`: icon font and optional MiSans font class.
@@ -63,12 +63,15 @@ This updates:
 - Wallpaper selection is stored in a cookie named `bg_img`.
 - Search engine preferences are stored in cookies.
 - MiSans is loaded after idle on non-iOS Safari only. iOS Safari skips it to avoid first-screen font changes.
-- iOS Safari gets `html.ios-safari` and `--app-height` early in `index.html`.
-- Update detection fetches `data/app-version.json`, compares it numerically with the footer runtime version, and shows a footer refresh button only when the fetched version is newer.
+- iOS Safari gets `html.ios-safari` and `--app-height` early in `index.html`. While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.
+- The footer is a compact info band: `导航酱 · 自用导航 · vYYYY.MM.DD.N`. Keep the `#app-version` span because update detection reads it as the runtime version.
+- Keep the hidden `.footer-separator` immediately before `#update-check`; `showUpdateButton` reveals that previous sibling when an update is available.
+- Update detection fetches `data/app-version.json`, compares it numerically with the footer runtime version, and shows a footer refresh button only when the fetched version is newer. Do not reintroduce `localStorage` as the current-version source.
 
 ## Important Cautions
 
 - iOS Safari background fixes are sensitive. Avoid changing wallpaper `object-fit`, background image scale, or large safe-area extensions without user confirmation.
+- iOS Safari keyboard fixes are also sensitive. Avoid writing intermediate `visualViewport.height` values during focus/blur because it can cause the page to shrink and expand when the keyboard closes.
 - The browser address bar itself is not webpage-renderable. The page can only control the document area, safe areas, and `theme-color`.
 - PC layout should not be affected by mobile fixes. Prefer selectors scoped to `html.ios-safari` or mobile media queries.
 - Service worker caching can make phone testing appear unchanged. Confirm the deployed version and cache state before assuming a CSS fix failed.
