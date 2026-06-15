@@ -5,14 +5,7 @@ html.ios-safari,
 html.ios-safari body {
     height: var(--app-height, 100vh);
     min-height: var(--app-height, 100vh);
-    background-color: var(--body-background-color);
     overflow: hidden;
-}
-
-html.ios-safari body {
-    position: fixed;
-    inset: 0;
-    width: 100%;
 }
 
 html.ios-safari section,
@@ -25,22 +18,13 @@ html.ios-safari .bg-all,
 html.ios-safari #bg,
 html.ios-safari .cover {
     position: fixed;
-    top: calc(-1 * env(safe-area-inset-top, 0px));
+    top: 0;
     right: 0;
     bottom: auto;
     left: 0;
     width: 100%;
-    height: calc(var(--app-bg-height, 100vh) + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px) + 96px);
-    min-height: calc(var(--app-bg-height, 100vh) + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px) + 96px);
-}
-
-@supports (height: 100lvh) {
-    html.ios-safari .bg-all,
-    html.ios-safari #bg,
-    html.ios-safari .cover {
-        height: calc(var(--app-bg-height, 100lvh) + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px) + 96px);
-        min-height: calc(var(--app-bg-height, 100lvh) + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px) + 96px);
-    }
+    height: calc(var(--app-height, 100vh) + env(safe-area-inset-bottom, 0px));
+    min-height: calc(var(--app-height, 100vh) + env(safe-area-inset-bottom, 0px));
 }
 
 /*小于1200px时*/
