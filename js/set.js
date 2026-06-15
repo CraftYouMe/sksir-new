@@ -744,32 +744,6 @@ $(document).ready(function () {
                 message: "\u5df2\u7acb\u5373\u5207\u6362\u9ed8\u8ba4\u641c\u7d22\u5f15\u64ce"
             });
         }
-        return;
-
-        var name = $(this).val();
-        Cookies.set('se_default', name, {
-            expires: 36500
-        });
-        iziToast.show({
-            timeout: 8000,
-            message: '是否设置为默认搜索引擎？',
-            buttons: [
-                ['<button>确认</button>', function (instance, toast) {
-                    setSeInit();
-                    instance.hide({
-                        transitionOut: 'flipOutX',
-                    }, toast, 'buttonName');
-                    iziToast.show({
-                        message: '设置成功'
-                    });
-                }, true],
-                ['<button>取消</button>', function (instance, toast) {
-                    instance.hide({
-                        transitionOut: 'flipOutX',
-                    }, toast, 'buttonName');
-                }]
-            ]
-        });
     });
 
     // 搜索引擎添加
