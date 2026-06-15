@@ -73,13 +73,14 @@
 使用脚本统一更新：
 
 ```powershell
-node scripts\update-version.js 2026.06.15.9
+node scripts\update-version.js 2026.06.16.1
 ```
 
 它会同时更新：
 
 - `data/app-version.json` 的 `version`
 - `sw.js` 里的 `CACHE_VERSION`
+- `index.html` 页脚显示的当前版本号
 
 ## 开发注意
 

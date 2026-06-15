@@ -60,16 +60,21 @@ html.ios-safari .cover {
         align-items: center;
         justify-content: center;
         max-width: calc(100vw - 24px);
-        gap: 0 4px;
+        gap: 4px 6px;
+        padding: 7px 12px;
         pointer-events: auto;
     }
 
     .update-check {
         max-width: calc(100vw - 28px);
         height: 22px;
-        margin-top: 2px;
         line-height: 20px;
         white-space: nowrap;
+    }
+
+    .app-version {
+        height: 18px;
+        line-height: 18px;
     }
 
     .passcode {
@@ -86,7 +91,7 @@ html.ios-safari .cover {
         min-width: 0;
         max-width: 100%;
         box-sizing: border-box;
-        font-size: 13px;
+        font-size: 16px;
     }
 
     .category-tools {
@@ -190,7 +195,7 @@ html.ios-safari .cover {
 
     .wd::-webkit-input-placeholder {
         letter-spacing: 1px;
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
 
     /*搜索引擎*/
@@ -242,7 +247,7 @@ html.ios-safari .cover {
         max-width: 100%;
         box-sizing: border-box;
         margin-right: 0;
-        font-size: 13px;
+        font-size: 16px;
     }
 
     .passcode button {

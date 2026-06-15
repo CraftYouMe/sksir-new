@@ -188,6 +188,7 @@ function scheduleUpdateCheck() {
 
     runAfterFirstPaint(function () {
         var updateButton = document.getElementById("update-check");
+        var versionElement = document.getElementById("app-version");
         if (!updateButton) return;
 
         var versionUrl = "./data/app-version.json?t=" + Date.now();
@@ -205,15 +206,11 @@ function scheduleUpdateCheck() {
             var latestVersion = versionInfo && String(versionInfo.version || "").trim();
             if (!latestVersion) return;
 
-            var storageKey = "sksir-new-app-version";
-            var currentVersion = getStoredAppVersion(storageKey);
-            if (!currentVersion) {
-                setStoredAppVersion(storageKey, latestVersion);
-                return;
-            }
+            var runningVersion = getRunningAppVersion(versionElement);
+            syncRunningAppVersion(versionElement, runningVersion);
 
-            if (currentVersion !== latestVersion) {
-                showUpdateButtonAfterIntro(updateButton, storageKey, latestVersion);
+            if (compareAppVersions(latestVersion, runningVersion) > 0) {
+                showUpdateButtonAfterIntro(updateButton, latestVersion);
             }
         }).catch(function (error) {
             console.warn("Update check failed", error);
@@ -221,42 +218,66 @@ function scheduleUpdateCheck() {
     }, 0);
 }
 
-function getStoredAppVersion(storageKey) {
-    try {
-        return localStorage.getItem(storageKey);
-    } catch (e) {
-        return null;
+function getRunningAppVersion(versionElement) {
+    var version = versionElement && String(versionElement.getAttribute("data-version") || "").trim();
+    if (version) return version;
+
+    version = versionElement && String(versionElement.textContent || "").trim().replace(/^v/i, "");
+    if (version) return version;
+
+    return "0.0.0.0";
+}
+
+function syncRunningAppVersion(versionElement, version) {
+    if (!versionElement || !version) return;
+
+    versionElement.textContent = "v" + version;
+    versionElement.setAttribute("data-version", version);
+}
+
+function compareAppVersions(left, right) {
+    var leftParts = parseAppVersion(left);
+    var rightParts = parseAppVersion(right);
+    var length = Math.max(leftParts.length, rightParts.length);
+
+    for (var i = 0; i < length; i++) {
+        var leftPart = leftParts[i] || 0;
+        var rightPart = rightParts[i] || 0;
+        if (leftPart > rightPart) return 1;
+        if (leftPart < rightPart) return -1;
     }
+
+    return 0;
 }
 
-function setStoredAppVersion(storageKey, version) {
-    try {
-        localStorage.setItem(storageKey, version);
-    } catch (e) {}
+function parseAppVersion(version) {
+    return String(version || "").split(".").map(function (part) {
+        var value = parseInt(part, 10);
+        return isNaN(value) ? 0 : value;
+    });
 }
 
-function showUpdateButtonAfterIntro(updateButton, storageKey, latestVersion) {
+function showUpdateButtonAfterIntro(updateButton, latestVersion) {
     var elapsed = window.performance && window.performance.now ? window.performance.now() : 0;
     var introDelay = Math.max(0, 900 - elapsed);
     setTimeout(function () {
-        showUpdateButton(updateButton, storageKey, latestVersion);
+        showUpdateButton(updateButton, latestVersion);
     }, introDelay);
 }
 
-function showUpdateButton(updateButton, storageKey, latestVersion) {
+function showUpdateButton(updateButton, latestVersion) {
     var separator = updateButton.previousElementSibling;
     updateButton.hidden = false;
     if (separator && separator.classList.contains("footer-separator")) {
         separator.hidden = false;
     }
-    updateButton.textContent = "\u53d1\u73b0\u65b0\u7248\u672c\uff0c\u70b9\u51fb\u5237\u65b0";
+    updateButton.textContent = "\u66f4\u65b0\u5230 v" + latestVersion;
 
     updateButton.onclick = function () {
         updateButton.disabled = true;
         updateButton.textContent = "\u6b63\u5728\u66f4\u65b0...";
 
         clearSiteCaches().then(function () {
-            setStoredAppVersion(storageKey, latestVersion);
             reloadForFreshAssets(latestVersion);
         }).catch(function (error) {
             console.warn("Refresh cache failed", error);

@@ -54,6 +54,7 @@ node scripts\update-version.js YYYY.MM.DD.N
 This updates:
 - `data/app-version.json` -> `version`
 - `sw.js` -> `CACHE_VERSION = "nav-cache-YYYY.MM.DD.N"`
+- `index.html` -> footer `#app-version`
 
 ## Current Implementation Notes
 
@@ -63,7 +64,7 @@ This updates:
 - Search engine preferences are stored in cookies.
 - MiSans is loaded after idle on non-iOS Safari only. iOS Safari skips it to avoid first-screen font changes.
 - iOS Safari gets `html.ios-safari` and `--app-height` early in `index.html`.
-- Update detection fetches `data/app-version.json` and shows a footer refresh button when the stored version differs.
+- Update detection fetches `data/app-version.json`, compares it numerically with the footer runtime version, and shows a footer refresh button only when the fetched version is newer.
 
 ## Important Cautions
 
