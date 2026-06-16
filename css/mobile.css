@@ -126,20 +126,33 @@ html.ios-safari .cover {
         overflow-y: hidden;
         gap: 6px;
         max-width: calc(100vw - 40px);
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255,255,255,0.28) transparent;
+        scrollbar-width: none;
         will-change: scroll-position;
         -webkit-overflow-scrolling: touch;
     }
 
-    .category-row::-webkit-scrollbar {
-        height: 3px;
-        background: transparent;
+    .category-row::before {
+        display: none;
     }
 
-    .category-row::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.28);
-        border-radius: 999px;
+    .category-row:hover {
+        border-color: rgba(179, 195, 214, 0.14);
+        box-shadow: 0 8px 22px 0 rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+
+    .category-row .category-anim-bg {
+        left: 0 !important;
+        max-width: calc(100% - 8px);
+        transform: translate3d(var(--category-indicator-x, 0px), -50%, 0);
+        transition:
+            width 0.25s cubic-bezier(.4,0,.2,1),
+            transform 0.25s cubic-bezier(.4,0,.2,1),
+            opacity 0.25s cubic-bezier(.4,0,.2,1);
+        will-change: transform, width;
+    }
+
+    .category-row::-webkit-scrollbar {
+        display: none;
     }
 
     .category-item {

@@ -538,10 +538,12 @@ function updateCategoryIndicator($row) {
         $indicator.css('transition', 'none');
     }
 
+    var left = getCategoryIndicatorLeft($row[0], $active[0], width);
     $indicator.css({
         width: width,
-        left: $active.position().left
+        left: left
     });
+    $row[0].style.setProperty('--category-indicator-x', left + 'px');
     $row.addClass('has-anim-bg');
 
     if (!hasIndicator) {
@@ -549,6 +551,17 @@ function updateCategoryIndicator($row) {
             $indicator.css('transition', '');
         });
     }
+}
+
+function getCategoryIndicatorLeft(row, active, width) {
+    if (!row || !active) return 0;
+
+    var left = active.offsetLeft - row.clientLeft;
+    var maxLeft = Math.max(0, row.scrollWidth - width - row.clientLeft);
+
+    if (left < 0) return 0;
+    if (left > maxLeft) return maxLeft;
+    return left;
 }
 
 function refreshCategoryIndicators() {

@@ -67,6 +67,7 @@ This updates:
 - The footer is a compact daily-quote band. `js/main.js` sets `#daily-quote` from a local quote list using the current date, so it is stable within a day and does not add a network request.
 - Keep the footer `#app-version` span even if it is visually subdued because update detection reads it as the runtime version.
 - Keep the hidden `.footer-separator` immediately before `#update-check`; `showUpdateButton` reveals that previous sibling when an update is available.
+- Category tabs use an injected `.category-anim-bg` indicator. `js/main.js` computes its position from the active item's `offsetLeft` and also writes `--category-indicator-x`; mobile CSS moves the indicator with `transform` to avoid creating extra horizontal scroll width.
 - Update detection fetches `data/app-version.json`, compares it numerically with the footer runtime version, and shows a footer refresh button only when the fetched version is newer. Do not reintroduce `localStorage` as the current-version source.
 
 ## Important Cautions
@@ -75,6 +76,7 @@ This updates:
 - iOS Safari keyboard fixes are also sensitive. Avoid writing intermediate `visualViewport.height` values during focus/blur because it can cause the page to shrink and expand when the keyboard closes.
 - The browser address bar itself is not webpage-renderable. The page can only control the document area, safe areas, and `theme-color`.
 - PC layout should not be affected by mobile fixes. Prefer selectors scoped to `html.ios-safari` or mobile media queries.
+- Do not re-enable mobile `.category-row::before` hover shine or scrollbar styling without testing on touch devices; it can create phantom horizontal blank space and break the active indicator position.
 - Service worker caching can make phone testing appear unchanged. Confirm the deployed version and cache state before assuming a CSS fix failed.
 - `api/check.js` currently fetches arbitrary URLs from query input. Treat security hardening as a recommended future task.
 - `js/main.js` contains a front-end password for a hidden section. This is only UI hiding, not real security.
