@@ -1378,30 +1378,26 @@ input[type="radio"]:checked+label {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
     color: var(--main-text-color);
-    font-size: 12px;
-    opacity: 0.88;
+    font-size: 13px;
+    opacity: 0.9;
     text-shadow: var(--main-text-shadow);
-    padding: 6px 12px;
+    padding: 7px 14px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
-    background: rgba(17, 25, 40, 0.16);
+    background: rgba(17, 25, 40, 0.18);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 
-.power a {
-    color: inherit;
-}
-
-.footer-brand {
-    font-weight: 600;
+.daily-quote {
+    max-width: min(58vw, 560px);
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.92);
+    text-overflow: ellipsis;
+    white-space: nowrap;
     letter-spacing: 0;
-}
-
-.footer-note {
-    color: rgba(255, 255, 255, 0.74);
 }
 
 .footer-separator {
@@ -1414,11 +1410,18 @@ input[type="radio"]:checked+label {
     align-items: center;
     height: 18px;
     padding: 0 2px;
-    color: rgba(255, 255, 255, 0.86);
+    color: rgba(255, 255, 255, 0.52);
     background: transparent;
     line-height: 18px;
+    opacity: 0.62;
     text-shadow: var(--main-text-shadow);
     font-variant-numeric: tabular-nums;
+    transition: opacity 0.18s ease;
+}
+
+.power:hover .app-version,
+.power:focus-within .app-version {
+    opacity: 0.9;
 }
 
 .update-check {

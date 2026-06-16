@@ -41,6 +41,7 @@ $(function () {
     scheduleUpdateCheck();
     scheduleMiSansFont();
     scheduleStaticCache();
+    setDailyQuote();
 });
 var now = new Date(), hour = now.getHours()
 
@@ -96,6 +97,32 @@ function scheduleWelcomeToast() {
             message: '欢迎来到 导航酱'
         });
     }, 450);
+}
+
+function setDailyQuote() {
+    var quoteElement = document.getElementById("daily-quote");
+    if (!quoteElement) return;
+
+    var quotes = [
+        "天暗下来，你就是光",
+        "路还长，天总会亮",
+        "把今天过好，就是答案",
+        "风会记得来时的路",
+        "心有热望，日子发亮",
+        "愿你眼里有星河，脚下有坦途",
+        "林深时见鹿，海蓝时见鲸，梦醒时见你",
+        "别急，花会沿路盛开",
+        "保持热爱，奔赴山海",
+        "清醒温柔，知进退也知努力",
+        "把平凡的小事做得漂亮",
+        "可惜我文笔平平，写不出惊鸿一场，道不出人间悲凉",
+        "去做具体的事，等自然的风",
+        "愿所有赶路，都有归处",
+        "今日宜收藏好心情"
+    ];
+    var today = new Date();
+    var seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    quoteElement.textContent = quotes[seed % quotes.length];
 }
 
 function scheduleMiSansFont() {

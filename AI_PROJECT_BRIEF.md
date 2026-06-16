@@ -64,7 +64,8 @@ This updates:
 - Search engine preferences are stored in cookies.
 - MiSans is loaded after idle on non-iOS Safari only. iOS Safari skips it to avoid first-screen font changes.
 - iOS Safari gets `html.ios-safari` and `--app-height` early in `index.html`. While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.
-- The footer is a compact info band: `导航酱 · 自用导航 · vYYYY.MM.DD.N`. Keep the `#app-version` span because update detection reads it as the runtime version.
+- The footer is a compact daily-quote band. `js/main.js` sets `#daily-quote` from a local quote list using the current date, so it is stable within a day and does not add a network request.
+- Keep the footer `#app-version` span even if it is visually subdued because update detection reads it as the runtime version.
 - Keep the hidden `.footer-separator` immediately before `#update-check`; `showUpdateButton` reveals that previous sibling when an update is available.
 - Update detection fetches `data/app-version.json`, compares it numerically with the footer runtime version, and shows a footer refresh button only when the fetched version is newer. Do not reintroduce `localStorage` as the current-version source.
 

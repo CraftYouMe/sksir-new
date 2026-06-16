@@ -62,6 +62,16 @@ window.NAV_SITES = {
         },
         {
           "className": "quicks",
+          "name": "影视森林",
+          "url": "https://www.tvtv.cc/",
+          "category": "系统必备",
+          "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/yssl.ico",
+          "desc": "老牌优质影视聚合导航网站",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "className": "quicks",
           "name": "Github",
           "url": "https://github.com/",
           "category": "开发建站",
@@ -217,6 +227,36 @@ window.NAV_SITES = {
           "category": "动漫番剧",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bimi.ico",
           "desc": "比较清晰的番剧网站",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "className": "quicks",
+          "name": "FindNO",
+          "url": "https://findno.tv/",
+          "category": "在线影院",
+          "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/findno.ico",
+          "desc": "海外热门剧集在线观看",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "className": "quicks",
+          "name": "AUETE",
+          "url": "https://auete.pro/",
+          "category": "在线影院",
+          "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/auete.ico",
+          "desc": "蓝光超清精品影视在线",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        }, 
+        {
+          "className": "quicks",
+          "name": "555影视",
+          "url": "https://www.555yy3.com/",
+          "category": "在线影院",
+          "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/555yy3.ico",
+          "desc": "Netflix电影在线看",
           "target": "_blank",
           "rel": "noopener noreferrer"
         },
@@ -737,9 +777,20 @@ window.NAV_SITES = {
       "items": [
         {
           "className": "quicks",
+          "name": "影视森林",
+          "url": "https://www.tvtv.cc/",
+          "category": "系统必备",
+          "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/yssl.ico",
+          "desc": "老牌优质影视聚合导航网站",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "className": "quicks",
           "name": "电脑开荒",
           "url": "http://www.cyhaoka.vip/",
           "category": "系统必备",
+          "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/kaihuang.ico",
           "desc": "B站尘封UP分享",
           "target": "_blank",
           "rel": "noopener noreferrer"
