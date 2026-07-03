@@ -362,7 +362,7 @@ function getPerformanceModeText(mode) {
     if (mode === "lite") {
         return "轻量动效：关闭大部分模糊、缩放和动画，适合低配电脑";
     }
-    return "自动模式会在低配设备或系统减少动态效果时启用轻量动效";
+    return "自动模式会在系统减少动态效果、省流量或明显低配设备上启用轻量动效";
 }
 
 function setPerformanceInit() {

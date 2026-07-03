@@ -63,7 +63,7 @@ This updates:
 - Wallpaper selection is stored in a cookie named `bg_img`.
 - Search engine preferences are stored in cookies.
 - Performance mode is stored in `localStorage` under `sksir-performance-mode`: `auto`, `full`, or `lite`.
-- The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, low `navigator.deviceMemory`, or low `navigator.hardwareConcurrency`.
+- The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
 - The settings panel has a `性能模式` tab. `js/set.js` initializes and updates it without requiring a page refresh.
 - MiSans is loaded after idle on non-iOS Safari only. iOS Safari skips it to avoid first-screen font changes.
 - iOS Safari gets `html.ios-safari` and `--app-height` early in `index.html`. While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.
@@ -80,6 +80,7 @@ This updates:
 - The browser address bar itself is not webpage-renderable. The page can only control the document area, safe areas, and `theme-color`.
 - PC layout should not be affected by mobile fixes. Prefer selectors scoped to `html.ios-safari` or mobile media queries.
 - High-end devices should keep full visuals by default. Put low-performance visual reductions under `html.perf-lite` instead of removing effects globally.
+- Do not classify iOS devices as low performance from `navigator.hardwareConcurrency` alone; Safari may report privacy-limited or non-representative hardware values.
 - Do not re-enable mobile `.category-row::before` hover shine or scrollbar styling without testing on touch devices; it can create phantom horizontal blank space and break the active indicator position.
 - Service worker caching can make phone testing appear unchanged. Confirm the deployed version and cache state before assuming a CSS fix failed.
 - `api/check.js` currently fetches arbitrary URLs from query input. Treat security hardening as a recommended future task.

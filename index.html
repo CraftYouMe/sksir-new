@@ -32,6 +32,12 @@
                 return "auto";
             }
 
+            function isIosDevice() {
+                var ua = navigator.userAgent || "";
+                var platform = navigator.platform || "";
+                return /iP(hone|ad|od)/.test(ua) || (platform === "MacIntel" && navigator.maxTouchPoints > 1);
+            }
+
             function shouldUseLitePerformanceMode(mode) {
                 if (mode === "lite") return true;
                 if (mode === "full") return false;
@@ -45,9 +51,13 @@
                 var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
                 if (connection && connection.saveData) return true;
 
+                var isIOS = isIosDevice();
                 var memory = navigator.deviceMemory || 0;
                 var cores = navigator.hardwareConcurrency || 0;
-                return (memory && memory <= 4) || (cores && cores <= 4);
+                if (memory && memory <= 2) return true;
+                if (!isIOS && memory && memory <= 4 && cores && cores <= 4) return true;
+                if (!isIOS && !memory && cores && cores <= 2) return true;
+                return false;
             }
 
             function applyPerformanceMode() {
@@ -74,8 +84,7 @@
 
             function isIosSafari() {
                 var ua = navigator.userAgent || "";
-                var platform = navigator.platform || "";
-                var isIOS = /iP(hone|ad|od)/.test(ua) || (platform === "MacIntel" && navigator.maxTouchPoints > 1);
+                var isIOS = isIosDevice();
                 var isSafari = /Safari/.test(ua) && !/(CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo)/.test(ua);
                 return isIOS && isSafari;
             }
@@ -454,7 +463,7 @@
                         <div class="mainConts">
                             <div class="set_blocks">
                                 <div class="set_tip">
-                                    <span class="set_text" id="performance_text">自动模式会在低配设备或系统减少动态效果时启用轻量动效</span>
+                                    <span class="set_text" id="performance_text">自动模式会在系统减少动态效果、省流量或明显低配设备上启用轻量动效</span>
                                 </div>
                                 <div class="set_blocks_content">
                                     <div class="from_container">
@@ -501,7 +510,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.03.1">v2026.07.03.1</span>
+                <span id="app-version" class="app-version" data-version="2026.07.03.2">v2026.07.03.2</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>
