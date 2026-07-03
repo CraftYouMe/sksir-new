@@ -144,6 +144,19 @@
   }
 }
 
+html.perf-lite .status-check-btn,
+html.perf-lite .quicks.status-checking::after,
+html.perf-lite .quickjl.status-checking::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+html.perf-lite .status-check-btn {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background: rgba(18, 24, 32, 0.88);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .status-check-btn,
   .quicks.status-checking::after,

@@ -1271,9 +1271,11 @@ input[type="number"] {
 }
 
 /*背景图片*/
-#wallpaper {
+#wallpaper,
+#performance {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #wallpaper_url {
@@ -2056,6 +2058,75 @@ input[type="radio"]:checked+label {
 /* ==========================================================================
    Accessibility
    ========================================================================== */
+
+html.perf-lite *,
+html.perf-lite *::before,
+html.perf-lite *::after {
+    animation: none !important;
+    -webkit-animation: none !important;
+    -moz-animation: none !important;
+    -o-animation: none !important;
+    -ms-animation: none !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+}
+
+html.perf-lite *,
+html.perf-lite *::before,
+html.perf-lite *::after {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+
+html.perf-lite #bg,
+html.perf-lite .onsearch #bg {
+    filter: none !important;
+    transform: scale(1) !important;
+}
+
+html.perf-lite .tool-all,
+html.perf-lite #bg,
+html.perf-lite .mark::before,
+html.perf-lite .category-row::before,
+html.perf-lite .category-item::before,
+html.perf-lite .category-item::after,
+html.perf-lite .toast-fallback,
+html.perf-lite .quick,
+html.perf-lite .quicks,
+html.perf-lite .quickjl {
+    will-change: auto !important;
+    transform: none !important;
+}
+
+html.perf-lite .tool-all {
+    transform: translate3d(0, var(--time-block-offset), 0) !important;
+}
+
+html.perf-lite .toast-fallback-wrap {
+    transform: translateX(-50%) !important;
+}
+
+html.perf-lite .all-search,
+html.perf-lite .search-engine,
+html.perf-lite #keywords,
+html.perf-lite .mark,
+html.perf-lite .set,
+html.perf-lite .passcode,
+html.perf-lite .category-row,
+html.perf-lite .status-check-btn,
+html.perf-lite .iziToast,
+html.perf-lite .iziToast.welcome-toast,
+html.perf-lite .iziToast.setting-toast,
+html.perf-lite .toast-fallback {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: rgba(18, 24, 32, 0.88) !important;
+}
+
+html.perf-lite #point {
+    opacity: 1 !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
     *,

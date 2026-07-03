@@ -242,7 +242,8 @@ html.ios-safari .cover {
     }
 
     /*壁纸设置*/
-    #wallpaper {
+    #wallpaper,
+    #performance {
         flex-wrap: wrap;
     }
 

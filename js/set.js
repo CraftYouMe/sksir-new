@@ -330,6 +330,50 @@ function setBgImgInit() {
     applyBgImg(resolveBgImgSrc(bg_img));
 }
 
+function getPerformanceMode() {
+    try {
+        return normalizePerformanceMode(localStorage.getItem("sksir-performance-mode"));
+    } catch (e) {
+        return "auto";
+    }
+}
+
+function normalizePerformanceMode(mode) {
+    if (mode === "full" || mode === "lite") return mode;
+    return "auto";
+}
+
+function setPerformanceMode(mode) {
+    mode = normalizePerformanceMode(mode);
+    try {
+        localStorage.setItem("sksir-performance-mode", mode);
+    } catch (e) {}
+
+    if (typeof window.applySksirPerformanceMode === "function") {
+        window.applySksirPerformanceMode();
+    }
+    syncPerformanceVisualState();
+}
+
+function getPerformanceModeText(mode) {
+    if (mode === "full") {
+        return "完整动效：保留背景模糊、毛玻璃和过渡动画，适合性能较好的设备";
+    }
+    if (mode === "lite") {
+        return "轻量动效：关闭大部分模糊、缩放和动画，适合低配电脑";
+    }
+    return "自动模式会在低配设备或系统减少动态效果时启用轻量动效";
+}
+
+function setPerformanceInit() {
+    var mode = getPerformanceMode();
+    $("input[name='performance-mode'][value='" + mode + "']").prop("checked", true);
+    $("#performance_text").html(getPerformanceModeText(mode));
+    if (typeof window.applySksirPerformanceMode === "function") {
+        window.applySksirPerformanceMode();
+    }
+}
+
 // 搜索框高亮
 function focusWd() {
     $("body").addClass("onsearch");
@@ -515,7 +559,7 @@ function openBox() {
     $(".mark").css({
         "display": "none",
     });
-    //背景模糊
+    // 背景模糊在轻量性能模式下会被跳过，避免低配设备频繁重绘。
     bookmarkOpenTimer = setTimeout(function () {
         $(".mark").css({
             "display": "flex",
@@ -526,12 +570,8 @@ function openBox() {
         }
         $(".mark").addClass("is-visible");
         bookmarkOpenTimer = null;
-    }, 220);
-    $('#bg').css({
-        "transform": 'scale(1.08)',
-        "filter": "blur(10px)",
-        "transition": "ease 0.3s",
-    });
+    }, document.documentElement.classList.contains("perf-lite") ? 0 : 220);
+    setBackgroundFocusEffect(true);
 }
 
 function loadVisibleNavIcons() {
@@ -551,12 +591,22 @@ function closeBox() {
     $(".mark").css({
         "display": "none",
     });
-    //背景模糊
+    setBackgroundFocusEffect(false);
+}
+
+function setBackgroundFocusEffect(active) {
+    var isLite = document.documentElement.classList.contains("perf-lite");
     $('#bg').css({
-        "transform": 'scale(1)',
-        "filter": "blur(0px)",
-        "transition": "ease 0.3s",
+        "transform": active && !isLite ? 'scale(1.08)' : 'scale(1)',
+        "filter": active && !isLite ? "blur(10px)" : "blur(0px)",
+        "transition": isLite ? "none" : "ease 0.3s",
     });
+}
+
+function syncPerformanceVisualState() {
+    if ($("#content").hasClass("box") || $("#content").hasClass("setting-open")) {
+        setBackgroundFocusEffect(true);
+    }
 }
 
 //显示设置搜索引擎列表
@@ -581,6 +631,9 @@ $(document).ready(function () {
 
     // 壁纸数据加载
     setBgImgInit();
+
+    // 性能模式加载
+    setPerformanceInit();
 
     // 点击事件
     $(document).on('click', function (e) {
@@ -975,6 +1028,19 @@ $(document).ready(function () {
                 message: '自定义壁纸设置成功，刷新生效',
             });
         }
+    });
+
+    // 性能模式设置
+    $("#performance").on("click", ".set-performance", function () {
+        var mode = $(this).val();
+        setPerformanceMode(mode);
+        $("#performance_text").html(getPerformanceModeText(mode));
+        iziToast.show({
+            timeout: 1800,
+            class: "setting-toast",
+            title: "性能模式",
+            message: "已切换为" + $(this).next("label").text().trim()
+        });
     });
 });
 

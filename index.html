@@ -17,6 +17,61 @@
     <meta name="theme-color" content="#333333">
     <script>
         (function () {
+            var performanceModeKey = "sksir-performance-mode";
+
+            function getStoredPerformanceMode() {
+                try {
+                    return normalizePerformanceMode(localStorage.getItem(performanceModeKey));
+                } catch (e) {
+                    return "auto";
+                }
+            }
+
+            function normalizePerformanceMode(mode) {
+                if (mode === "full" || mode === "lite") return mode;
+                return "auto";
+            }
+
+            function shouldUseLitePerformanceMode(mode) {
+                if (mode === "lite") return true;
+                if (mode === "full") return false;
+
+                var reduceMotion = false;
+                try {
+                    reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                } catch (e) {}
+                if (reduceMotion) return true;
+
+                var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                if (connection && connection.saveData) return true;
+
+                var memory = navigator.deviceMemory || 0;
+                var cores = navigator.hardwareConcurrency || 0;
+                return (memory && memory <= 4) || (cores && cores <= 4);
+            }
+
+            function applyPerformanceMode() {
+                var mode = getStoredPerformanceMode();
+                var lite = shouldUseLitePerformanceMode(mode);
+                document.documentElement.classList.toggle("perf-lite", lite);
+                document.documentElement.setAttribute("data-performance-mode", mode);
+                document.documentElement.setAttribute("data-performance-active", lite ? "lite" : "full");
+                if (window.jQuery && window.jQuery.fx) {
+                    window.jQuery.fx.off = lite;
+                }
+                if (lite) {
+                    var bg = document.getElementById("bg");
+                    if (bg) {
+                        bg.style.transform = "scale(1)";
+                        bg.style.filter = "blur(0px)";
+                        bg.style.transition = "none";
+                    }
+                }
+            }
+
+            applyPerformanceMode();
+            window.applySksirPerformanceMode = applyPerformanceMode;
+
             function isIosSafari() {
                 var ua = navigator.userAgent || "";
                 var platform = navigator.platform || "";
@@ -245,6 +300,7 @@
                     <div class="tabs">
                         <div class="tab-items actives">搜索引擎</div>
                         <div class="tab-items">背景图片</div>
+                        <div class="tab-items">性能模式</div>
                     </div>
                     <div class="contents productss">
                         <!-- 搜索引擎设置 -->
@@ -390,6 +446,48 @@
                                     </div>
                                     <div class="from_items button" id="wallpaper-button" style="display: none;">
                                         <div class="wallpaper_save">保存</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 性能模式设置 -->
+                        <div class="mainConts">
+                            <div class="set_blocks">
+                                <div class="set_tip">
+                                    <span class="set_text" id="performance_text">自动模式会在低配设备或系统减少动态效果时启用轻量动效</span>
+                                </div>
+                                <div class="set_blocks_content">
+                                    <div class="from_container">
+                                        <div class="froms">
+                                            <div class="from_row">
+                                                <div class="from_row_content">
+                                                    <div id="performance">
+                                                        <div class="form-radio">
+                                                            <input type="radio" id="performance-auto" class="set-performance"
+                                                                name="performance-mode" value="auto" style="display: none;">
+                                                            <label class="form-radio-label" for="performance-auto">
+                                                                自动
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-radio">
+                                                            <input type="radio" id="performance-full" class="set-performance"
+                                                                name="performance-mode" value="full" style="display: none;">
+                                                            <label class="form-radio-label" for="performance-full">
+                                                                完整动效
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-radio">
+                                                            <input type="radio" id="performance-lite" class="set-performance"
+                                                                name="performance-mode" value="lite" style="display: none;">
+                                                            <label class="form-radio-label" for="performance-lite">
+                                                                轻量动效
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
