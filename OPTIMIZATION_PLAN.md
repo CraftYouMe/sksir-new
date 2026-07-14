@@ -33,11 +33,11 @@
 
 ## 待验证
 
-- [ ] 部署后在 Vercel 生产环境确认 `node scripts\check.js` 本地通过后页面能正常上线。
-- [ ] 部署后打开 `https://sksir.top/data/app-version.json`，确认线上版本和页脚版本对应。
-- [ ] 部署后在浏览器控制台查看 `window.__sksirFirstScreenMs`，确认 PC 和手机首屏接近或低于 500ms。
-- [ ] iPhone 15 Pro Max Safari 复测：背景铺满、搜索框聚焦、键盘收起不抖动。
-- [ ] 低配电脑复测：轻量模式下分类切换、搜索框、书签面板不卡顿。
+- [x] 部署后在 Vercel 生产环境确认 `node scripts\check.js` 本地通过后页面能正常上线。
+- [x] 部署后打开 `https://sksir.top/data/app-version.json`，确认线上版本和页脚版本对应。
+- [ ] 部署后在浏览器控制台查看 `window.__sksirFirstScreenMs`：有缓存时已低于 500ms，冷启动继续观察。
+- [ ] iPhone 15 Pro Max Safari 复测：搜索框聚焦、键盘收起正常；背景铺满问题本轮继续修复。
+- [x] 低配电脑复测：轻量模式下分类切换、搜索框、书签面板不卡顿。
 - [ ] Vercel 日志观察 `/api/check` 是否有异常请求量。
 
 ## 未完成

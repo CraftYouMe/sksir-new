@@ -78,7 +78,8 @@ This updates:
 - The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
 - The settings panel has a `性能模式` tab. `js/set.js` initializes and updates it without requiring a page refresh.
 - MiSans is loaded after idle on non-iOS Safari only. iOS Safari skips it to avoid first-screen font changes.
-- iOS Safari gets `html.ios-safari` and `--app-height` early in `index.html`. While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.
+- iOS Safari gets `html.ios-safari` and `--app-height` early in `index.html`. `css/mobile.css` extends `.bg-all` beyond the visible viewport and makes `#bg` / `.cover` absolute inside it, so the wallpaper covers safe areas and Safari toolbar height changes without changing PC behavior.
+- While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.
 - The footer is a compact daily-quote band. `js/main.js` sets `#daily-quote` from a local quote list using the current date, so it is stable within a day and does not add a network request.
 - Keep the footer `#app-version` span even if it is visually subdued because update detection reads it as the runtime version.
 - Keep the hidden `.footer-separator` immediately before `#update-check`; `showUpdateButton` reveals that previous sibling when an update is available.
