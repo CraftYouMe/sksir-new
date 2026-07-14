@@ -14,6 +14,9 @@
     <title>导航酱 - 但行好事，莫问前程</title>
     <link rel="icon" href="apple-touch-icon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
+    <link rel="dns-prefetch" href="//yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
+    <link rel="dns-prefetch" href="//api.dujin.org">
     <meta name="theme-color" content="#333333">
     <script>
         (function () {
@@ -189,9 +192,14 @@
                 }
             } catch (e) {}
 
-            window.setTimeout(function () {
-                document.documentElement.classList.add("is-first-screen-ready");
-            }, 1800);
+            window.__sksirBootFallbackTimer = window.setTimeout(function () {
+                var root = document.documentElement;
+                root.classList.add("is-first-screen-ready");
+                window.setTimeout(function () {
+                    root.classList.remove("is-booting");
+                    root.classList.remove("is-first-screen-ready");
+                }, 700);
+            }, 4800);
         }());
     </script>
     <!-- 引入样式 -->
@@ -516,7 +524,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.14.5">v2026.07.14.5</span>
+                <span id="app-version" class="app-version" data-version="2026.07.14.6">v2026.07.14.6</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>

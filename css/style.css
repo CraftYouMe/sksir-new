@@ -100,6 +100,11 @@ section {
     opacity: 1;
 }
 
+html.is-booting #bg.is-loaded {
+    opacity: 1;
+    transition: none;
+}
+
 img.error {
     display: none;
 }

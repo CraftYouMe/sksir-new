@@ -286,6 +286,19 @@ function resolveBgImgSrc(bg_img) {
     }
 }
 
+function setBootWallpaperState(status, src) {
+    window.__sksirWallpaperState = {
+        status: status,
+        src: src || "",
+        time: Date.now()
+    };
+
+    if (status === "loading") return;
+    document.dispatchEvent(new CustomEvent("sksir-wallpaper-ready", {
+        detail: window.__sksirWallpaperState
+    }));
+}
+
 function applyBgImg(src) {
     var $bg = $('#bg');
     var targetSrc = src;
@@ -293,21 +306,28 @@ function applyBgImg(src) {
 
     if (!targetSrc) {
         $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
+        setBootWallpaperState("empty", "");
         return;
     }
-    if (currentSrc === targetSrc && $bg.hasClass('is-loaded')) return;
+    if (currentSrc === targetSrc && $bg.hasClass('is-loaded')) {
+        setBootWallpaperState("loaded", targetSrc);
+        return;
+    }
 
     $bg.removeClass('error is-loaded');
+    setBootWallpaperState("loading", targetSrc);
 
     var img = new Image();
     img.onload = function () {
         $bg.attr('src', targetSrc);
         requestAnimationFrame(function () {
             $bg.addClass('is-loaded');
+            setBootWallpaperState("loaded", targetSrc);
         });
     };
     img.onerror = function () {
         $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
+        setBootWallpaperState("error", targetSrc);
     };
     img.src = targetSrc;
 }
@@ -331,11 +351,10 @@ function setBgImgInit() {
 }
 
 function scheduleBgImgInit() {
-    var delay = document.documentElement.classList.contains("perf-lite") ? 650 : 180;
     if (typeof runAfterFirstPaint === "function") {
-        runAfterFirstPaint(setBgImgInit, delay);
+        runAfterFirstPaint(setBgImgInit, 0);
     } else {
-        setTimeout(setBgImgInit, delay);
+        setTimeout(setBgImgInit, 0);
     }
 }
 

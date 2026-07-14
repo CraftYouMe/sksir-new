@@ -68,11 +68,11 @@ This updates:
 - Do not move `奖励` items into public tabs unless the user explicitly confirms it; it is only front-end hidden, but the current UX treats it as a private group.
 - Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation and syntax checks.
 - Remote icons are initially rendered with a local fallback and loaded later for visible panels.
-- First-screen target is 0.5 seconds for visible page structure on both PC and mobile. This means time/search/layout visible; remote wallpaper, remote icons, visitor badge, update check, and status checks must not block that window.
+- First-screen target is 0.5 seconds for assembled page structure on both PC and mobile. Time/search/layout should be ready quickly; remote icons, visitor badge, update check, and status checks must not block that window.
 - `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
 - Visitor badge, welcome toast, update check, service worker registration, and MiSans loading are intentionally delayed beyond the critical first-screen window.
-- First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay/spinner, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. It must hide page assembly without waiting for wallpaper, icons, visitor badge, update check, or status checks.
-- Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` delays remote wallpaper loading until after first paint so the page structure appears first.
+- First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay/spinner, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. It hides page assembly and waits briefly for wallpaper readiness, but must not wait for icons, visitor badge, update check, or status checks.
+- Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` starts wallpaper loading right after first paint, updates `window.__sksirWallpaperState`, and dispatches `sksir-wallpaper-ready` on `load`, `error`, or empty source so the boot mask does not fade before the wallpaper is ready unless the wait times out.
 - Search engine preferences are stored in cookies.
 - Performance mode is stored in `localStorage` under `sksir-performance-mode`: `auto`, `full`, or `lite`.
 - The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.

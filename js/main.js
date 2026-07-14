@@ -58,15 +58,71 @@ function markFirstScreenVisible() {
 function scheduleFirstScreenReveal(elapsed) {
     var root = document.documentElement;
     var minVisibleMs = root.classList.contains("perf-lite") ? 180 : 420;
+    var maxWallpaperWaitMs = root.classList.contains("perf-lite") ? 1800 : 3200;
     var remaining = Math.max(0, minVisibleMs - (elapsed || 0));
+    var minTimeReady = false;
+    var wallpaperReady = false;
+    var revealed = false;
+
+    if (window.__sksirBootFallbackTimer) {
+        clearTimeout(window.__sksirBootFallbackTimer);
+        window.__sksirBootFallbackTimer = 0;
+    }
 
     setTimeout(function () {
+        minTimeReady = true;
+        revealWhenReady();
+    }, remaining);
+
+    waitForBootWallpaper(maxWallpaperWaitMs, function (reason) {
+        wallpaperReady = true;
+        window.__sksirBootWallpaperWait = reason;
+        revealWhenReady();
+    });
+
+    function revealWhenReady() {
+        if (revealed || !minTimeReady || !wallpaperReady) return;
+        revealed = true;
         root.classList.add("is-first-screen-ready");
         setTimeout(function () {
             root.classList.remove("is-booting");
             root.classList.remove("is-first-screen-ready");
         }, root.classList.contains("perf-lite") ? 220 : 520);
-    }, remaining);
+    }
+}
+
+function waitForBootWallpaper(maxWaitMs, callback) {
+    if (isBootWallpaperReady()) {
+        callback("ready");
+        return;
+    }
+
+    var completed = false;
+    var timer = setTimeout(function () {
+        done("timeout");
+    }, maxWaitMs);
+
+    function done(reason) {
+        if (completed) return;
+        completed = true;
+        clearTimeout(timer);
+        document.removeEventListener("sksir-wallpaper-ready", onWallpaperReady);
+        callback(reason);
+    }
+
+    function onWallpaperReady() {
+        done("ready");
+    }
+
+    document.addEventListener("sksir-wallpaper-ready", onWallpaperReady);
+}
+
+function isBootWallpaperReady() {
+    var bg = document.getElementById("bg");
+    if (bg && bg.classList.contains("is-loaded")) return true;
+
+    var state = window.__sksirWallpaperState;
+    return !!(state && state.status && state.status !== "loading");
 }
 
 function runAfterFirstPaint(callback, delay) {
