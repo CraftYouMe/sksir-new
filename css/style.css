@@ -151,6 +151,16 @@ img.error {
     }
 }
 
+@keyframes bootLoaderPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(155, 231, 215, 0.0), 0 0 26px rgba(155, 231, 215, 0.20);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(155, 231, 215, 0.08), 0 0 34px rgba(241, 210, 119, 0.22);
+    }
+}
+
 html.is-booting::before,
 html.is-booting::after {
     content: "";
@@ -158,14 +168,16 @@ html.is-booting::after {
     pointer-events: none;
     opacity: 1;
     visibility: visible;
-    transition: opacity 360ms ease, visibility 0s linear 360ms;
+    transition: opacity 460ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 460ms;
 }
 
 html.is-booting::before {
     z-index: 999998;
     inset: 0;
     background:
-        radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.08), transparent 24%),
+        radial-gradient(circle at 50% 48%, rgba(155, 231, 215, 0.12), transparent 22%),
+        radial-gradient(circle at 50% 55%, rgba(241, 210, 119, 0.10), transparent 26%),
+        linear-gradient(180deg, rgba(28, 34, 42, 0.96), rgba(16, 20, 26, 0.94)),
         var(--body-background-color);
 }
 
@@ -173,14 +185,31 @@ html.is-booting::after {
     z-index: 999999;
     top: 50%;
     left: 50%;
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     margin: 0;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.22);
-    border-top-color: rgba(255, 255, 255, 0.92);
+    background:
+        conic-gradient(from 90deg, rgba(155, 231, 215, 0.08), rgba(155, 231, 215, 0.95), rgba(241, 210, 119, 0.88), rgba(255, 255, 255, 0.16));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
     transform: translate3d(-50%, -50%, 0);
-    animation: bootLoaderSpin 820ms linear infinite;
+    animation: bootLoaderSpin 960ms linear infinite, bootLoaderPulse 1600ms ease-in-out infinite;
+}
+
+html.is-booting .con,
+html.is-booting .foot {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+}
+
+html.is-booting.is-first-screen-ready .con,
+html.is-booting.is-first-screen-ready .foot {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    transition:
+        opacity 460ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html.is-booting.is-first-screen-ready::before,
@@ -196,6 +225,12 @@ html.perf-lite.is-booting::after {
 
 html.perf-lite.is-booting::after {
     animation: none;
+}
+
+html.perf-lite.is-booting .con,
+html.perf-lite.is-booting .foot {
+    opacity: 1;
+    transform: none;
 }
 
 /* .box .sou {
