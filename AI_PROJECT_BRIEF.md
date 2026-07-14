@@ -68,6 +68,8 @@ This updates:
 - Bookmarks are rendered from `window.NAV_SITES` in `data/sites.js`.
 - Current bookmark tabs are `常用`, `影音`, `工具`, `收藏`, `装机`, and password-gated `奖励`. Keep public tabs grouped by short categories and keep descriptions brief.
 - Do not move `奖励` items into public tabs unless the user explicitly confirms it; it is only front-end hidden, but the current UX treats it as a private group.
+- `js/nav-render.js` renders the selected bookmark panel first and leaves hidden panels as lightweight shells. Hidden panels hydrate during idle time after page load, or immediately through `window.ensureNavPanelRendered(index)` before a user-selected tab is shown.
+- Bookmark card clicks are delegated from `.products` in `js/main.js`, so cards added by later hydration still open correctly.
 - `js/set.js` exposes `closeActiveSurface()` for closing search, bookmark, and settings layers; `Esc` uses it and should stay lightweight.
 - Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation and syntax checks.
 - Remote icons are initially rendered with a local fallback and loaded later for visible panels.

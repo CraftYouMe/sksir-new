@@ -453,9 +453,13 @@ function getHello() {
 //Tab书签页
 $(function () {
     $(".mark .tab").on("click", ".tab-item", function () {
+        var tabIndex = $(this).index();
+        if (typeof window.ensureNavPanelRendered === "function") {
+            window.ensureNavPanelRendered(tabIndex);
+        }
         $(this).addClass("active").siblings().removeClass("active");
         $(".products .mainCont")
-            .eq($(this).index())
+            .eq(tabIndex)
             .addClass("selected")
             .css("display", "flex")
             .siblings()
@@ -538,19 +542,27 @@ runWhenNavSitesReady(function () {
     });
 });
 
-runWhenNavSitesReady(function() {
-  document.querySelectorAll('.quicks').forEach(function(card) {
-    card.addEventListener('click', function(e) {
-      // 如果点击的是a标签本身，浏览器会自动跳转，无需处理
-      // 否则手动跳转到a的href
-      if (e.target.tagName.toLowerCase() !== 'a') {
-        var a = card.querySelector('a');
-        if (a && a.href) {
-          window.open(a.href, a.target || '_self');
+runWhenNavSitesReady(function () {
+    var products = document.querySelector(".products");
+    if (!products || products.dataset.cardClickBound === "1") return;
+
+    products.dataset.cardClickBound = "1";
+    products.addEventListener("click", function (e) {
+        if (e.target.closest && e.target.closest("a")) return;
+
+        var card = e.target.closest && e.target.closest(".quicks, .quickjl");
+        if (!card || !products.contains(card)) return;
+
+        var a = card.querySelector("a");
+        if (!a || !a.href) return;
+
+        var target = a.target || "_self";
+        if (target === "_blank") {
+            window.open(a.href, target, "noopener,noreferrer");
+        } else {
+            window.open(a.href, target);
         }
-      }
     });
-  });
 });
 
 function runWhenNavSitesReady(callback) {
