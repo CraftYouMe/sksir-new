@@ -39,6 +39,10 @@ Use `apply_patch` for manual edits.
 - `data/app-version.json`: visible app version used by update check.
 - `sw.js`: service worker static cache.
 - `api/check.js`: serverless link status check endpoint.
+- `vercel.json`: Vercel cache headers and baseline security headers.
+- `scripts/check.js`: single local check command for day-to-day maintenance and pre-release checks.
+- `scripts/preflight.js`: compatibility wrapper for the old pre-release check command.
+- `scripts/validate-sites.js`: internal validator for `data/sites.js` structure and common maintenance mistakes.
 - `scripts/update-version.js`: updates `data/app-version.json` and `sw.js` cache version together.
 
 ## Versioning
@@ -59,6 +63,7 @@ This updates:
 ## Current Implementation Notes
 
 - Bookmarks are rendered from `window.NAV_SITES` in `data/sites.js`.
+- Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation and syntax checks.
 - Remote icons are initially rendered with a local fallback and loaded later for visible panels.
 - Wallpaper selection is stored in a cookie named `bg_img`.
 - Search engine preferences are stored in cookies.
@@ -72,6 +77,8 @@ This updates:
 - Keep the hidden `.footer-separator` immediately before `#update-check`; `showUpdateButton` reveals that previous sibling when an update is available.
 - Category tabs use an injected `.category-anim-bg` indicator. `js/main.js` computes its position from the active item's `offsetLeft` and also writes `--category-indicator-x`; mobile CSS moves the indicator with `transform` to avoid creating extra horizontal scroll width.
 - Update detection fetches `data/app-version.json`, compares it numerically with the footer runtime version, and shows a footer refresh button only when the fetched version is newer. Do not reintroduce `localStorage` as the current-version source.
+- `/api/check` is CommonJS so local `node --check api/check.js` works. It loads allowed hosts from `data/sites.js`, rejects non-navigation hosts, blocks local/private/metadata targets, checks DNS-resolved addresses, does not follow redirects, and uses an 8 second timeout.
+- `vercel.json` sets no-store/no-cache headers for `data/app-version.json`, `sw.js`, and `/api/check`, plus baseline security headers. It intentionally does not set a strict CSP yet.
 
 ## Important Cautions
 
@@ -83,20 +90,20 @@ This updates:
 - Do not classify iOS devices as low performance from `navigator.hardwareConcurrency` alone; Safari may report privacy-limited or non-representative hardware values.
 - Do not re-enable mobile `.category-row::before` hover shine or scrollbar styling without testing on touch devices; it can create phantom horizontal blank space and break the active indicator position.
 - Service worker caching can make phone testing appear unchanged. Confirm the deployed version and cache state before assuming a CSS fix failed.
-- `api/check.js` currently fetches arbitrary URLs from query input. Treat security hardening as a recommended future task.
+- `/api/check` is not a full rate-limited service. If abuse appears in Vercel logs, add external rate limiting or disable the public status endpoint.
 - `js/main.js` contains a front-end password for a hidden section. This is only UI hiding, not real security.
 
 ## Recommended Backlog
 
 High confidence:
 - Add a small release checklist around `scripts/update-version.js`.
-- Validate `data/sites.js` structure to catch missing category/icon/url fields before deploy.
+- Run `scripts/check.js` as part of the normal pre-release check.
 - Improve iOS Safari background fallback without changing wallpaper crop.
 - Add a setting to hide visitor badge or load it later.
 - Clean more old/dead settings code after confirming behavior.
 
 Needs user confirmation:
 - Auto-refresh service worker cache when a new version is detected.
-- Security hardening for `/api/check` with URL allow/deny rules.
+- External rate limiting for `/api/check` if public traffic becomes noisy.
 - Moving search engine and wallpaper config out of `js/set.js`.
 - Reworking iOS Safari fullscreen behavior or wallpaper positioning.

@@ -17,8 +17,9 @@
 - 远程图标延迟加载，失败时回退到本地图标
 - 手动检测当前分类下网站存活状态
 - Service Worker 静态缓存和版本更新提示
+- 性能模式：自动/完整/轻量，低配设备可减少动效
 - 移动端适配，包含 iOS Safari 首屏高度与字体稳定处理
-- 欢迎提示、访问统计、版权信息
+- 欢迎提示、访问统计、每日一言页脚
 - 简单的前端密码隐藏分组
 
 ## 目录说明
@@ -33,8 +34,12 @@
 ├── js/set.js                 # 搜索、壁纸、设置面板逻辑
 ├── js/nav-render.js          # 根据 data/sites.js 渲染导航
 ├── js/status-dot.js          # 网站状态检测交互
+├── scripts/check.js          # 本地统一检查入口
+├── scripts/preflight.js      # 兼容旧检查入口
+├── scripts/validate-sites.js # 内部收藏数据校验
 ├── scripts/update-version.js # 统一更新版本号和 SW 缓存号
 ├── sw.js                     # Service Worker 缓存
+├── vercel.json               # Vercel 缓存和基础安全响应头
 ├── index.html                # 页面入口
 └── AI_PROJECT_BRIEF.md       # 给 AI 接手用的项目简介
 ```
@@ -66,6 +71,16 @@
 "skipCheck": "true"
 ```
 
+### 统一检查
+
+改完收藏、样式或脚本后，只需要运行这一条：
+
+```powershell
+node scripts\check.js
+```
+
+它会校验收藏数据，并对主要前端脚本、Service Worker、Vercel API 和维护脚本做语法检查。
+
 ### 更新版本
 
 不要手动只改 `data/app-version.json` 或只改 `sw.js`。
@@ -88,7 +103,9 @@ node scripts\update-version.js 2026.06.16.1
 - iOS Safari 的背景和首屏高度比较敏感，修改前要确认不会改变壁纸裁切效果。
 - PC 端样式尽量不要被移动端修复影响，移动修复优先写在 `css/mobile.css` 或 `html.ios-safari` 作用域下。
 - Service Worker 会缓存静态资源，手机端测试时如果“看起来没变”，先确认缓存版本是否已更新。
-- `api/check.js` 会请求传入 URL，后续如果公开使用，建议增加 URL 白名单/内网地址拦截/限流。
+- 页脚里隐藏的 `#app-version` 会被更新检测读取，不要随手删掉。
+- `api/check.js` 只允许检测 `data/sites.js` 里出现过的域名，并会拦截内网、本地和 metadata 地址。
+- `vercel.json` 控制 `data/app-version.json`、`sw.js`、`/api/check` 的缓存策略和基础安全响应头。
 - 前端隐藏分组密码只是 UI 隐藏，不是真正安全隔离。
 
 ## 给 AI 接手
@@ -103,10 +120,10 @@ AI_PROJECT_BRIEF.md
 
 ## 后续计划
 
-- 给 `data/sites.js` 增加结构校验，避免漏填 URL、分类或图标
+- 按需给 `/api/check` 增加真正的外部限流
 - 将搜索引擎和壁纸配置从 `js/set.js` 进一步拆出
 - 增加访客统计开关或延迟加载策略
-- 强化 `/api/check` 的安全限制
+- 增加更完整的线上发布 checklist
 - 继续清理历史遗留代码
 
 ## 使用到的组件
