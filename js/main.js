@@ -45,10 +45,28 @@ var now = new Date(), hour = now.getHours()
 
 function markFirstScreenVisible() {
     runAfterFirstPaint(function () {
+        var elapsed = window.performance && typeof window.performance.now === "function"
+            ? window.performance.now()
+            : 0;
         if (window.performance && typeof window.performance.now === "function") {
-            window.__sksirFirstScreenMs = Math.round(window.performance.now());
+            window.__sksirFirstScreenMs = Math.round(elapsed);
         }
+        scheduleFirstScreenReveal(elapsed);
     }, 0);
+}
+
+function scheduleFirstScreenReveal(elapsed) {
+    var root = document.documentElement;
+    var minVisibleMs = root.classList.contains("perf-lite") ? 180 : 420;
+    var remaining = Math.max(0, minVisibleMs - (elapsed || 0));
+
+    setTimeout(function () {
+        root.classList.add("is-first-screen-ready");
+        setTimeout(function () {
+            root.classList.remove("is-booting");
+            root.classList.remove("is-first-screen-ready");
+        }, root.classList.contains("perf-lite") ? 220 : 520);
+    }, remaining);
 }
 
 function runAfterFirstPaint(callback, delay) {

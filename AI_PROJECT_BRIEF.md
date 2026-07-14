@@ -69,7 +69,7 @@ This updates:
 - First-screen target is 0.5 seconds for visible page structure on both PC and mobile. This means time/search/layout visible; remote wallpaper, remote icons, visitor badge, update check, and status checks must not block that window.
 - `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
 - Visitor badge, welcome toast, update check, service worker registration, and MiSans loading are intentionally delayed beyond the critical first-screen window.
-- First-screen entrance motion lives in `css/style.css` and must stay ultra-light: opacity/transform only, around 220-280 ms, and disabled by `html.perf-lite` or `prefers-reduced-motion`.
+- First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay/spinner, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. It must hide page assembly without waiting for wallpaper, icons, visitor badge, update check, or status checks.
 - Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` delays remote wallpaper loading until after first paint so the page structure appears first.
 - Search engine preferences are stored in cookies.
 - Performance mode is stored in `localStorage` under `sksir-performance-mode`: `auto`, `full`, or `lite`.

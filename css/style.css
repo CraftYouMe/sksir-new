@@ -140,38 +140,57 @@ img.error {
     /* transform: translateY(-150%); */
 }
 
-@keyframes firstScreenSoftIn {
-    from {
-        opacity: 0.72;
-        transform: translate3d(0, 5px, 0);
-    }
-
+@keyframes bootLoaderSpin {
     to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(-50%, -50%, 0) rotate(360deg);
     }
 }
 
-@keyframes firstScreenSoftFade {
-    from {
-        opacity: 0.78;
-    }
-
-    to {
-        opacity: 1;
-    }
+html.is-booting::before,
+html.is-booting::after {
+    content: "";
+    position: fixed;
+    pointer-events: none;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 360ms ease, visibility 0s linear 360ms;
 }
 
-.tool-all {
-    animation: firstScreenSoftFade 220ms ease-out both;
+html.is-booting::before {
+    z-index: 999998;
+    inset: 0;
+    background:
+        radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.08), transparent 24%),
+        var(--body-background-color);
 }
 
-.sou {
-    animation: firstScreenSoftIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+html.is-booting::after {
+    z-index: 999999;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.22);
+    border-top-color: rgba(255, 255, 255, 0.92);
+    transform: translate3d(-50%, -50%, 0);
+    animation: bootLoaderSpin 820ms linear infinite;
 }
 
-.foot {
-    animation: firstScreenSoftIn 280ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both;
+html.is-booting.is-first-screen-ready::before,
+html.is-booting.is-first-screen-ready::after {
+    opacity: 0;
+    visibility: hidden;
+}
+
+html.perf-lite.is-booting::before,
+html.perf-lite.is-booting::after {
+    transition-duration: 180ms;
+}
+
+html.perf-lite.is-booting::after {
+    animation: none;
 }
 
 /* .box .sou {
