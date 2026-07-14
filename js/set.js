@@ -185,8 +185,13 @@ function setDefaultSearchEngine(rawValue) {
 }
 
 var keywordRequestSeq = 0;
+var keywordReminderTimer = null;
 
 function hideKeywordPanel() {
+    if (keywordReminderTimer) {
+        clearTimeout(keywordReminderTimer);
+        keywordReminderTimer = null;
+    }
     keywordRequestSeq++;
     $("#keywords").empty().removeAttr("data-length").hide();
 }
@@ -197,6 +202,16 @@ function canShowKeywordPanel(keyword, requestSeq) {
         $(".search-engine").is(":hidden") &&
         $(".wd").val() === keyword &&
         keyword !== "";
+}
+
+function scheduleKeywordReminder(delay) {
+    if (keywordReminderTimer) {
+        clearTimeout(keywordReminderTimer);
+    }
+    keywordReminderTimer = setTimeout(function () {
+        keywordReminderTimer = null;
+        keywordReminder();
+    }, delay || 120);
 }
 
 document.addEventListener("click", function (event) {
@@ -768,7 +783,7 @@ $(document).ready(function () {
 
     $(document).on('click', '.wd', function () {
         focusWd();
-        keywordReminder();
+        scheduleKeywordReminder(80);
         $(".search-engine").slideUp(160);
     });
 
@@ -804,7 +819,7 @@ $(document).ready(function () {
         // 屏蔽上下键
         var shieldKey = [38, 40];
         if (shieldKey.includes(key)) return;
-        keywordReminder();
+        scheduleKeywordReminder(140);
     });
 
     // 点击自动提示的搜索建议

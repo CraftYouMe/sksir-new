@@ -77,6 +77,7 @@ This updates:
 - First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay and ring loader, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. The content/footer do a small opacity/translate reveal during the fade. It hides page assembly and waits briefly for wallpaper readiness, but must not wait for icons, visitor badge, update check, or status checks.
 - Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` starts wallpaper loading right after first paint, updates `window.__sksirWallpaperState`, and dispatches `sksir-wallpaper-ready` on `load`, `error`, or empty source so the boot mask does not fade before the wallpaper is ready unless the wait times out.
 - Search engine preferences are stored in cookies.
+- Search suggestions use Baidu JSONP from `js/set.js`; calls are short-debounced with `scheduleKeywordReminder()` so rapid typing does not fire a request on every keyup.
 - Performance mode is stored in `localStorage` under `sksir-performance-mode`: `auto`, `full`, or `lite`.
 - The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
 - The settings panel has a `性能模式` tab. `js/set.js` initializes and updates it without requiring a page refresh.
