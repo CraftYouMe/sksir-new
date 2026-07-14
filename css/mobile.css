@@ -3,7 +3,6 @@
 /* iOS Safari 使用真实可视高度，避免地址栏变化导致首屏背景露底。 */
 html.ios-safari,
 html.ios-safari body {
-    --ios-bg-top: env(safe-area-inset-top, 0px);
     --ios-bg-bottom: env(safe-area-inset-bottom, 0px);
     --ios-bg-extra: 72px;
     height: var(--app-height, 100vh);
@@ -19,21 +18,26 @@ html.ios-safari #content {
 
 html.ios-safari .bg-all {
     position: fixed;
-    top: calc(-1 * var(--ios-bg-top));
+    top: 0;
     right: 0;
     bottom: auto;
     left: 0;
     width: 100%;
-    height: calc(var(--app-height, 100vh) + var(--ios-bg-top) + var(--ios-bg-bottom) + var(--ios-bg-extra));
-    min-height: calc(var(--app-height, 100vh) + var(--ios-bg-top) + var(--ios-bg-bottom) + var(--ios-bg-extra));
+    height: calc(var(--ios-bg-height, var(--app-height, 100vh)) + var(--ios-bg-bottom) + var(--ios-bg-extra));
+    min-height: calc(var(--ios-bg-height, var(--app-height, 100vh)) + var(--ios-bg-bottom) + var(--ios-bg-extra));
     overflow: hidden;
+    background-image: var(--ios-wallpaper-image, none);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
     transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 @supports (height: 100lvh) {
     html.ios-safari .bg-all {
-        height: calc(100lvh + var(--ios-bg-top) + var(--ios-bg-bottom));
-        min-height: calc(100lvh + var(--ios-bg-top) + var(--ios-bg-bottom));
+        height: calc(max(var(--ios-bg-height, var(--app-height, 100vh)), 100lvh) + var(--ios-bg-bottom) + 24px);
+        min-height: calc(max(var(--ios-bg-height, var(--app-height, 100vh)), 100lvh) + var(--ios-bg-bottom) + 24px);
     }
 }
 

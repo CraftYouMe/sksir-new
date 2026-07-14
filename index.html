@@ -98,6 +98,7 @@
             var iosKeyboardTimer = 0;
             var iosKeyboardLocked = false;
             var iosLastAppHeight = 0;
+            var iosLastBgHeight = 0;
             var iosKeyboardReleaseTries = 0;
 
             function isFormControl(element) {
@@ -107,6 +108,19 @@
             function getIosViewportHeight() {
                 var viewport = window.visualViewport;
                 return viewport && viewport.height ? viewport.height : window.innerHeight;
+            }
+
+            function getIosBgHeight(appHeight, allowShrink) {
+                var doc = document.documentElement;
+                var layoutHeight = Math.max(window.innerHeight || 0, doc.clientHeight || 0);
+                var nextHeight = Math.ceil(Math.max(appHeight || 0, layoutHeight || 0));
+
+                if (!nextHeight) return iosLastBgHeight || appHeight || 0;
+                if (!allowShrink && iosLastBgHeight) {
+                    nextHeight = Math.max(nextHeight, iosLastBgHeight);
+                }
+                iosLastBgHeight = nextHeight;
+                return nextHeight;
             }
 
             function setIosAppHeight(allowShrink) {
@@ -120,6 +134,7 @@
                 }
                 iosLastAppHeight = height;
                 document.documentElement.style.setProperty("--app-height", height + "px");
+                document.documentElement.style.setProperty("--ios-bg-height", getIosBgHeight(height, allowShrink) + "px");
                 return true;
             }
 
@@ -159,6 +174,7 @@
                 window.addEventListener("orientationchange", function () {
                     iosKeyboardLocked = false;
                     iosLastAppHeight = 0;
+                    iosLastBgHeight = 0;
                     scheduleIosAppHeight(360, true);
                 }, { passive: true });
                 document.addEventListener("focusin", function (event) {
@@ -524,7 +540,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.14.7">v2026.07.14.7</span>
+                <span id="app-version" class="app-version" data-version="2026.07.14.8">v2026.07.14.8</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>

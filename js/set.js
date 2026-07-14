@@ -299,6 +299,18 @@ function setBootWallpaperState(status, src) {
     }));
 }
 
+function setIosWallpaperFallback(src) {
+    var root = document.documentElement;
+    if (!root || !root.classList.contains("ios-safari")) return;
+
+    if (!src) {
+        root.style.removeProperty("--ios-wallpaper-image");
+        return;
+    }
+
+    root.style.setProperty("--ios-wallpaper-image", "url(" + JSON.stringify(src) + ")");
+}
+
 function applyBgImg(src) {
     var $bg = $('#bg');
     var targetSrc = src;
@@ -306,10 +318,12 @@ function applyBgImg(src) {
 
     if (!targetSrc) {
         $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
+        setIosWallpaperFallback("");
         setBootWallpaperState("empty", "");
         return;
     }
     if (currentSrc === targetSrc && $bg.hasClass('is-loaded')) {
+        setIosWallpaperFallback(targetSrc);
         setBootWallpaperState("loaded", targetSrc);
         return;
     }
@@ -321,12 +335,14 @@ function applyBgImg(src) {
     img.onload = function () {
         $bg.attr('src', targetSrc);
         requestAnimationFrame(function () {
+            setIosWallpaperFallback(targetSrc);
             $bg.addClass('is-loaded');
             setBootWallpaperState("loaded", targetSrc);
         });
     };
     img.onerror = function () {
         $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
+        setIosWallpaperFallback("");
         setBootWallpaperState("error", targetSrc);
     };
     img.src = targetSrc;

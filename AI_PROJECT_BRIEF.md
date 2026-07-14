@@ -8,6 +8,8 @@ This is a personal daily navigation/start-page site for bookmarks, search, quick
 
 The user cares most about:
 - Fast and stable first-screen loading.
+- Lightweight but polished animation and transitions.
+- Good daily-use UX on mobile and desktop.
 - Reliable mobile Safari behavior, especially iPhone 15 Pro Max.
 - Minimal disruption to PC layout when fixing mobile issues.
 - Easy day-to-day maintenance of bookmarks and categories.
@@ -78,7 +80,8 @@ This updates:
 - The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
 - The settings panel has a `性能模式` tab. `js/set.js` initializes and updates it without requiring a page refresh.
 - MiSans is loaded after idle on non-iOS Safari only. iOS Safari skips it to avoid first-screen font changes.
-- iOS Safari gets `html.ios-safari` and `--app-height` early in `index.html`. `css/mobile.css` extends `.bg-all` beyond the visible viewport and makes `#bg` / `.cover` absolute inside it, so the wallpaper covers safe areas and Safari toolbar height changes without changing PC behavior.
+- iOS Safari gets `html.ios-safari`, `--app-height`, and `--ios-bg-height` early in `index.html`. `css/mobile.css` sizes `.bg-all` from the largest known viewport height, uses `100lvh` when available, and makes `#bg` / `.cover` absolute inside it.
+- `js/set.js` mirrors the loaded wallpaper URL into `--ios-wallpaper-image`; only `html.ios-safari .bg-all` uses that CSS background as a same-image fallback if the image layer fails to cover Safari toolbar/safe-area changes.
 - While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.
 - The footer is a compact daily-quote band. `js/main.js` sets `#daily-quote` from a local quote list using the current date, so it is stable within a day and does not add a network request.
 - Keep the footer `#app-version` span even if it is visually subdued because update detection reads it as the runtime version.
@@ -104,14 +107,14 @@ This updates:
 ## Recommended Backlog
 
 High confidence:
-- Add a small release checklist around `scripts/update-version.js`.
+- Keep first-screen startup fast; cached visits should stay under 500ms.
+- Improve iOS Safari wallpaper coverage without changing PC behavior or desktop wallpaper crop.
+- Polish lightweight boot, category, card, and settings transitions.
+- Keep mobile search, keyboard close, and category indicator behavior stable.
 - Run `scripts/check.js` as part of the normal pre-release check.
-- Improve iOS Safari background fallback without changing wallpaper crop.
-- Add a setting to hide visitor badge.
-- Clean more old/dead settings code after confirming behavior.
 
 Needs user confirmation:
 - Auto-refresh service worker cache when a new version is detected.
-- External rate limiting for `/api/check` if public traffic becomes noisy.
 - Moving search engine and wallpaper config out of `js/set.js`.
 - Reworking iOS Safari fullscreen behavior or wallpaper positioning.
+- Adding heavier security work such as strict CSP, external rate limiting, or authentication; this is a static navigation page, so do it only if a real problem appears.
