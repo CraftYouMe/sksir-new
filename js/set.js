@@ -653,6 +653,27 @@ function syncPerformanceVisualState() {
     }
 }
 
+function closeActiveSurface() {
+    var hasSearch = $("body").hasClass("onsearch");
+    var hasPanel = $("#content").hasClass("box") || $("#content").hasClass("setting-open");
+    var hasFloatingSearch = $(".search-engine").is(":visible") || $("#keywords").is(":visible");
+
+    if (!hasSearch && !hasPanel && !hasFloatingSearch) return false;
+
+    blurWd();
+    if ($("#content").hasClass("setting-open")) {
+        closeSet();
+    } else if (hasPanel) {
+        closeBox();
+    }
+    $(".wd").trigger("blur");
+    $('#s-button').hide();
+    $('.se').hide();
+    $('#menu').hide();
+    $('.power').show();
+    return true;
+}
+
 //显示设置搜索引擎列表
 function showSe() {
     $(".se_list").show();
@@ -755,14 +776,16 @@ $(document).ready(function () {
 
     // 点击其他区域关闭事件
     $(document).on('click', '.close_sou', function () {
-        blurWd();
-        closeSet();
-        // 隐藏搜索按钮
-        $('#s-button').hide();
-        // 隐藏引擎按钮
-        $('.se').hide();
-        $('#menu').hide();
-        $('.power').show();
+        closeActiveSurface();
+    });
+
+    $(document).on('keydown', function (event) {
+        var key = event.key || event.keyCode;
+        if (key !== "Escape" && key !== "Esc" && key !== 27) return;
+        if (closeActiveSurface()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
     });
 
     // 点击搜索引擎时隐藏自动提示
