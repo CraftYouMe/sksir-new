@@ -18,6 +18,7 @@
 - 手动检测当前分类下网站存活状态
 - Service Worker 静态缓存和版本更新提示
 - 性能模式：自动/完整/轻量，低配设备可减少动效
+- 首屏非关键任务延后，目标 PC/手机 0.5 秒内主体内容可见
 - 移动端适配，包含 iOS Safari 首屏高度与字体稳定处理
 - 欢迎提示、访问统计、每日一言页脚
 - 简单的前端密码隐藏分组
@@ -41,6 +42,7 @@
 ├── sw.js                     # Service Worker 缓存
 ├── vercel.json               # Vercel 缓存和基础安全响应头
 ├── index.html                # 页面入口
+├── OPTIMIZATION_PLAN.md      # 优化计划清单
 └── AI_PROJECT_BRIEF.md       # 给 AI 接手用的项目简介
 ```
 
@@ -102,6 +104,8 @@ node scripts\update-version.js 2026.06.16.1
 - 文件中有中文注释和中文 UI 文案，读写请使用 UTF-8。
 - iOS Safari 的背景和首屏高度比较敏感，修改前要确认不会改变壁纸裁切效果。
 - PC 端样式尽量不要被移动端修复影响，移动修复优先写在 `css/mobile.css` 或 `html.ios-safari` 作用域下。
+- 首屏目标是 0.5 秒内看到主体结构和当前首屏内容；远程壁纸、远程图标、访客统计、状态检测和更新检查都不应阻塞这个窗口。
+- 页面会在首屏绘制后写入 `window.__sksirFirstScreenMs`，用于本地调试首屏耗时。
 - Service Worker 会缓存静态资源，手机端测试时如果“看起来没变”，先确认缓存版本是否已更新。
 - 页脚里隐藏的 `#app-version` 会被更新检测读取，不要随手删掉。
 - `api/check.js` 只允许检测 `data/sites.js` 里出现过的域名，并会拦截内网、本地和 metadata 地址。
@@ -114,15 +118,16 @@ node scripts\update-version.js 2026.06.16.1
 
 ```text
 AI_PROJECT_BRIEF.md
+OPTIMIZATION_PLAN.md
 ```
 
-里面记录了项目目标、关键文件、编码要求、版本更新方式、iOS Safari 注意事项和后续优化计划。
+里面记录了项目目标、关键文件、编码要求、版本更新方式、首屏策略、iOS Safari 注意事项和当前优化进度。
 
 ## 后续计划
 
 - 按需给 `/api/check` 增加真正的外部限流
 - 将搜索引擎和壁纸配置从 `js/set.js` 进一步拆出
-- 增加访客统计开关或延迟加载策略
+- 增加访客统计开关
 - 增加更完整的线上发布 checklist
 - 继续清理历史遗留代码
 

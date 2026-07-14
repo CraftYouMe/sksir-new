@@ -330,6 +330,15 @@ function setBgImgInit() {
     applyBgImg(resolveBgImgSrc(bg_img));
 }
 
+function scheduleBgImgInit() {
+    var delay = document.documentElement.classList.contains("perf-lite") ? 650 : 180;
+    if (typeof runAfterFirstPaint === "function") {
+        runAfterFirstPaint(setBgImgInit, delay);
+    } else {
+        setTimeout(setBgImgInit, delay);
+    }
+}
+
 function getPerformanceMode() {
     try {
         return normalizePerformanceMode(localStorage.getItem("sksir-performance-mode"));
@@ -629,8 +638,8 @@ $(document).ready(function () {
     // 搜索引擎列表加载
     seList();
 
-    // 壁纸数据加载
-    setBgImgInit();
+    // 壁纸远程图不参与 0.5 秒首屏目标，首屏结构出现后再加载。
+    scheduleBgImgInit();
 
     // 性能模式加载
     setPerformanceInit();

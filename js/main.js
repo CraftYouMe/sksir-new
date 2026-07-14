@@ -32,9 +32,7 @@ $(document).ready(function () {
 //加载完成后执行
 $(function () {
     //载入动画
-    $('#bg').css("cssText", "transform: scale(1);filter: blur(0px);transition: ease 1.5s;");
-    $('#section').css("cssText", "opacity: 1;transition: ease 1.5s;");
-    $('.cover').css("cssText", "opacity: 1;transition: ease 1.5s;");
+    markFirstScreenVisible();
 
     scheduleVisitorBadge();
     scheduleWelcomeToast();
@@ -44,6 +42,14 @@ $(function () {
     setDailyQuote();
 });
 var now = new Date(), hour = now.getHours()
+
+function markFirstScreenVisible() {
+    runAfterFirstPaint(function () {
+        if (window.performance && typeof window.performance.now === "function") {
+            window.__sksirFirstScreenMs = Math.round(window.performance.now());
+        }
+    }, 0);
+}
 
 function runAfterFirstPaint(callback, delay) {
     var run = function () {
@@ -96,7 +102,7 @@ function scheduleWelcomeToast() {
             title: getHello(),
             message: '欢迎来到 导航酱'
         });
-    }, 450);
+    }, 950);
 }
 
 function setDailyQuote() {
@@ -177,7 +183,7 @@ function scheduleMiSansFont() {
 }
 
 function scheduleVisitorBadge() {
-    runAfterFirstPaint(function () {
+    runAfterLoadIdle(function () {
         if (document.getElementById("visitor-badge")) return;
 
         var link = document.createElement("a");
@@ -190,12 +196,13 @@ function scheduleVisitorBadge() {
         var img = document.createElement("img");
         img.src = "https://visitor-badge.laobi.icu/badge?page_id=sksir-new";
         img.alt = "visitor badge";
-        img.loading = "eager";
+        img.loading = "lazy";
         img.decoding = "async";
+        img.setAttribute("fetchpriority", "low");
 
         link.appendChild(img);
         document.body.appendChild(link);
-    }, 250);
+    }, 3600);
 }
 
 function scheduleStaticCache() {
@@ -222,7 +229,7 @@ function scheduleUpdateCheck() {
         fetch(versionUrl, {
             cache: "no-store",
             credentials: "same-origin",
-            priority: "high",
+            priority: "low",
             headers: {
                 "Accept": "application/json"
             }
@@ -242,7 +249,7 @@ function scheduleUpdateCheck() {
         }).catch(function (error) {
             console.warn("Update check failed", error);
         });
-    }, 0);
+    }, 650);
 }
 
 function getRunningAppVersion(versionElement) {

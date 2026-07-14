@@ -40,6 +40,7 @@ Use `apply_patch` for manual edits.
 - `sw.js`: service worker static cache.
 - `api/check.js`: serverless link status check endpoint.
 - `vercel.json`: Vercel cache headers and baseline security headers.
+- `OPTIMIZATION_PLAN.md`: simple checklist of completed, pending, and not recommended optimization work.
 - `scripts/check.js`: single local check command for day-to-day maintenance and pre-release checks.
 - `scripts/preflight.js`: compatibility wrapper for the old pre-release check command.
 - `scripts/validate-sites.js`: internal validator for `data/sites.js` structure and common maintenance mistakes.
@@ -65,7 +66,10 @@ This updates:
 - Bookmarks are rendered from `window.NAV_SITES` in `data/sites.js`.
 - Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation and syntax checks.
 - Remote icons are initially rendered with a local fallback and loaded later for visible panels.
-- Wallpaper selection is stored in a cookie named `bg_img`.
+- First-screen target is 0.5 seconds for visible page structure on both PC and mobile. This means time/search/layout visible; remote wallpaper, remote icons, visitor badge, update check, and status checks must not block that window.
+- `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
+- Visitor badge, welcome toast, update check, service worker registration, and MiSans loading are intentionally delayed beyond the critical first-screen window.
+- Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` delays remote wallpaper loading until after first paint so the page structure appears first.
 - Search engine preferences are stored in cookies.
 - Performance mode is stored in `localStorage` under `sksir-performance-mode`: `auto`, `full`, or `lite`.
 - The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
@@ -99,7 +103,7 @@ High confidence:
 - Add a small release checklist around `scripts/update-version.js`.
 - Run `scripts/check.js` as part of the normal pre-release check.
 - Improve iOS Safari background fallback without changing wallpaper crop.
-- Add a setting to hide visitor badge or load it later.
+- Add a setting to hide visitor badge.
 - Clean more old/dead settings code after confirming behavior.
 
 Needs user confirmation:
