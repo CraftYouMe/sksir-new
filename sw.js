@@ -1,9 +1,8 @@
-const CACHE_VERSION = "nav-cache-2026.07.15.6";
+const CACHE_VERSION = "nav-cache-2026.07.15.7";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
   "./css/style.css",
-  "./css/font.css",
   "./css/mobile.css",
   "./css/status-dot.css",
   "./js/jquery-3.6.0.min.js",
@@ -15,8 +14,6 @@ const PRECACHE_URLS = [
   "./js/nav-render.js",
   "./data/sites.js",
   "./font/iconfont.woff2",
-  "./font/iconfont.woff",
-  "./font/iconfont.ttf",
   "./img/icon/fangdiu.png",
   "./apple-touch-icon.png",
   "./favicon.ico"

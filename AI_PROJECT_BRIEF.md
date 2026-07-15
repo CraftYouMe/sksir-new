@@ -30,9 +30,8 @@ Use `apply_patch` for manual edits.
 ## Key Files
 
 - `index.html`: main page structure, early iOS Safari height/keyboard setup, script/style loading.
-- `css/style.css`: main desktop/base styles, boot animation, and shared `fade` / `fadenum` keyframes.
+- `css/style.css`: main desktop/base styles, boot animation, shared `fade` / `fadenum` keyframes, icon font mapping, and optional MiSans class.
 - `css/mobile.css`: mobile and iOS Safari overrides.
-- `css/font.css`: icon font and optional MiSans font class.
 - `js/main.js`: first-screen tasks, welcome toast, visitor badge, update check, category indicator, password-gated reward section.
 - `js/set.js`: search engine settings, wallpaper settings, search suggestions, search UI interactions.
 - `js/nav-render.js`: renders navigation cards from data.
@@ -83,7 +82,8 @@ This updates:
 - `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
 - Visitor badge, welcome toast, update check, service worker registration, and MiSans loading are intentionally delayed beyond the critical first-screen window.
 - First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay and ring loader, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. Page content stays fully composed beneath the overlay so the search box backdrop blur is ready before it becomes visible. Do not animate opacity or transform on the `.con` ancestor during boot; doing so can make the glass effect appear one frame late. The mask waits briefly for wallpaper readiness, but must not wait for icons, visitor badge, update check, or status checks.
-- Shared `fade` and `fadenum` keyframes live in `css/style.css`. The old standalone `css/animation.css`, unused `down` keyframes, and legacy prefixed duplicates were removed to save one render-blocking stylesheet request.
+- Shared `fade` / `fadenum` keyframes and icon font mapping live in `css/style.css`. The old standalone `css/animation.css` and `css/font.css`, unused `down` keyframes, and legacy prefixed duplicates were removed so they do not add separate render-blocking stylesheet requests.
+- The Service Worker precaches only `font/iconfont.woff2`. The `woff` and `ttf` sources remain in the `@font-face` fallback list and are cached on demand by the existing cache-first handler if an older browser requests them.
 - Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` starts wallpaper loading right after first paint, updates `window.__sksirWallpaperState`, and dispatches `sksir-wallpaper-ready` on `load`, `error`, or empty source so the boot mask does not fade before the wallpaper is ready unless the wait times out.
 - Search engine preferences are stored in cookies.
 - Search suggestions use Baidu JSONP from `js/set.js`; calls are short-debounced with `scheduleKeywordReminder()` so rapid typing does not fire a request on every keyup.
