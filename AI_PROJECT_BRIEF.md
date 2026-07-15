@@ -71,6 +71,8 @@ This updates:
 - Do not move `奖励` items into public tabs unless the user explicitly confirms it; it is only front-end hidden, but the current UX treats it as a private group.
 - Bookmark resources are not part of the blocking script/style list in `index.html`. `js/main.js` loads the core `data/sites.js` and `js/nav-render.js` after load/idle, or immediately through `window.ensureNavSitesLoaded()` when the bookmark panel is opened early.
 - `js/status-dot.js` and `css/status-dot.css` are separate progressive enhancements loaded through `ensureNavStatusResourcesLoaded()`. They must never gate bookmark tab rendering; cached stylesheet load events also have a timeout fallback for mobile Safari.
+- On viewports up to 768px, `scheduleNavSitesLoad()` prewarms the core bookmark resources shortly after first paint instead of waiting for window load/idle. Desktop keeps the idle-loading path.
+- Mobile bookmark opening uses a shorter reveal delay and waits one animation frame before adding `.is-visible`. Remote icons start after the panel reveal and load in batches through `loadDeferredNavIcons(root, options)` to avoid decode work during the opening animation.
 - Opening the settings panel must not trigger bookmark resource loading. `js/set.js` opens settings directly and waits for `ensureNavSitesLoaded()` only in `openBox()`.
 - `js/nav-render.js` renders the selected bookmark panel first and leaves hidden panels as lightweight shells. Hidden panels hydrate during idle time after page load, or immediately through `window.ensureNavPanelRendered(index)` before a user-selected tab is shown.
 - Bookmark card clicks are delegated from `.products` in `js/main.js`, so cards added by later hydration still open correctly.

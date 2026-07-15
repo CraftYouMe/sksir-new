@@ -567,15 +567,39 @@ function setSeInit() {
 
 // 打开设置
 var bookmarkOpenTimer = null;
+var bookmarkRevealFrame = null;
+var bookmarkIconTimer = null;
+var bookmarkOpenRequestId = 0;
+
+function cancelBookmarkOpenTasks() {
+    bookmarkOpenRequestId++;
+
+    if (bookmarkOpenTimer) {
+        clearTimeout(bookmarkOpenTimer);
+        bookmarkOpenTimer = null;
+    }
+    if (bookmarkRevealFrame) {
+        cancelAnimationFrame(bookmarkRevealFrame);
+        bookmarkRevealFrame = null;
+    }
+    if (bookmarkIconTimer) {
+        clearTimeout(bookmarkIconTimer);
+        bookmarkIconTimer = null;
+    }
+}
+
+function isMobileNavViewport() {
+    if (typeof window.isMobileNavPriorityViewport === "function") {
+        return window.isMobileNavPriorityViewport();
+    }
+    return !!(window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
+}
 
 function openSet() {
     $("#menu").addClass('on');
 
     $("#content").addClass('box setting-open').removeClass('bookmarks-open');
-    if (bookmarkOpenTimer) {
-        clearTimeout(bookmarkOpenTimer);
-        bookmarkOpenTimer = null;
-    }
+    cancelBookmarkOpenTasks();
     $(".mark").removeClass("is-visible");
 
     //隐藏书签打开设置
@@ -609,10 +633,10 @@ function closeSet() {
 
 // 书签显示
 function openBox() {
-    if (bookmarkOpenTimer) {
-        clearTimeout(bookmarkOpenTimer);
-        bookmarkOpenTimer = null;
-    }
+    cancelBookmarkOpenTasks();
+    var requestId = bookmarkOpenRequestId;
+    var mobileNav = isMobileNavViewport();
+    var liteMode = document.documentElement.classList.contains("perf-lite");
     $("#content").addClass('box bookmarks-open').removeClass('setting-open');
     $(".mark").removeClass("is-visible");
     $(".mark").css({
@@ -625,24 +649,46 @@ function openBox() {
         : Promise.resolve();
 
     prepareNav.then(function () {
+        if (requestId !== bookmarkOpenRequestId) return;
         if (!$("#content").hasClass("bookmarks-open") || $("#content").hasClass("setting-open")) {
             return;
         }
 
-        // 背景模糊在轻量性能模式下会被跳过，避免低配设备频繁重绘。
         bookmarkOpenTimer = setTimeout(function () {
+            bookmarkOpenTimer = null;
+            if (requestId !== bookmarkOpenRequestId) return;
+
             $(".mark").css({
                 "display": "flex",
             });
-            loadVisibleNavIcons();
             if (typeof refreshCategoryIndicators === "function") {
                 refreshCategoryIndicators();
             }
-            $(".mark").addClass("is-visible");
-            bookmarkOpenTimer = null;
-        }, document.documentElement.classList.contains("perf-lite") ? 0 : 220);
+
+            if (!mobileNav) {
+                loadVisibleNavIcons();
+                $(".mark").addClass("is-visible");
+                return;
+            }
+
+            bookmarkRevealFrame = requestAnimationFrame(function () {
+                bookmarkRevealFrame = null;
+                if (requestId !== bookmarkOpenRequestId) return;
+                if (!$("#content").hasClass("bookmarks-open")) return;
+
+                $(".mark").addClass("is-visible");
+                bookmarkIconTimer = setTimeout(function () {
+                    bookmarkIconTimer = null;
+                    if (requestId !== bookmarkOpenRequestId) return;
+                    if ($("#content").hasClass("bookmarks-open")) {
+                        loadVisibleNavIcons();
+                    }
+                }, liteMode ? 80 : 240);
+            });
+        }, liteMode ? 0 : (mobileNav ? 70 : 220));
     }).catch(function (error) {
         console.warn("Navigation panel failed to prepare", error);
+        if (requestId !== bookmarkOpenRequestId) return;
         if (!$("#content").hasClass("bookmarks-open")) return;
 
         closeBox();
@@ -658,15 +704,15 @@ function openBox() {
 function loadVisibleNavIcons() {
     if (typeof window.loadDeferredNavIcons !== "function") return;
     var selectedPanel = document.querySelector(".products .mainCont.selected");
-    window.loadDeferredNavIcons(selectedPanel || document);
+    var options = isMobileNavViewport()
+        ? { batchSize: 4, batchDelay: 45 }
+        : null;
+    window.loadDeferredNavIcons(selectedPanel || document, options);
 }
 
 // 书签关闭
 function closeBox() {
-    if (bookmarkOpenTimer) {
-        clearTimeout(bookmarkOpenTimer);
-        bookmarkOpenTimer = null;
-    }
+    cancelBookmarkOpenTasks();
     $("#content").removeClass('box bookmarks-open setting-open');
     $(".mark").removeClass("is-visible");
     $(".mark").css({

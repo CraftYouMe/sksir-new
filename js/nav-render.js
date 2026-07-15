@@ -97,19 +97,37 @@
     return img;
   }
 
-  function loadDeferredNavIcons(root) {
+  function loadDeferredNavIcons(root, options) {
     var scope = root && root.querySelectorAll ? root : document;
-    var icons = scope.querySelectorAll("img[data-icon-src]");
+    var icons = Array.prototype.filter.call(
+      scope.querySelectorAll("img[data-icon-src]"),
+      function (img) {
+        if (img.dataset.iconLoadScheduled === "1") return false;
+        img.dataset.iconLoadScheduled = "1";
+        return true;
+      }
+    );
+    var batchSize = options && options.batchSize ? options.batchSize : icons.length;
+    var batchDelay = options && options.batchDelay ? options.batchDelay : 0;
 
-    Array.prototype.forEach.call(icons, function (img) {
-      var src = img.dataset.iconSrc;
-      if (!src) return;
+    function loadBatch() {
+      icons.splice(0, batchSize).forEach(function (img) {
+        var src = img.dataset.iconSrc;
+        delete img.dataset.iconLoadScheduled;
+        if (!src) return;
 
-      img.dataset.fallbackApplied = "";
-      img.classList.remove("error", "iconcss-pending");
-      delete img.dataset.iconSrc;
-      img.src = src;
-    });
+        img.dataset.fallbackApplied = "";
+        img.classList.remove("error", "iconcss-pending");
+        delete img.dataset.iconSrc;
+        img.src = src;
+      });
+
+      if (icons.length) {
+        setTimeout(loadBatch, batchDelay);
+      }
+    }
+
+    loadBatch();
   }
 
   function createCard(item) {

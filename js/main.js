@@ -278,6 +278,15 @@ function ensureNavSitesLoaded() {
 }
 
 function scheduleNavSitesLoad() {
+    if (isMobileNavPriorityViewport()) {
+        runAfterFirstPaint(function () {
+            ensureNavSitesLoaded().catch(function (error) {
+                console.warn("Navigation resources failed to load", error);
+            });
+        }, 120);
+        return;
+    }
+
     runAfterLoadIdle(function () {
         ensureNavSitesLoaded().catch(function (error) {
             console.warn("Navigation resources failed to load", error);
@@ -285,7 +294,12 @@ function scheduleNavSitesLoad() {
     }, 1600);
 }
 
+function isMobileNavPriorityViewport() {
+    return !!(window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
+}
+
 window.ensureNavSitesLoaded = ensureNavSitesLoaded;
+window.isMobileNavPriorityViewport = isMobileNavPriorityViewport;
 
 function scheduleWelcomeToast() {
     runAfterFirstPaint(function () {
