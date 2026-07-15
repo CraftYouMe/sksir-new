@@ -347,13 +347,35 @@ function applyBgImg(src) {
     setBootWallpaperState("loading", targetSrc);
 
     var img = new Image();
+    img.decoding = "async";
+    img.loading = "eager";
+    img.setAttribute("fetchpriority", "high");
     img.onload = function () {
-        $bg.attr('src', targetSrc);
-        requestAnimationFrame(function () {
-            setIosWallpaperFallback(targetSrc);
-            $bg.addClass('is-loaded');
-            setBootWallpaperState("loaded", targetSrc);
-        });
+        var wallpaperRevealed = false;
+        var decodeFallbackTimer = 0;
+        var revealWallpaper = function () {
+            if (wallpaperRevealed) return;
+            wallpaperRevealed = true;
+            if (decodeFallbackTimer) clearTimeout(decodeFallbackTimer);
+
+            $bg.attr('src', targetSrc);
+            requestAnimationFrame(function () {
+                setIosWallpaperFallback(targetSrc);
+                $bg.addClass('is-loaded');
+                setBootWallpaperState("loaded", targetSrc);
+            });
+        };
+
+        if (typeof img.decode === "function") {
+            decodeFallbackTimer = setTimeout(revealWallpaper, 180);
+            try {
+                img.decode().then(revealWallpaper, revealWallpaper);
+            } catch (e) {
+                revealWallpaper();
+            }
+        } else {
+            revealWallpaper();
+        }
     };
     img.onerror = function () {
         $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
@@ -381,13 +403,15 @@ function setBgImgInit() {
     applyBgImg(resolveBgImgSrc(bg_img));
 }
 
-function scheduleBgImgInit() {
-    if (typeof runAfterFirstPaint === "function") {
-        runAfterFirstPaint(setBgImgInit, 0);
-    } else {
-        setTimeout(setBgImgInit, 0);
-    }
+var bgImgInitStarted = false;
+
+function startBgImgInit() {
+    if (bgImgInitStarted) return;
+    bgImgInitStarted = true;
+    setBgImgInit();
 }
+
+startBgImgInit();
 
 function getPerformanceMode() {
     try {
@@ -787,9 +811,6 @@ $(document).ready(function () {
 
     // 搜索引擎列表加载
     seList();
-
-    // 壁纸远程图不参与 0.5 秒首屏目标，首屏结构出现后再加载。
-    scheduleBgImgInit();
 
     // 性能模式加载
     setPerformanceInit();
