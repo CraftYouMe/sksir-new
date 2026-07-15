@@ -32,7 +32,7 @@ Use `apply_patch` for manual edits.
 - `index.html`: main page structure, early iOS Safari height/keyboard setup, script/style loading.
 - `css/style.css`: main desktop/base styles, boot animation, shared `fade` / `fadenum` keyframes, icon font mapping, and optional MiSans class.
 - `css/mobile.css`: mobile and iOS Safari overrides.
-- `js/main.js`: first-screen tasks, welcome toast, visitor badge, update check, category indicator, password-gated reward section.
+- `js/main.js`: local toast fallback, first-screen tasks, welcome toast, visitor badge, update check, category indicator, password-gated reward section.
 - `js/set.js`: search engine settings, wallpaper settings, search suggestions, search UI interactions.
 - `js/nav-render.js`: renders navigation cards from data.
 - `js/status-dot.js`: manual link availability checks.
@@ -81,6 +81,7 @@ This updates:
 - First-screen target is 0.5 seconds for assembled page structure on both PC and mobile. Time/search/layout should be ready quickly; remote icons, visitor badge, update check, and status checks must not block that window.
 - `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
 - Visitor badge, welcome toast, update check, service worker registration, and MiSans loading are intentionally delayed beyond the critical first-screen window.
+- The local `iziToast`-compatible fallback now lives at the top of `js/main.js`. The old `js/toast-loader.js` was removed so it does not add another defer request. Keep the fallback bootstrap before any `iziToast` calls in `main.js` or `set.js`.
 - First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay and ring loader, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. Page content stays fully composed beneath the overlay so the search box backdrop blur is ready before it becomes visible. Do not animate opacity or transform on the `.con` ancestor during boot; doing so can make the glass effect appear one frame late. The mask waits briefly for wallpaper readiness, but must not wait for icons, visitor badge, update check, or status checks.
 - Shared `fade` / `fadenum` keyframes and icon font mapping live in `css/style.css`. The old standalone `css/animation.css` and `css/font.css`, unused `down` keyframes, and legacy prefixed duplicates were removed so they do not add separate render-blocking stylesheet requests.
 - The Service Worker precaches only `font/iconfont.woff2`. The `woff` and `ttf` sources remain in the `@font-face` fallback list and are cached on demand by the existing cache-first handler if an older browser requests them.
