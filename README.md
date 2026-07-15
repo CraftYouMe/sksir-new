@@ -27,6 +27,7 @@
 - 首屏壁纸提前高优先级预加载，完成下载和解码后再交给启动遮罩显现
 - 通用动画关键帧和图标字体映射已合并到主样式，减少独立的首屏阻塞样式请求
 - 本地提示框兜底并入主脚本，减少一个首屏 defer 脚本请求
+- Cookies 依赖并入设置脚本，首屏 defer 脚本请求进一步精简为 3 个
 - 移动端适配，包含 iOS Safari 首屏高度与字体稳定处理
 - 欢迎提示、访问统计、每日一言页脚
 - 简单的前端密码隐藏分组
@@ -40,7 +41,7 @@
 ├── data/sites.js             # 导航站点数据
 ├── data/app-version.json     # 当前版本号
 ├── js/main.js                # 首屏任务、更新检测、分类交互等
-├── js/set.js                 # 搜索、壁纸、设置面板逻辑
+├── js/set.js                 # Cookies、搜索、壁纸、设置面板逻辑
 ├── js/nav-render.js          # 根据 data/sites.js 渲染导航
 ├── js/status-dot.js          # 网站状态检测交互
 ├── scripts/check.js          # 本地统一检查入口
@@ -136,7 +137,9 @@ node scripts\update-version.js YYYY.MM.DD.N
 - 首屏启动遮罩用于遮住页面组装过程，当前由 CSS 光环和遮罩淡出完成过渡；主体会在遮罩下提前完成合成，避免搜索框毛玻璃从透明状态突然跳出。
 - 通用 `fade`、`fadenum` 关键帧和图标字体映射保存在 `css/style.css`；原独立 `css/animation.css`、`css/font.css` 已删除，不要重新拆回首屏阻塞样式。
 - Service Worker 只预缓存图标字体的 `woff2` 版本，`woff` 和 `ttf` 仍作为 CSS 兼容回退并在实际需要时按需缓存。
-- 本地 `iziToast` 风格提示框兜底位于 `js/main.js` 开头，原 `js/toast-loader.js` 已删除；HTML 当前只保留 jQuery、Cookies、主脚本和设置脚本四个 defer 请求。
+- 本地 `iziToast` 风格提示框兜底位于 `js/main.js` 开头，原 `js/toast-loader.js` 已删除。
+- JavaScript Cookie v2.2.1 已原样并入 `js/set.js` 顶部，原 `js/js.cookie.js` 已删除；必须保留其 MIT 许可，并确保 Cookies 初始化始终位于设置逻辑之前。
+- HTML 当前只保留 jQuery、主脚本和设置脚本 3 个 defer 请求。
 - 页面会在首屏绘制后写入 `window.__sksirFirstScreenMs`，用于本地调试首屏耗时。
 - Service Worker 会缓存静态资源，手机端测试时如果“看起来没变”，先确认缓存版本是否已更新。
 - 页脚里隐藏的 `#app-version` 会被更新检测读取，不要随手删掉。
