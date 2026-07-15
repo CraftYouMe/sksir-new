@@ -436,9 +436,9 @@ function setPerformanceInit() {
 // 搜索框高亮
 function focusWd() {
     $("body").addClass("onsearch");
-    requestAnimationFrame(updateKeywordPanel);
-    setTimeout(updateKeywordPanel, 180);
-    setTimeout(updateKeywordPanel, 320);
+    scheduleKeywordPanelUpdate();
+    setTimeout(scheduleKeywordPanelUpdate, 180);
+    setTimeout(scheduleKeywordPanelUpdate, 320);
 }
 
 // 搜索框取消高亮
@@ -505,6 +505,17 @@ function updateKeywordPanel() {
         width: panelWidth,
         left: Math.round(searchRect.left - wrapRect.left + inset),
         top: Math.round(searchRect.bottom - wrapRect.top - 1)
+    });
+}
+
+var keywordPanelUpdateFrame = 0;
+
+function scheduleKeywordPanelUpdate() {
+    if (keywordPanelUpdateFrame) return;
+
+    keywordPanelUpdateFrame = requestAnimationFrame(function () {
+        keywordPanelUpdateFrame = 0;
+        updateKeywordPanel();
     });
 }
 
@@ -1196,10 +1207,10 @@ $(document).ready(function () {
 
 $(function () {
     $(document).on("focus click keyup", ".wd", function () {
-        updateKeywordPanel();
+        scheduleKeywordPanelUpdate();
     });
 
     $(window).on("resize", function () {
-        if ($("#keywords").is(":visible")) updateKeywordPanel();
+        if ($("#keywords").is(":visible")) scheduleKeywordPanelUpdate();
     });
 });

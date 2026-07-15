@@ -614,7 +614,7 @@ $(function () {
         if (typeof loadVisibleNavIcons === "function") {
             loadVisibleNavIcons();
         }
-        setTimeout(refreshCategoryIndicators, 0);
+        scheduleCategoryIndicatorRefresh();
     })
 })
 
@@ -743,9 +743,20 @@ $(function () {
     });
 
     $(window).on('resize', function () {
-        refreshCategoryIndicators();
+        scheduleCategoryIndicatorRefresh();
     });
 });
+
+var categoryIndicatorRefreshFrame = 0;
+
+function scheduleCategoryIndicatorRefresh() {
+    if (categoryIndicatorRefreshFrame) return;
+
+    categoryIndicatorRefreshFrame = requestAnimationFrame(function () {
+        categoryIndicatorRefreshFrame = 0;
+        refreshCategoryIndicators();
+    });
+}
 
 function initCategoryRows() {
     $('.category-row').each(function () {

@@ -87,6 +87,7 @@ This updates:
 - Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` starts wallpaper loading right after first paint, updates `window.__sksirWallpaperState`, and dispatches `sksir-wallpaper-ready` on `load`, `error`, or empty source so the boot mask does not fade before the wallpaper is ready unless the wait times out.
 - Search engine preferences are stored in cookies.
 - Search suggestions use Baidu JSONP from `js/set.js`; calls are short-debounced with `scheduleKeywordReminder()` so rapid typing does not fire a request on every keyup.
+- Search suggestion panel positioning uses `scheduleKeywordPanelUpdate()` to merge focus, click, keyup, and resize layout work into at most one update per animation frame. Keep direct positioning after suggestion data arrives so the panel can display in the correct place immediately.
 - Performance mode is stored in `localStorage` under `sksir-performance-mode`: `auto`, `full`, or `lite`.
 - The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
 - The settings panel has a `性能模式` tab. `js/set.js` initializes and updates it without requiring a page refresh.
@@ -98,6 +99,7 @@ This updates:
 - Keep the footer `#app-version` span even if it is visually subdued because update detection reads it as the runtime version.
 - Keep the hidden `.footer-separator` immediately before `#update-check`; `showUpdateButton` reveals that previous sibling when an update is available.
 - Category tabs use an injected `.category-anim-bg` indicator. `js/main.js` computes its position from the active item's `offsetLeft` and also writes `--category-indicator-x`; mobile CSS moves the indicator with `transform` to avoid creating extra horizontal scroll width.
+- Category indicator refreshes after tab changes and window resizes use `scheduleCategoryIndicatorRefresh()`, so repeated mobile viewport changes do not force multiple layout reads and writes in one frame. Direct category clicks still update the current row immediately.
 - Update detection fetches `data/app-version.json`, compares it numerically with the footer runtime version, and shows a footer refresh button only when the fetched version is newer. Do not reintroduce `localStorage` as the current-version source.
 - `/api/check` is CommonJS so local `node --check api/check.js` works. It loads allowed hosts from `data/sites.js`, rejects non-navigation hosts, blocks local/private/metadata targets, checks DNS-resolved addresses, does not follow redirects, and uses an 8 second timeout.
 - `vercel.json` sets no-store/no-cache headers for `data/app-version.json`, `sw.js`, and `/api/check`, plus baseline security headers. It intentionally does not set a strict CSP yet.
@@ -120,9 +122,10 @@ This updates:
 
 High confidence:
 - Keep first-screen startup fast; cached visits should stay under 500ms.
-- Improve iOS Safari wallpaper coverage without changing PC behavior or desktop wallpaper crop.
+- Preserve and re-test the current iOS Safari wallpaper coverage without changing PC behavior or desktop wallpaper crop.
 - Polish lightweight boot, category, card, and settings transitions.
 - Keep mobile search, keyboard close, and category indicator behavior stable.
+- Keep high-frequency layout work batched with `requestAnimationFrame`; do not restore direct resize/keyup layout refreshes without measuring the impact.
 - Run `scripts/check.js` as part of the normal pre-release check.
 
 Needs user confirmation:
