@@ -216,21 +216,6 @@ html.is-booting::after {
     animation: bootLoaderSpin 960ms linear infinite, bootLoaderPulse 1600ms ease-in-out infinite;
 }
 
-html.is-booting .con,
-html.is-booting .foot {
-    opacity: 0;
-    transform: translate3d(0, 12px, 0);
-}
-
-html.is-booting.is-first-screen-ready .con,
-html.is-booting.is-first-screen-ready .foot {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-    transition:
-        opacity 460ms cubic-bezier(0.16, 1, 0.3, 1),
-        transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 html.is-booting.is-first-screen-ready::before,
 html.is-booting.is-first-screen-ready::after {
     opacity: 0;
@@ -244,12 +229,6 @@ html.perf-lite.is-booting::after {
 
 html.perf-lite.is-booting::after {
     animation: none;
-}
-
-html.perf-lite.is-booting .con,
-html.perf-lite.is-booting .foot {
-    opacity: 1;
-    transform: none;
 }
 
 /* .box .sou {
