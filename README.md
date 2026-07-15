@@ -26,6 +26,7 @@
 - 首屏启动遮罩会短暂覆盖组装过程，并以轻量过渡显现完整页面
 - 首屏壁纸提前高优先级预加载，完成下载和解码后再交给启动遮罩显现
 - 通用动画关键帧和图标字体映射已合并到主样式，减少独立的首屏阻塞样式请求
+- 移动端与 iOS Safari 规则已合并到主样式，首屏同步样式请求精简为 1 个
 - 本地提示框兜底并入主脚本，减少一个首屏 defer 脚本请求
 - Cookies 依赖并入设置脚本，首屏 defer 脚本请求进一步精简为 3 个
 - 移动端适配，包含 iOS Safari 首屏高度与字体稳定处理
@@ -123,8 +124,8 @@ node scripts\update-version.js YYYY.MM.DD.N
 
 - 文件中有中文注释和中文 UI 文案，读写请使用 UTF-8。
 - iOS Safari 的背景和首屏高度比较敏感，修改前要确认不会改变壁纸裁切效果。
-- iOS Safari 壁纸铺满逻辑主要在 `css/mobile.css` 的 `html.ios-safari .bg-all`，通过最大可视高度和同图 CSS 背景兜底覆盖安全区和地址栏收放高度。
-- PC 端样式尽量不要被移动端修复影响，移动修复优先写在 `css/mobile.css` 或 `html.ios-safari` 作用域下。
+- iOS Safari 壁纸铺满逻辑位于 `css/style.css` 末尾的移动端区域，核心选择器是 `html.ios-safari .bg-all`，通过最大可视高度和同图 CSS 背景兜底覆盖安全区和地址栏收放高度。
+- PC 端样式尽量不要被移动端修复影响，移动修复应继续放在 `css/style.css` 末尾，并限制在移动媒体查询或 `html.ios-safari` 作用域下。
 - 首屏目标是 0.5 秒内完成主体结构和当前首屏内容；远程图标、访客统计、状态检测和更新检查都不应阻塞这个窗口。
 - 书签卡片不是首屏必需内容，`data/sites.js` 和 `js/nav-render.js` 会在首屏后空闲加载；用户提前打开书签时则立即加载。
 - `js/status-dot.js` 和 `css/status-dot.css` 属于附加功能，加载慢或失败不能阻塞书签标签和卡片显示；移动 Safari 的样式 `load` 回调也有超时放行。
@@ -135,7 +136,7 @@ node scripts\update-version.js YYYY.MM.DD.N
 - 壁纸会在 `set.js` 执行时立即高优先级预加载，不再额外等待首屏后的两帧；图片完成加载和异步解码后才进入可见状态，解码异常时最多等待约 180ms 自动回退。
 - 启动遮罩会短暂等待壁纸 `load/error` 或整体超时后再淡出，避免露出灰色底色。
 - 首屏启动遮罩用于遮住页面组装过程，当前由 CSS 光环和遮罩淡出完成过渡；主体会在遮罩下提前完成合成，避免搜索框毛玻璃从透明状态突然跳出。
-- 通用 `fade`、`fadenum` 关键帧和图标字体映射保存在 `css/style.css`；原独立 `css/animation.css`、`css/font.css` 已删除，不要重新拆回首屏阻塞样式。
+- 通用 `fade`、`fadenum` 关键帧、图标字体映射、移动端和 iOS Safari 规则都保存在 `css/style.css`；原独立 `css/animation.css`、`css/font.css`、`css/mobile.css` 已删除，不要重新拆回首屏阻塞样式。
 - Service Worker 只预缓存图标字体的 `woff2` 版本，`woff` 和 `ttf` 仍作为 CSS 兼容回退并在实际需要时按需缓存。
 - 本地 `iziToast` 风格提示框兜底位于 `js/main.js` 开头，原 `js/toast-loader.js` 已删除。
 - JavaScript Cookie v2.2.1 已原样并入 `js/set.js` 顶部，原 `js/js.cookie.js` 已删除；必须保留其 MIT 许可，并确保 Cookies 初始化始终位于设置逻辑之前。

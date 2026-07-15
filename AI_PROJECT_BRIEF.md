@@ -30,8 +30,7 @@ Use `apply_patch` for manual edits.
 ## Key Files
 
 - `index.html`: main page structure, early iOS Safari height/keyboard setup, script/style loading.
-- `css/style.css`: main desktop/base styles, boot animation, shared `fade` / `fadenum` keyframes, icon font mapping, and optional MiSans class.
-- `css/mobile.css`: mobile and iOS Safari overrides.
+- `css/style.css`: desktop/base styles, boot animation, shared keyframes, icon font mapping, optional MiSans class, and the final mobile/iOS Safari override section.
 - `js/main.js`: local toast fallback, first-screen tasks, welcome toast, visitor badge, update check, category indicator, password-gated reward section.
 - `js/set.js`: JavaScript Cookie v2.2.1 bootstrap, search engine settings, wallpaper settings, search suggestions, search UI interactions.
 - `js/nav-render.js`: renders navigation cards from data.
@@ -86,6 +85,7 @@ This updates:
 - `index.html` now has three deferred scripts: jQuery, `main.js`, and `set.js`. Do not restore a separate Cookies request unless a measured regression requires it.
 - First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay and ring loader, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. Page content stays fully composed beneath the overlay so the search box backdrop blur is ready before it becomes visible. Do not animate opacity or transform on the `.con` ancestor during boot; doing so can make the glass effect appear one frame late. The mask waits briefly for wallpaper readiness, but must not wait for icons, visitor badge, update check, or status checks.
 - Shared `fade` / `fadenum` keyframes and icon font mapping live in `css/style.css`. The old standalone `css/animation.css` and `css/font.css`, unused `down` keyframes, and legacy prefixed duplicates were removed so they do not add separate render-blocking stylesheet requests.
+- Mobile and iOS Safari overrides now live at the end of `css/style.css`. The old `css/mobile.css` was removed, reducing the first-screen synchronous stylesheets from two requests to one. Keep mobile fixes in that final section and scope them with mobile media queries or `html.ios-safari` so desktop behavior remains unchanged.
 - The Service Worker precaches only `font/iconfont.woff2`. The `woff` and `ttf` sources remain in the `@font-face` fallback list and are cached on demand by the existing cache-first handler if an older browser requests them.
 - Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` calls `startBgImgInit()` during deferred script execution instead of waiting two animation frames after first paint. The preload image uses eager/high-priority hints and waits for `decode()` before revealing, with a short 180ms fallback so Safari cannot leave the wallpaper pending indefinitely. It updates `window.__sksirWallpaperState` and dispatches `sksir-wallpaper-ready` on loaded, error, or empty states so the boot mask does not fade before the wallpaper is ready unless the overall wait times out.
 - Search engine preferences are stored in cookies.
@@ -95,7 +95,7 @@ This updates:
 - The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
 - The settings panel has a `性能模式` tab. `js/set.js` initializes and updates it without requiring a page refresh.
 - MiSans is loaded after idle on non-iOS Safari only. iOS Safari skips it to avoid first-screen font changes.
-- iOS Safari gets `html.ios-safari`, `--app-height`, and `--ios-bg-height` early in `index.html`. `css/mobile.css` sizes `.bg-all` from the largest known viewport height, uses `100lvh` when available, and makes `#bg` / `.cover` absolute inside it.
+- iOS Safari gets `html.ios-safari`, `--app-height`, and `--ios-bg-height` early in `index.html`. The final mobile section of `css/style.css` sizes `.bg-all` from the largest known viewport height, uses `100lvh` when available, and makes `#bg` / `.cover` absolute inside it.
 - `js/set.js` mirrors the loaded wallpaper URL into `--ios-wallpaper-image`; only `html.ios-safari .bg-all` uses that CSS background as a same-image fallback if the image layer fails to cover Safari toolbar/safe-area changes.
 - While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.
 - The footer is a compact daily-quote band. `js/main.js` sets `#daily-quote` from a local quote list using the current date, so it is stable within a day and does not add a network request.
