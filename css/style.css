@@ -145,6 +145,25 @@ img.error {
     /* transform: translateY(-150%); */
 }
 
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadenum {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
 @keyframes bootLoaderSpin {
     to {
         transform: translate3d(-50%, -50%, 0) rotate(360deg);
@@ -320,10 +339,6 @@ html.perf-lite.is-booting .foot {
 #point {
     margin: 0px 4px;
     animation: fadenum 2s infinite;
-    -webkit-animation: fadenum 2s infinite;
-    -moz-animation: fadenum 2s infinite;
-    -o-animation: fadenum 2s linear infinite;
-    -ms-animation: fadenum 2s linear infinite;
 }
 
 #time_text {
@@ -474,11 +489,7 @@ html.perf-lite.is-booting .foot {
     border-radius: 8px;
     display: none;
     z-index: 999;
-    animation: fade;
-    -webkit-animation: fade 0.5s;
-    -moz-animation: fade 0.5s;
-    -o-animation: fade 0.5s;
-    -ms-animation: fade 0.5s;
+    animation: fade 0.5s;
 }
 
 .search-engine-list {
@@ -599,11 +610,7 @@ html.perf-lite.is-booting .foot {
     position: absolute;
     margin-top: 200px;
     z-index: 2000;
-    animation: fade;
-    -webkit-animation: fade 0.75s;
-    -moz-animation: fade 0.75s;
-    -o-animation: fade 0.75s;
-    -ms-animation: fade 0.75s;
+    animation: fade 0.75s;
 }
 
 .mark {
@@ -611,10 +618,6 @@ html.perf-lite.is-booting .foot {
     overflow: hidden;
     background: transparent;
     animation: none;
-    -webkit-animation: none;
-    -moz-animation: none;
-    -o-animation: none;
-    -ms-animation: none;
 }
 
 .mark::before {
@@ -776,19 +779,11 @@ html.perf-lite.is-booting .foot {
     width: 100%;
     /* overflow: auto; */
     flex-wrap: wrap;
-    animation: fade;
-    -webkit-animation: fade 0.5s;
-    -moz-animation: fade 0.5s;
-    -o-animation: fade 0.5s;
-    -ms-animation: fade 0.5s;
+    animation: fade 0.5s;
 }
 
 .products .mainCont:has(.category-row) {
     animation: none;
-    -webkit-animation: none;
-    -moz-animation: none;
-    -o-animation: none;
-    -ms-animation: none;
 }
 
 .products .mainCont.selected,
@@ -1107,11 +1102,7 @@ html.perf-lite.is-booting .foot {
     transition: 0.5s;
     border-radius: 8px;
     transition: 0.3s;
-    animation: fade;
-    -webkit-animation: fade 1s;
-    -moz-animation: fade 1s;
-    -o-animation: fade 1s;
-    -ms-animation: fade 1s;
+    animation: fade 1s;
 }
 
 #menu:hover {
@@ -1229,11 +1220,7 @@ html.perf-lite.is-booting .foot {
 .se_add_preinstalls,
 .quick_list,
 .add_content {
-    animation: fade;
-    -webkit-animation: fade 0.5s;
-    -moz-animation: fade 0.5s;
-    -o-animation: fade 0.5s;
-    -ms-animation: fade 0.5s;
+    animation: fade 0.5s;
 }
 
 /*表单内容*/
@@ -1373,11 +1360,7 @@ input[type="number"] {
 
 #wallpaper_url {
     margin: 10px 0px;
-    animation: fade;
-    -webkit-animation: fade 0.5s;
-    -moz-animation: fade 0.5s;
-    -o-animation: fade 0.5s;
-    -ms-animation: fade 0.5s;
+    animation: fade 0.5s;
 }
 
 #wallpaper_text {
@@ -2156,10 +2139,6 @@ html.perf-lite *,
 html.perf-lite *::before,
 html.perf-lite *::after {
     animation: none !important;
-    -webkit-animation: none !important;
-    -moz-animation: none !important;
-    -o-animation: none !important;
-    -ms-animation: none !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
     scroll-behavior: auto !important;
@@ -2226,10 +2205,6 @@ html.perf-lite #point {
     *::before,
     *::after {
         animation: none !important;
-        -webkit-animation: none !important;
-        -moz-animation: none !important;
-        -o-animation: none !important;
-        -ms-animation: none !important;
         transition: none !important;
         scroll-behavior: auto !important;
     }

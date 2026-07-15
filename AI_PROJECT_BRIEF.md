@@ -30,7 +30,7 @@ Use `apply_patch` for manual edits.
 ## Key Files
 
 - `index.html`: main page structure, early iOS Safari height/keyboard setup, script/style loading.
-- `css/style.css`: main desktop/base styles.
+- `css/style.css`: main desktop/base styles, boot animation, and shared `fade` / `fadenum` keyframes.
 - `css/mobile.css`: mobile and iOS Safari overrides.
 - `css/font.css`: icon font and optional MiSans font class.
 - `js/main.js`: first-screen tasks, welcome toast, visitor badge, update check, category indicator, password-gated reward section.
@@ -69,7 +69,8 @@ This updates:
 - Bookmarks are rendered from `window.NAV_SITES` in `data/sites.js`.
 - Current bookmark tabs are `常用`, `影音`, `工具`, `收藏`, `装机`, and password-gated `奖励`. Keep public tabs grouped by short categories and keep descriptions brief.
 - Do not move `奖励` items into public tabs unless the user explicitly confirms it; it is only front-end hidden, but the current UX treats it as a private group.
-- Bookmark resources are not part of the blocking script/style list in `index.html`. `js/main.js` loads `data/sites.js`, `js/nav-render.js`, `js/status-dot.js`, and `css/status-dot.css` together after load/idle, or immediately through `window.ensureNavSitesLoaded()` when the bookmark panel is opened early.
+- Bookmark resources are not part of the blocking script/style list in `index.html`. `js/main.js` loads the core `data/sites.js` and `js/nav-render.js` after load/idle, or immediately through `window.ensureNavSitesLoaded()` when the bookmark panel is opened early.
+- `js/status-dot.js` and `css/status-dot.css` are separate progressive enhancements loaded through `ensureNavStatusResourcesLoaded()`. They must never gate bookmark tab rendering; cached stylesheet load events also have a timeout fallback for mobile Safari.
 - Opening the settings panel must not trigger bookmark resource loading. `js/set.js` opens settings directly and waits for `ensureNavSitesLoaded()` only in `openBox()`.
 - `js/nav-render.js` renders the selected bookmark panel first and leaves hidden panels as lightweight shells. Hidden panels hydrate during idle time after page load, or immediately through `window.ensureNavPanelRendered(index)` before a user-selected tab is shown.
 - Bookmark card clicks are delegated from `.products` in `js/main.js`, so cards added by later hydration still open correctly.
@@ -80,6 +81,7 @@ This updates:
 - `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
 - Visitor badge, welcome toast, update check, service worker registration, and MiSans loading are intentionally delayed beyond the critical first-screen window.
 - First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay and ring loader, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. The content/footer do a small opacity/translate reveal during the fade. It hides page assembly and waits briefly for wallpaper readiness, but must not wait for icons, visitor badge, update check, or status checks.
+- Shared `fade` and `fadenum` keyframes live in `css/style.css`. The old standalone `css/animation.css`, unused `down` keyframes, and legacy prefixed duplicates were removed to save one render-blocking stylesheet request.
 - Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` starts wallpaper loading right after first paint, updates `window.__sksirWallpaperState`, and dispatches `sksir-wallpaper-ready` on `load`, `error`, or empty source so the boot mask does not fade before the wallpaper is ready unless the wait times out.
 - Search engine preferences are stored in cookies.
 - Search suggestions use Baidu JSONP from `js/set.js`; calls are short-debounced with `scheduleKeywordReminder()` so rapid typing does not fire a request on every keyup.
@@ -108,6 +110,7 @@ This updates:
 - Do not classify iOS devices as low performance from `navigator.hardwareConcurrency` alone; Safari may report privacy-limited or non-representative hardware values.
 - Do not re-enable mobile `.category-row::before` hover shine or scrollbar styling without testing on touch devices; it can create phantom horizontal blank space and break the active indicator position.
 - Service worker caching can make phone testing appear unchanged. Confirm the deployed version and cache state before assuming a CSS fix failed.
+- Do not put status-check styles or scripts back into the `ensureNavSitesLoaded()` completion condition. Mobile Safari may delay or omit a cached stylesheet `load` event, which previously left the bookmark tabs waiting indefinitely.
 - `/api/check` is not a full rate-limited service. If abuse appears in Vercel logs, add external rate limiting or disable the public status endpoint.
 - `js/main.js` contains a front-end password for a hidden section. This is only UI hiding, not real security.
 

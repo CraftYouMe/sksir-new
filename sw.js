@@ -1,11 +1,10 @@
-const CACHE_VERSION = "nav-cache-2026.07.15.1";
+const CACHE_VERSION = "nav-cache-2026.07.15.3";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
   "./css/style.css",
   "./css/font.css",
   "./css/mobile.css",
-  "./css/animation.css",
   "./css/status-dot.css",
   "./js/jquery-3.6.0.min.js",
   "./js/js.cookie.js",

@@ -157,6 +157,7 @@ function runAfterLoadIdle(callback, timeout) {
 }
 
 var navSitesLoadPromise = null;
+var navStatusLoadPromise = null;
 
 function loadDeferredScript(id, src) {
     var existing = document.getElementById(id);
@@ -187,28 +188,67 @@ function loadDeferredStylesheet(id, href) {
 
     return new Promise(function (resolve, reject) {
         var link = document.createElement("link");
+        var completed = false;
+        var fallbackTimer = setTimeout(function () {
+            if (completed) return;
+            completed = true;
+            resolve();
+        }, 2500);
+
+        function finish(callback, value) {
+            if (completed) return;
+            completed = true;
+            clearTimeout(fallbackTimer);
+            callback(value);
+        }
+
         link.id = id;
         link.rel = "stylesheet";
         link.href = href;
-        link.onload = resolve;
+        link.onload = function () {
+            finish(resolve);
+        };
         link.onerror = function () {
             link.remove();
-            reject(new Error("Failed to load " + href));
+            finish(reject, new Error("Failed to load " + href));
         };
         document.head.appendChild(link);
     });
 }
 
-function ensureNavSitesLoaded() {
+function ensureNavStatusResourcesLoaded() {
     var statusStyles = document.getElementById("status-dot-styles") ||
         document.querySelector("link[href*='css/status-dot.css']");
-    if (document.querySelector(".mark .mainCont") && window.startLinkStatusChecks && statusStyles) {
+    if (window.startLinkStatusChecks && statusStyles) {
+        return Promise.resolve(true);
+    }
+    if (navStatusLoadPromise) return navStatusLoadPromise;
+
+    var styleTask = loadDeferredStylesheet("status-dot-styles", "./css/status-dot.css");
+    var scriptTask = window.startLinkStatusChecks
+        ? Promise.resolve()
+        : loadDeferredScript("nav-status-checker", "./js/status-dot.js");
+
+    navStatusLoadPromise = Promise.all([styleTask, scriptTask]).then(function () {
+        return true;
+    }).catch(function (error) {
+        navStatusLoadPromise = null;
+        throw error;
+    });
+
+    return navStatusLoadPromise;
+}
+
+function ensureNavSitesLoaded() {
+    if (document.querySelector(".mark .mainCont")) {
+        ensureNavStatusResourcesLoaded().catch(function (error) {
+            console.warn("Navigation status resources failed to load", error);
+        });
         return Promise.resolve(true);
     }
     if (navSitesLoadPromise) return navSitesLoadPromise;
 
-    var styleTask = loadDeferredStylesheet("status-dot-styles", "./css/status-dot.css");
-    var scriptTask = (window.NAV_SITES
+    navSitesLoadPromise = (window.NAV_SITES
         ? Promise.resolve()
         : loadDeferredScript("nav-sites-data", "./data/sites.js"))
         .then(function () {
@@ -220,17 +260,19 @@ function ensureNavSitesLoaded() {
             if (!document.querySelector(".mark .mainCont") && typeof window.renderNavSites === "function") {
                 window.renderNavSites();
             }
-            return window.startLinkStatusChecks
-                ? Promise.resolve()
-                : loadDeferredScript("nav-status-checker", "./js/status-dot.js");
+            if (!document.querySelector(".mark .mainCont")) {
+                throw new Error("Navigation tabs were not rendered");
+            }
+            ensureNavStatusResourcesLoaded().catch(function (error) {
+                console.warn("Navigation status resources failed to load", error);
+            });
+        })
+        .then(function () {
+            return true;
+        }).catch(function (error) {
+            navSitesLoadPromise = null;
+            throw error;
         });
-
-    navSitesLoadPromise = Promise.all([styleTask, scriptTask]).then(function () {
-        return true;
-    }).catch(function (error) {
-        navSitesLoadPromise = null;
-        throw error;
-    });
 
     return navSitesLoadPromise;
 }
