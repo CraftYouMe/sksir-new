@@ -51,6 +51,7 @@ Use `apply_patch` for manual edits.
 ## Versioning
 
 Do not manually edit only one of `data/app-version.json` or `sw.js`.
+Every completed optimization round must bump the version unless the user explicitly says otherwise.
 
 Use:
 
@@ -68,6 +69,8 @@ This updates:
 - Bookmarks are rendered from `window.NAV_SITES` in `data/sites.js`.
 - Current bookmark tabs are `常用`, `影音`, `工具`, `收藏`, `装机`, and password-gated `奖励`. Keep public tabs grouped by short categories and keep descriptions brief.
 - Do not move `奖励` items into public tabs unless the user explicitly confirms it; it is only front-end hidden, but the current UX treats it as a private group.
+- Bookmark resources are not part of the blocking script/style list in `index.html`. `js/main.js` loads `data/sites.js`, `js/nav-render.js`, `js/status-dot.js`, and `css/status-dot.css` together after load/idle, or immediately through `window.ensureNavSitesLoaded()` when the bookmark panel is opened early.
+- Opening the settings panel must not trigger bookmark resource loading. `js/set.js` opens settings directly and waits for `ensureNavSitesLoaded()` only in `openBox()`.
 - `js/nav-render.js` renders the selected bookmark panel first and leaves hidden panels as lightweight shells. Hidden panels hydrate during idle time after page load, or immediately through `window.ensureNavPanelRendered(index)` before a user-selected tab is shown.
 - Bookmark card clicks are delegated from `.products` in `js/main.js`, so cards added by later hydration still open correctly.
 - `js/set.js` exposes `closeActiveSurface()` for closing search, bookmark, and settings layers; `Esc` uses it and should stay lightweight.

@@ -34,6 +34,7 @@ $(function () {
     //载入动画
     markFirstScreenVisible();
 
+    scheduleNavSitesLoad();
     scheduleVisitorBadge();
     scheduleWelcomeToast();
     scheduleUpdateCheck();
@@ -154,6 +155,95 @@ function runAfterLoadIdle(callback, timeout) {
         window.addEventListener("load", run, { once: true });
     }
 }
+
+var navSitesLoadPromise = null;
+
+function loadDeferredScript(id, src) {
+    var existing = document.getElementById(id);
+    if (existing) {
+        return Promise.resolve();
+    }
+
+    return new Promise(function (resolve, reject) {
+        var script = document.createElement("script");
+        script.id = id;
+        script.src = src;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = function () {
+            script.remove();
+            reject(new Error("Failed to load " + src));
+        };
+        document.head.appendChild(script);
+    });
+}
+
+function loadDeferredStylesheet(id, href) {
+    var existing = document.getElementById(id) ||
+        document.querySelector("link[href*='" + href.replace("./", "") + "']");
+    if (existing) {
+        return Promise.resolve();
+    }
+
+    return new Promise(function (resolve, reject) {
+        var link = document.createElement("link");
+        link.id = id;
+        link.rel = "stylesheet";
+        link.href = href;
+        link.onload = resolve;
+        link.onerror = function () {
+            link.remove();
+            reject(new Error("Failed to load " + href));
+        };
+        document.head.appendChild(link);
+    });
+}
+
+function ensureNavSitesLoaded() {
+    var statusStyles = document.getElementById("status-dot-styles") ||
+        document.querySelector("link[href*='css/status-dot.css']");
+    if (document.querySelector(".mark .mainCont") && window.startLinkStatusChecks && statusStyles) {
+        return Promise.resolve(true);
+    }
+    if (navSitesLoadPromise) return navSitesLoadPromise;
+
+    var styleTask = loadDeferredStylesheet("status-dot-styles", "./css/status-dot.css");
+    var scriptTask = (window.NAV_SITES
+        ? Promise.resolve()
+        : loadDeferredScript("nav-sites-data", "./data/sites.js"))
+        .then(function () {
+            return window.renderNavSites
+                ? Promise.resolve()
+                : loadDeferredScript("nav-sites-renderer", "./js/nav-render.js");
+        })
+        .then(function () {
+            if (!document.querySelector(".mark .mainCont") && typeof window.renderNavSites === "function") {
+                window.renderNavSites();
+            }
+            return window.startLinkStatusChecks
+                ? Promise.resolve()
+                : loadDeferredScript("nav-status-checker", "./js/status-dot.js");
+        });
+
+    navSitesLoadPromise = Promise.all([styleTask, scriptTask]).then(function () {
+        return true;
+    }).catch(function (error) {
+        navSitesLoadPromise = null;
+        throw error;
+    });
+
+    return navSitesLoadPromise;
+}
+
+function scheduleNavSitesLoad() {
+    runAfterLoadIdle(function () {
+        ensureNavSitesLoaded().catch(function (error) {
+            console.warn("Navigation resources failed to load", error);
+        });
+    }, 1600);
+}
+
+window.ensureNavSitesLoaded = ensureNavSitesLoaded;
 
 function scheduleWelcomeToast() {
     runAfterFirstPaint(function () {

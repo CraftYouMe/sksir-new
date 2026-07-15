@@ -571,8 +571,7 @@ var bookmarkOpenTimer = null;
 function openSet() {
     $("#menu").addClass('on');
 
-    openBox();
-    $("#content").removeClass('bookmarks-open').addClass('setting-open');
+    $("#content").addClass('box setting-open').removeClass('bookmarks-open');
     if (bookmarkOpenTimer) {
         clearTimeout(bookmarkOpenTimer);
         bookmarkOpenTimer = null;
@@ -586,6 +585,7 @@ function openSet() {
     $(".set").css({
         "display": "flex",
     });
+    setBackgroundFocusEffect(true);
 }
 
 // 关闭设置
@@ -618,19 +618,41 @@ function openBox() {
     $(".mark").css({
         "display": "none",
     });
-    // 背景模糊在轻量性能模式下会被跳过，避免低配设备频繁重绘。
-    bookmarkOpenTimer = setTimeout(function () {
-        $(".mark").css({
-            "display": "flex",
-        });
-        loadVisibleNavIcons();
-        if (typeof refreshCategoryIndicators === "function") {
-            refreshCategoryIndicators();
-        }
-        $(".mark").addClass("is-visible");
-        bookmarkOpenTimer = null;
-    }, document.documentElement.classList.contains("perf-lite") ? 0 : 220);
     setBackgroundFocusEffect(true);
+
+    var prepareNav = typeof window.ensureNavSitesLoaded === "function"
+        ? window.ensureNavSitesLoaded()
+        : Promise.resolve();
+
+    prepareNav.then(function () {
+        if (!$("#content").hasClass("bookmarks-open") || $("#content").hasClass("setting-open")) {
+            return;
+        }
+
+        // 背景模糊在轻量性能模式下会被跳过，避免低配设备频繁重绘。
+        bookmarkOpenTimer = setTimeout(function () {
+            $(".mark").css({
+                "display": "flex",
+            });
+            loadVisibleNavIcons();
+            if (typeof refreshCategoryIndicators === "function") {
+                refreshCategoryIndicators();
+            }
+            $(".mark").addClass("is-visible");
+            bookmarkOpenTimer = null;
+        }, document.documentElement.classList.contains("perf-lite") ? 0 : 220);
+    }).catch(function (error) {
+        console.warn("Navigation panel failed to prepare", error);
+        if (!$("#content").hasClass("bookmarks-open")) return;
+
+        closeBox();
+        iziToast.show({
+            timeout: 2200,
+            class: "setting-toast",
+            title: "书签加载失败",
+            message: "请检查网络后重试"
+        });
+    });
 }
 
 function loadVisibleNavIcons() {
