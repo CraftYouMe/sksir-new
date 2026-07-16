@@ -797,6 +797,8 @@ function isMobileNavViewport() {
 
 function openSet() {
     $("#menu").addClass('on');
+    $("#menu").attr("aria-expanded", "true");
+    $("#time_text").attr("aria-expanded", "true");
 
     $("#content").addClass('box setting-open').removeClass('bookmarks-open');
     cancelBookmarkOpenTasks();
@@ -815,6 +817,7 @@ function openSet() {
 // 关闭设置
 function closeSet() {
     $("#menu").removeClass('on');
+    $("#menu").attr("aria-expanded", "false");
 
     closeBox();
     $("#content").removeClass('setting-open');
@@ -837,6 +840,8 @@ function openBox() {
     var requestId = bookmarkOpenRequestId;
     var mobileNav = isMobileNavViewport();
     var liteMode = document.documentElement.classList.contains("perf-lite");
+    $("#time_text").attr("aria-expanded", "true");
+    $("#menu").attr("aria-expanded", "false");
     $("#content").addClass('box bookmarks-open').removeClass('setting-open');
     $(".mark").removeClass("is-visible");
     $(".mark").css({
@@ -919,6 +924,8 @@ function loadVisibleNavIcons() {
 // 书签关闭
 function closeBox() {
     cancelBookmarkOpenTasks();
+    $("#time_text").attr("aria-expanded", "false");
+    $("#menu").attr("aria-expanded", "false");
     $("#content").removeClass('box bookmarks-open setting-open');
     $(".mark").removeClass("is-visible");
     $(".mark").css({
@@ -942,7 +949,20 @@ function syncPerformanceVisualState() {
     }
 }
 
-function closeActiveSurface() {
+function focusPrimaryTrigger() {
+    var trigger = document.getElementById("time_text");
+    if (!trigger) return;
+
+    requestAnimationFrame(function () {
+        try {
+            trigger.focus({ preventScroll: true });
+        } catch (error) {
+            trigger.focus();
+        }
+    });
+}
+
+function closeActiveSurface(restoreFocus) {
     var hasSearch = $("body").hasClass("onsearch");
     var hasPanel = $("#content").hasClass("box") || $("#content").hasClass("setting-open");
     var hasFloatingSearch = $(".search-engine").is(":visible") || $("#keywords").is(":visible");
@@ -960,7 +980,27 @@ function closeActiveSurface() {
     $('.se').hide();
     $('#menu').hide();
     $('.power').show();
+    if (restoreFocus) {
+        focusPrimaryTrigger();
+    }
     return true;
+}
+
+function isTextEntryTarget(target) {
+    if (!target) return false;
+    var tagName = target.tagName ? target.tagName.toLowerCase() : "";
+    return tagName === "input" ||
+        tagName === "textarea" ||
+        tagName === "select" ||
+        target.isContentEditable;
+}
+
+function canUseSearchShortcut(event) {
+    if (event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented) return false;
+    if (isTextEntryTarget(event.target)) return false;
+    if (isMobileNavViewport()) return false;
+    if (window.matchMedia && !window.matchMedia("(any-pointer: fine)").matches) return false;
+    return !$("#content").hasClass("box") && !$("#content").hasClass("setting-open");
 }
 
 //显示设置搜索引擎列表
@@ -1065,12 +1105,28 @@ $(document).ready(function () {
         closeActiveSurface();
     });
 
+    $(document).on('keydown', '#time_text, #menu', function (event) {
+        var key = event.key || event.keyCode;
+        if (key !== "Enter" && key !== " " && key !== "Spacebar" && key !== 13 && key !== 32) {
+            return;
+        }
+        event.preventDefault();
+        $(this).trigger("click");
+    });
+
     $(document).on('keydown', function (event) {
         var key = event.key || event.keyCode;
-        if (key !== "Escape" && key !== "Esc" && key !== 27) return;
-        if (closeActiveSurface()) {
+        if (key === "Escape" || key === "Esc" || key === 27) {
+            if (closeActiveSurface(true)) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            return;
+        }
+
+        if ((key === "/" || key === 191) && canUseSearchShortcut(event)) {
             event.preventDefault();
-            event.stopPropagation();
+            $(".sou").trigger("click");
         }
     });
 

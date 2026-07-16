@@ -667,35 +667,151 @@ function getHello() {
 
 
     
+function handleHorizontalSelectionKeydown(event, itemSelector, activate) {
+    var key = event.key || event.keyCode;
+    if (key === "Enter" || key === " " || key === "Spacebar" || key === 13 || key === 32) {
+        event.preventDefault();
+        activate(event.currentTarget);
+        return;
+    }
+
+    var $items = $(event.currentTarget).parent().children(itemSelector);
+    var currentIndex = $items.index(event.currentTarget);
+    var nextIndex = currentIndex;
+
+    if (key === "ArrowLeft" || key === 37) {
+        nextIndex = currentIndex > 0 ? currentIndex - 1 : $items.length - 1;
+    } else if (key === "ArrowRight" || key === 39) {
+        nextIndex = currentIndex < $items.length - 1 ? currentIndex + 1 : 0;
+    } else if (key === "Home" || key === 36) {
+        nextIndex = 0;
+    } else if (key === "End" || key === 35) {
+        nextIndex = $items.length - 1;
+    } else {
+        return;
+    }
+
+    event.preventDefault();
+    var nextItem = $items.get(nextIndex);
+    if (!nextItem) return;
+    nextItem.focus();
+    activate(nextItem);
+}
+
+function activateBookmarkTab(tab) {
+    var $tab = $(tab);
+    var tabIndex = $tab.index();
+    if (tabIndex < 0) return;
+
+    if (typeof window.ensureNavPanelRendered === "function") {
+        window.ensureNavPanelRendered(tabIndex);
+    }
+
+    $tab
+        .addClass("active")
+        .attr({
+            "aria-selected": "true",
+            "tabindex": "0"
+        })
+        .siblings()
+        .removeClass("active")
+        .attr({
+            "aria-selected": "false",
+            "tabindex": "-1"
+        });
+
+    $(".products .mainCont")
+        .eq(tabIndex)
+        .addClass("selected")
+        .attr("aria-hidden", "false")
+        .css("display", "flex")
+        .siblings()
+        .removeClass("selected")
+        .attr("aria-hidden", "true")
+        .css("display", "none");
+
+    if (typeof loadVisibleNavIcons === "function") {
+        loadVisibleNavIcons();
+    }
+    scheduleCategoryIndicatorRefresh();
+}
+
+function initSettingsTabAccessibility() {
+    var $tabs = $(".set .tabs");
+    var $items = $tabs.children(".tab-items");
+    var $panels = $(".productss .mainConts");
+
+    $tabs.attr("role", "tablist");
+    $items.each(function (index) {
+        var selected = $(this).hasClass("actives");
+        var tabId = "settings-tab-" + index;
+        var panelId = "settings-panel-" + index;
+
+        $(this).attr({
+            "id": tabId,
+            "role": "tab",
+            "tabindex": selected ? "0" : "-1",
+            "aria-selected": selected ? "true" : "false",
+            "aria-controls": panelId
+        });
+        $panels.eq(index).attr({
+            "id": panelId,
+            "role": "tabpanel",
+            "aria-labelledby": tabId,
+            "aria-hidden": selected ? "false" : "true"
+        });
+    });
+}
+
+function activateSettingsTab(tab) {
+    var $tab = $(tab);
+    var tabIndex = $tab.index();
+    if (tabIndex < 0) return;
+
+    $tab
+        .addClass("actives")
+        .attr({
+            "aria-selected": "true",
+            "tabindex": "0"
+        })
+        .siblings()
+        .removeClass("actives")
+        .attr({
+            "aria-selected": "false",
+            "tabindex": "-1"
+        });
+
+    $(".productss .mainConts")
+        .eq(tabIndex)
+        .attr("aria-hidden", "false")
+        .css("display", "flex")
+        .siblings()
+        .attr("aria-hidden", "true")
+        .css("display", "none");
+}
+
 //Tab书签页
 $(function () {
-    $(".mark .tab").on("click", ".tab-item", function () {
-        var tabIndex = $(this).index();
-        if (typeof window.ensureNavPanelRendered === "function") {
-            window.ensureNavPanelRendered(tabIndex);
-        }
-        $(this).addClass("active").siblings().removeClass("active");
-        $(".products .mainCont")
-            .eq(tabIndex)
-            .addClass("selected")
-            .css("display", "flex")
-            .siblings()
-            .removeClass("selected")
-            .css("display", "none");
-        if (typeof loadVisibleNavIcons === "function") {
-            loadVisibleNavIcons();
-        }
-        scheduleCategoryIndicatorRefresh();
-    })
-})
+    $(".mark .tab")
+        .on("click", ".tab-item", function () {
+            activateBookmarkTab(this);
+        })
+        .on("keydown", ".tab-item", function (event) {
+            handleHorizontalSelectionKeydown(event, ".tab-item", activateBookmarkTab);
+        });
+});
 
 //设置
 $(function () {
-    $(".set .tabs .tab-items").click(function () {
-        $(this).addClass("actives").siblings().removeClass("actives");
-        $(".productss .mainConts").eq($(this).index()).css("display", "flex").siblings().css("display", "none");
-    })
-})
+    initSettingsTabAccessibility();
+    $(".set .tabs")
+        .on("click", ".tab-items", function () {
+            activateSettingsTab(this);
+        })
+        .on("keydown", ".tab-items", function (event) {
+            handleHorizontalSelectionKeydown(event, ".tab-items", activateSettingsTab);
+        });
+});
 
 //输入框为空时阻止跳转
 $(window).keydown(function (e) {
@@ -797,21 +913,13 @@ $(function () {
     });
 
     // 分类高亮及内容切换，只影响当前mainCont
-    $('.products').on('click', '.category-row .category-item', function () {
-        var $row = $(this).closest('.category-row');
-        $(this).addClass('active').siblings().removeClass('active');
-        updateCategoryIndicator($row);
-
-        var category = $(this).text().trim();
-        var $mainCont = $row.closest('.mainCont');
-        $mainCont.find('.quicks').each(function () {
-            if (category === '全部' || $(this).attr('data-category') === category) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
+    $('.products')
+        .on('click', '.category-row .category-item', function () {
+            activateCategoryItem(this);
+        })
+        .on('keydown', '.category-row .category-item', function (event) {
+            handleHorizontalSelectionKeydown(event, ".category-item", activateCategoryItem);
         });
-    });
 
     $(window).on('resize', function () {
         scheduleCategoryIndicatorRefresh();
@@ -819,6 +927,35 @@ $(function () {
 });
 
 var categoryIndicatorRefreshFrame = 0;
+
+function activateCategoryItem(item) {
+    var $item = $(item);
+    var $row = $item.closest('.category-row');
+
+    $item
+        .addClass('active')
+        .attr({
+            'aria-pressed': 'true',
+            'tabindex': '0'
+        })
+        .siblings('.category-item')
+        .removeClass('active')
+        .attr({
+            'aria-pressed': 'false',
+            'tabindex': '-1'
+        });
+    updateCategoryIndicator($row);
+
+    var category = $item.text().trim();
+    var $mainCont = $row.closest('.mainCont');
+    $mainCont.find('.quicks').each(function () {
+        if (category === '全部' || $(this).attr('data-category') === category) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
 
 function scheduleCategoryIndicatorRefresh() {
     if (categoryIndicatorRefreshFrame) return;
