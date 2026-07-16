@@ -78,6 +78,7 @@ This updates:
 - Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation and syntax checks.
 - Remote icons are initially rendered with a local fallback and loaded later for visible panels.
 - First-screen target is 0.5 seconds for assembled page structure on both PC and mobile. Time/search/layout should be ready quickly; remote icons, visitor badge, update check, and status checks must not block that window.
+- `index.html` preloads `css/style.css` and `font/iconfont.woff2` before the inline boot script so cold visits can discover both critical resources earlier. Keep the real stylesheet link after the boot script; moving it before the script can block early boot classes, performance mode, and iOS height setup.
 - `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
 - Visitor badge, welcome toast, update check, service worker registration, and MiSans loading are intentionally delayed beyond the critical first-screen window.
 - The local `iziToast`-compatible fallback now lives at the top of `js/main.js`. The old `js/toast-loader.js` was removed so it does not add another defer request. Keep the fallback bootstrap before any `iziToast` calls in `main.js` or `set.js`.
