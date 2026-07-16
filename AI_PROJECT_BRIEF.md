@@ -78,10 +78,6 @@ This updates:
 - `js/nav-render.js` renders the selected bookmark panel first and leaves hidden panels as lightweight shells. Hidden panels hydrate during idle time after page load, or immediately through `window.ensureNavPanelRendered(index)` before a user-selected tab is shown.
 - Bookmark card clicks are delegated from `.products` in `js/main.js`, so cards added by later hydration still open correctly.
 - `js/set.js` exposes `closeActiveSurface()` for closing search, bookmark, and settings layers; `Esc` uses it and should stay lightweight.
-- Desktop fine-pointer users can press `/` to focus the search field when they are not already typing and no bookmark/settings panel is open. Do not replace browser-owned `Ctrl/Cmd+K`.
-- Time and settings triggers expose button semantics. Bookmark tabs, settings tabs, and category filters use roving `tabindex` plus Left/Right, Home/End, Enter, and Space through their existing activation paths.
-- Keyboard-driven `Esc` closure restores focus to `#time_text`; pointer/touch outside-click closure does not restore focus, so it cannot reopen the mobile keyboard.
-- Keyboard focus styling uses `:focus-visible`. Card focus-within emphasis and the search-input outline are restricted to desktop fine-pointer environments to avoid adding touch-only visual states.
 - Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation, MiSans UI manifest validation, and syntax checks.
 - Remote icons are initially rendered with a local fallback and loaded later for visible panels.
 - First-screen target is 0.5 seconds for assembled page structure on both PC and mobile. Time/search/layout should be ready quickly; remote icons, visitor badge, update check, and status checks must not block that window.
@@ -137,7 +133,6 @@ High confidence:
 - Keep first-screen startup fast; cached visits should stay under 500ms.
 - Preserve and re-test the current iOS Safari wallpaper coverage without changing PC behavior or desktop wallpaper crop.
 - Polish lightweight boot, category, card, and settings transitions.
-- Preserve and regression-test the lightweight keyboard/focus behavior without adding visible shortcut instructions or first-screen resources.
 - Keep mobile search, keyboard close, and category indicator behavior stable.
 - Keep high-frequency layout work batched with `requestAnimationFrame`; do not restore direct resize/keyup layout refreshes without measuring the impact.
 - Run `scripts/check.js` as part of the normal pre-release check.

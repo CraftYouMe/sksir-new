@@ -42,12 +42,8 @@
     if (tab.categoryRowClass) rowClass += " " + tab.categoryRowClass;
 
     var row = createDiv(rowClass);
-    row.setAttribute("role", "group");
     (tab.categories || []).forEach(function (category, index) {
       var item = createDiv("category-item" + (index === 0 ? " active" : ""), category);
-      item.setAttribute("role", "button");
-      item.setAttribute("tabindex", index === 0 ? "0" : "-1");
-      item.setAttribute("aria-pressed", index === 0 ? "true" : "false");
       row.appendChild(item);
     });
 
@@ -238,34 +234,13 @@
 
     tabRoot.textContent = "";
     productRoot.textContent = "";
-    tabRoot.setAttribute("role", "tablist");
-
-    var selectedIndex = 0;
-    tabs.some(function (tab, index) {
-      if (!tab.selected) return false;
-      selectedIndex = index;
-      return true;
-    });
 
     tabs.forEach(function (tab, index) {
-      var isSelected = index === selectedIndex;
-      var tabItem = createDiv("tab-item" + (isSelected ? " active" : ""), tab.title);
-      var tabId = "nav-tab-" + index;
-      var panelId = "nav-panel-" + index;
-
-      tabItem.id = tabId;
-      tabItem.setAttribute("role", "tab");
-      tabItem.setAttribute("tabindex", isSelected ? "0" : "-1");
-      tabItem.setAttribute("aria-selected", isSelected ? "true" : "false");
-      tabItem.setAttribute("aria-controls", panelId);
-      tabRoot.appendChild(tabItem);
+      var isSelected = tab.selected || index === 0;
+      tabRoot.appendChild(createDiv("tab-item" + (isSelected ? " active" : ""), tab.title));
 
       var panel = createDiv("mainCont" + (isSelected ? " selected" : ""));
-      panel.id = panelId;
       panel.dataset.navTabIndex = index;
-      panel.setAttribute("role", "tabpanel");
-      panel.setAttribute("aria-labelledby", tabId);
-      panel.setAttribute("aria-hidden", isSelected ? "false" : "true");
       if (Array.isArray(tab.categories) && tab.categories.length) {
         panel.appendChild(createCategoryTools(tab));
       }

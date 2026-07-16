@@ -2064,37 +2064,6 @@ input[type="radio"]:checked+label {
     white-space: nowrap;
 }
 
-#time_text:focus-visible,
-#menu:focus-visible {
-    outline: 2px solid rgba(155, 231, 215, 0.92);
-    outline-offset: 4px;
-}
-
-.mark .tab .tab-item:focus-visible,
-.set .tabs .tab-items:focus-visible,
-.category-item:focus-visible,
-.quick a:focus-visible,
-.quicks a:focus-visible,
-.quickjl a:focus-visible {
-    outline: 2px solid rgba(155, 231, 215, 0.92);
-    outline-offset: -2px;
-}
-
-@media (min-width: 769px) and (any-hover: hover) and (any-pointer: fine) {
-    .quick:focus-within,
-    .quicks:focus-within,
-    .quickjl:focus-within {
-        border-color: rgba(255, 255, 255, 0.46);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 0 0 1px rgba(155, 231, 215, 0.14), 0 10px 22px rgba(0, 0, 0, 0.22), 0 0 16px rgba(155, 231, 215, 0.12);
-    }
-
-    .con .sou form .wd:focus-visible {
-        outline: 2px solid rgba(155, 231, 215, 0.92);
-        outline-offset: -4px;
-        border-radius: 999px;
-    }
-}
-
 .passcode {
     width: min(380px, calc(100vw - 32px));
     max-width: calc(100vw - 32px);
