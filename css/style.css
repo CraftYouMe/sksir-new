@@ -357,7 +357,13 @@ html.perf-lite.is-booting::after {
    ========================================================================== */
 
 .onsearch .all-search {
-    background-color: var(--main-text-form-hover-color);
+    border-color: rgba(255, 255, 255, 0.74);
+    background-color: rgba(245, 245, 245, 0.90);
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.90);
+    -webkit-backdrop-filter: blur(16px) saturate(1.08);
+    backdrop-filter: blur(16px) saturate(1.08);
     transform: translateY(-140%);
     transition: ease 0.3s !important;
     width: 100%;
@@ -477,20 +483,36 @@ html.perf-lite.is-booting::after {
 .all-search {
     display: flex;
     align-items: center;
+    box-sizing: border-box;
     width: 70%;
     height: 43px;
     border-radius: 30px;
     color: var(--main-text-color);
-    background-color: var(--main-background-color);
-    box-shadow: var(--main-search-shadow);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    background-color: rgba(18, 24, 32, 0.26);
+    box-shadow:
+        0 12px 34px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    backdrop-filter: blur(14px) saturate(1.15);
+    transform: translateY(0);
     overflow: hidden;
-    transition: 0.5s ease;
+    transition:
+        transform 0.3s ease,
+        width 0.5s ease,
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
-.all-search:hover {
-    box-shadow: var(--main-search-hover-shadow);
+body:not(.onsearch) .all-search:hover {
+    border-color: rgba(255, 255, 255, 0.34);
+    background-color: rgba(18, 24, 32, 0.34);
+    box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.14);
     width: 100%;
 }
 
@@ -549,16 +571,36 @@ html.perf-lite.is-booting::after {
 .all-search input::-webkit-input-placeholder {
     color: var(--main-text-color);
     text-align: center;
+    opacity: 1;
+    transition: opacity 0.12s ease;
 }
 
 .all-search input::-moz-placeholder {
     color: var(--main-text-color);
     text-align: center;
+    opacity: 1;
+    transition: opacity 0.12s ease;
 }
 
 .all-search input:-ms-input-placeholder {
     color: var(--main-text-color);
     text-align: center;
+    opacity: 1;
+    transition: opacity 0.12s ease;
+}
+
+.all-search input::placeholder {
+    color: var(--main-text-color);
+    text-align: center;
+    opacity: 1;
+    transition: opacity 0.12s ease;
+}
+
+.onsearch .all-search input::-webkit-input-placeholder,
+.onsearch .all-search input::-moz-placeholder,
+.onsearch .all-search input:-ms-input-placeholder,
+.onsearch .all-search input::placeholder {
+    opacity: 0;
 }
 
 /*切换搜索引擎*/
@@ -2452,6 +2494,7 @@ html.ios-safari .cover {
         line-height: 1.5;
         padding: 0 12px;
         box-sizing: border-box;
+        text-align: center;
         pointer-events: none;
     }
 
@@ -2461,23 +2504,20 @@ html.ios-safari .cover {
         align-items: center;
         justify-content: center;
         max-width: calc(100vw - 24px);
-        gap: 5px 8px;
-        padding: 7px 13px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 999px;
-        background: rgba(10, 16, 24, 0.28);
-        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        -webkit-backdrop-filter: blur(12px) saturate(1.05);
-        backdrop-filter: blur(12px) saturate(1.05);
+        gap: 6px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
         pointer-events: auto;
     }
 
-    .power::before {
-        height: 16px;
-    }
-
+    .power::before,
     .daily-quote {
-        max-width: calc(100vw - 124px);
+        display: none;
     }
 
     .update-check {

@@ -450,6 +450,7 @@ function scheduleWelcomeToast() {
 function setDailyQuote() {
     var quoteElement = document.getElementById("daily-quote");
     if (!quoteElement) return;
+    if (window.matchMedia && window.matchMedia("(max-width: 720px)").matches) return;
 
     var quotes = [
         "天暗下来，你就是光",
