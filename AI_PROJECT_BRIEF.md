@@ -30,7 +30,9 @@ Use `apply_patch` for manual edits.
 ## Key Files
 
 - `index.html`: main page structure, early iOS Safari height/keyboard setup, script/style loading.
-- `css/style.css`: desktop/base styles, boot animation, shared keyframes, icon font mapping, optional MiSans class, and the final mobile/iOS Safari override section.
+- `css/style.css`: desktop/base styles, boot animation, shared keyframes, icon font mapping, local MiSans UI subset, and the final mobile/iOS Safari override section.
+- `font/MiSans-UI.woff2`: generated local UI subset; currently 76,764 bytes and 633 characters.
+- `font/MiSans-UI.characters.txt`: generated character manifest used to detect stale subsets.
 - `js/main.js`: local toast fallback, first-screen tasks, welcome toast, visitor badge, update check, category indicator, password-gated reward section.
 - `js/set.js`: JavaScript Cookie v2.2.1 bootstrap, search engine settings, wallpaper settings, search suggestions, search UI interactions.
 - `js/nav-render.js`: renders navigation cards from data.
@@ -42,6 +44,7 @@ Use `apply_patch` for manual edits.
 - `vercel.json`: Vercel cache headers and baseline security headers.
 - `OPTIMIZATION_PLAN.md`: simple checklist of completed, pending, and not recommended optimization work.
 - `scripts/check.js`: single local check command for day-to-day maintenance and pre-release checks.
+- `scripts/build-font-subset.js`: validates the generated subset with `--check`, or rebuilds it from a full MiSans source font when given a source path.
 - `scripts/preflight.js`: compatibility wrapper for the old pre-release check command.
 - `scripts/validate-sites.js`: internal validator for `data/sites.js` structure and common maintenance mistakes.
 - `scripts/update-version.js`: updates `data/app-version.json` and `sw.js` cache version together.
@@ -68,26 +71,26 @@ This updates:
 - Current bookmark tabs are `常用`, `影音`, `工具`, `收藏`, `装机`, and password-gated `奖励`. Keep public tabs grouped by short categories and keep descriptions brief.
 - Do not move `奖励` items into public tabs unless the user explicitly confirms it; it is only front-end hidden, but the current UX treats it as a private group.
 - Bookmark resources are not part of the blocking script/style list in `index.html`. `js/main.js` loads the core `data/sites.js` and `js/nav-render.js` after load/idle, or immediately through `window.ensureNavSitesLoaded()` when the bookmark panel is opened early.
-- `js/status-dot.js` and `css/status-dot.css` are separate progressive enhancements loaded through `ensureNavStatusResourcesLoaded()`. They must never gate bookmark tab rendering; cached stylesheet load events also have a timeout fallback for mobile Safari.
+- `js/status-dot.js` and `css/status-dot.css` are separate progressive enhancements loaded through `ensureNavStatusResourcesLoaded()` only when `openBox()` opens bookmarks. Bookmark prewarming must not request them, and they must stay out of the Service Worker precache. The base `.status-actions` hide rule lives in `css/style.css` so slow loading cannot expose an unstyled button.
 - On viewports up to 768px, `scheduleNavSitesLoad()` prewarms the core bookmark resources shortly after first paint instead of waiting for window load/idle. Desktop keeps the idle-loading path.
 - Mobile bookmark opening uses a shorter reveal delay and waits one animation frame before adding `.is-visible`. Remote icons start after the panel reveal and load in batches through `loadDeferredNavIcons(root, options)` to avoid decode work during the opening animation.
 - Opening the settings panel must not trigger bookmark resource loading. `js/set.js` opens settings directly and waits for `ensureNavSitesLoaded()` only in `openBox()`.
 - `js/nav-render.js` renders the selected bookmark panel first and leaves hidden panels as lightweight shells. Hidden panels hydrate during idle time after page load, or immediately through `window.ensureNavPanelRendered(index)` before a user-selected tab is shown.
 - Bookmark card clicks are delegated from `.products` in `js/main.js`, so cards added by later hydration still open correctly.
 - `js/set.js` exposes `closeActiveSurface()` for closing search, bookmark, and settings layers; `Esc` uses it and should stay lightweight.
-- Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation and syntax checks.
+- Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation, MiSans UI manifest validation, and syntax checks.
 - Remote icons are initially rendered with a local fallback and loaded later for visible panels.
 - First-screen target is 0.5 seconds for assembled page structure on both PC and mobile. Time/search/layout should be ready quickly; remote icons, visitor badge, update check, and status checks must not block that window.
-- `index.html` preloads `css/style.css` and `font/iconfont.woff2` before the inline boot script so cold visits can discover both critical resources earlier. Keep the real stylesheet link after the boot script; moving it before the script can block early boot classes, performance mode, and iOS height setup.
+- `index.html` preloads `css/style.css`, `font/iconfont.woff2`, and `font/MiSans-UI.woff2` before the inline boot script so cold visits can discover critical resources earlier. Keep the real stylesheet link after the boot script; moving it before the script can block early boot classes, performance mode, and iOS height setup.
 - `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
-- Visitor badge, welcome toast, update check, service worker registration, and MiSans loading are intentionally delayed beyond the critical first-screen window.
+- Visitor badge, welcome toast, update check, and service worker registration are intentionally delayed beyond the critical first-screen window.
 - The local `iziToast`-compatible fallback now lives at the top of `js/main.js`. The old `js/toast-loader.js` was removed so it does not add another defer request. Keep the fallback bootstrap before any `iziToast` calls in `main.js` or `set.js`.
 - JavaScript Cookie v2.2.1 now lives at the top of `js/set.js`; the old `js/js.cookie.js` file was removed. Preserve the complete MIT license and library source, and keep the Cookies bootstrap before all project settings code so existing `bg_img`, `se_list`, and other preference formats remain compatible.
 - `index.html` now has three deferred scripts: jQuery, `main.js`, and `set.js`. Do not restore a separate Cookies request unless a measured regression requires it.
 - First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay and ring loader, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. Page content stays fully composed beneath the overlay so the search box backdrop blur is ready before it becomes visible. Do not animate opacity or transform on the `.con` ancestor during boot; doing so can make the glass effect appear one frame late. The mask waits briefly for wallpaper readiness, but must not wait for icons, visitor badge, update check, or status checks.
 - Shared `fade` / `fadenum` keyframes and icon font mapping live in `css/style.css`. The old standalone `css/animation.css` and `css/font.css`, unused `down` keyframes, and legacy prefixed duplicates were removed so they do not add separate render-blocking stylesheet requests.
 - Mobile and iOS Safari overrides now live at the end of `css/style.css`. The old `css/mobile.css` was removed, reducing the first-screen synchronous stylesheets from two requests to one. Keep mobile fixes in that final section and scope them with mobile media queries or `html.ios-safari` so desktop behavior remains unchanged.
-- The Service Worker precaches only `font/iconfont.woff2`. The `woff` and `ttf` sources remain in the `@font-face` fallback list and are cached on demand by the existing cache-first handler if an older browser requests them.
+- The Service Worker precaches `font/iconfont.woff2` and `font/MiSans-UI.woff2`. The icon font `woff` and `ttf` sources remain as compatibility fallbacks and are cached on demand.
 - Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` calls `startBgImgInit()` during deferred script execution instead of waiting two animation frames after first paint. The preload image uses eager/high-priority hints and waits for `decode()` before revealing, with a short 180ms fallback so Safari cannot leave the wallpaper pending indefinitely. It updates `window.__sksirWallpaperState` and dispatches `sksir-wallpaper-ready` on loaded, error, or empty states so the boot mask does not fade before the wallpaper is ready unless the overall wait times out.
 - Search engine preferences are stored in cookies.
 - Search suggestions use Baidu JSONP from `js/set.js`; calls are short-debounced with `scheduleKeywordReminder()` so rapid typing does not fire a request on every keyup.
@@ -95,7 +98,9 @@ This updates:
 - Performance mode is stored in `localStorage` under `sksir-performance-mode`: `auto`, `full`, or `lite`.
 - The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
 - The settings panel has a `性能模式` tab. `js/set.js` initializes and updates it without requiring a page refresh.
-- MiSans is loaded after idle on non-iOS Safari only. iOS Safari skips it to avoid first-screen font changes.
+- The original remote MiSans was about 3.9 MiB. It has been replaced by a generated 76,764-byte local subset covering the current runtime text. `font-display: optional` prevents a late whole-page swap when the subset is not ready.
+- `scripts/build-font-subset.js --check` compares runtime text with `font/MiSans-UI.characters.txt`; this check must remain in `scripts/check.js`. To rebuild, install `fonttools` and `brotli`, then run `node scripts/build-font-subset.js path/to/MiSans-Regular.woff2`. Do not commit the full source font.
+- Keep only one OSS `preconnect` resource hint. Do not add a duplicate `dns-prefetch` for the same host; the remaining `api.dujin.org` hint is used by the optional Bing wallpaper source.
 - iOS Safari gets `html.ios-safari`, `--app-height`, and `--ios-bg-height` early in `index.html`. The final mobile section of `css/style.css` sizes `.bg-all` from the largest known viewport height, uses `100lvh` when available, and makes `#bg` / `.cover` absolute inside it.
 - `js/set.js` mirrors the loaded wallpaper URL into `--ios-wallpaper-image`; only `html.ios-safari .bg-all` uses that CSS background as a same-image fallback if the image layer fails to cover Safari toolbar/safe-area changes.
 - While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.

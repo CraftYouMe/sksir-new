@@ -14,6 +14,10 @@ const checks = [
     args: [projectPath("scripts", "validate-sites.js")]
   },
   {
+    name: "Validate MiSans UI subset",
+    args: [projectPath("scripts", "build-font-subset.js"), "--check"]
+  },
+  {
     name: "Syntax check main.js",
     args: ["--check", projectPath("js", "main.js")]
   },
@@ -44,6 +48,10 @@ const checks = [
   {
     name: "Syntax check validate-sites.js",
     args: ["--check", projectPath("scripts", "validate-sites.js")]
+  },
+  {
+    name: "Syntax check build-font-subset.js",
+    args: ["--check", projectPath("scripts", "build-font-subset.js")]
   }
 ];
 

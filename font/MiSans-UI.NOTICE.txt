@@ -1,0 +1,13 @@
+MiSans UI subset
+
+Derived from MiSans Regular Version 2.000 for use by this navigation site.
+
+Copyright (c) 2020-2021 Beijing Xiaomi Mobile Software Co., Ltd.
+All Rights Reserved.
+
+Official MiSans page:
+https://hyperos.mi.com/font/zh/
+
+The generated WOFF2 contains only characters collected from the runtime HTML,
+navigation data, and user-interface scripts. The original full font is not
+stored in this repository.

@@ -848,6 +848,12 @@ function openBox() {
         ? window.ensureNavSitesLoaded()
         : Promise.resolve();
 
+    if (typeof window.ensureNavStatusResourcesLoaded === "function") {
+        window.ensureNavStatusResourcesLoaded().catch(function (error) {
+            console.warn("Navigation status resources failed to load", error);
+        });
+    }
+
     prepareNav.then(function () {
         if (requestId !== bookmarkOpenRequestId) return;
         if (!$("#content").hasClass("bookmarks-open") || $("#content").hasClass("setting-open")) {

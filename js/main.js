@@ -166,7 +166,6 @@ $(function () {
     scheduleVisitorBadge();
     scheduleWelcomeToast();
     scheduleUpdateCheck();
-    scheduleMiSansFont();
     scheduleStaticCache();
     setDailyQuote();
 });
@@ -369,9 +368,6 @@ function ensureNavStatusResourcesLoaded() {
 
 function ensureNavSitesLoaded() {
     if (document.querySelector(".mark .mainCont")) {
-        ensureNavStatusResourcesLoaded().catch(function (error) {
-            console.warn("Navigation status resources failed to load", error);
-        });
         return Promise.resolve(true);
     }
     if (navSitesLoadPromise) return navSitesLoadPromise;
@@ -391,9 +387,6 @@ function ensureNavSitesLoaded() {
             if (!document.querySelector(".mark .mainCont")) {
                 throw new Error("Navigation tabs were not rendered");
             }
-            ensureNavStatusResourcesLoaded().catch(function (error) {
-                console.warn("Navigation status resources failed to load", error);
-            });
         })
         .then(function () {
             return true;
@@ -427,6 +420,7 @@ function isMobileNavPriorityViewport() {
 }
 
 window.ensureNavSitesLoaded = ensureNavSitesLoaded;
+window.ensureNavStatusResourcesLoaded = ensureNavStatusResourcesLoaded;
 window.isMobileNavPriorityViewport = isMobileNavPriorityViewport;
 
 function scheduleWelcomeToast() {
@@ -477,57 +471,6 @@ function setDailyQuote() {
     var today = new Date();
     var seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
     quoteElement.textContent = quotes[seed % quotes.length];
-}
-
-function scheduleMiSansFont() {
-    if (document.documentElement.classList.contains("ios-safari")) {
-        document.documentElement.classList.remove("font-misans");
-        return;
-    }
-
-    if (!("FontFace" in window) || !document.fonts) return;
-
-    var cacheKey = "misans-font-ready";
-    var storage = {
-        get: function () {
-            try {
-                return localStorage.getItem(cacheKey);
-            } catch (e) {
-                return null;
-            }
-        },
-        set: function () {
-            try {
-                localStorage.setItem(cacheKey, "1");
-            } catch (e) {}
-        },
-        remove: function () {
-            try {
-                localStorage.removeItem(cacheKey);
-            } catch (e) {}
-        }
-    };
-
-    if (storage.get() === "1") {
-        document.documentElement.classList.add("font-misans");
-    }
-
-    runAfterLoadIdle(function () {
-        var font = new FontFace(
-            "MiSans",
-            "url(https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/MiSans-Regular.woff2)",
-            { display: "optional" }
-        );
-
-        font.load().then(function (loadedFont) {
-            document.fonts.add(loadedFont);
-            document.documentElement.classList.add("font-misans");
-            storage.set();
-        }).catch(function () {
-            storage.remove();
-            document.documentElement.classList.remove("font-misans");
-        });
-    }, 2200);
 }
 
 function scheduleVisitorBadge() {

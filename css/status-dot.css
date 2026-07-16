@@ -1,11 +1,4 @@
 /* Manual link status check */
-.status-actions {
-  display: none;
-  margin-top: 0;
-  flex: 0 0 auto;
-  margin-left: auto;
-}
-
 #content.bookmarks-open:not(.setting-open) .status-actions {
   display: flex;
   align-items: center;

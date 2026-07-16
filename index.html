@@ -16,8 +16,8 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preload" href="./css/style.css" as="style">
     <link rel="preload" href="./font/iconfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="./font/MiSans-UI.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
-    <link rel="dns-prefetch" href="//yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
     <link rel="dns-prefetch" href="//api.dujin.org">
     <meta name="theme-color" content="#333333">
     <script>
@@ -203,12 +203,6 @@
                     }, { passive: true });
                 }
             }
-
-            try {
-                if (!iosSafari && localStorage.getItem("misans-font-ready") === "1") {
-                    document.documentElement.classList.add("font-misans");
-                }
-            } catch (e) {}
 
             window.__sksirBootFallbackTimer = window.setTimeout(function () {
                 var root = document.documentElement;
@@ -534,7 +528,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.16.2">v2026.07.16.2</span>
+                <span id="app-version" class="app-version" data-version="2026.07.16.4">v2026.07.16.4</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>
