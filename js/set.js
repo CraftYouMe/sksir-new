@@ -1235,6 +1235,13 @@ $(document).ready(function () {
         closeActiveSurface();
     });
 
+    $(document).on('pointerdown click', '.search-cancel', function (event) {
+        if (!$('body').hasClass('onsearch')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        closeActiveSurface();
+    });
+
     $(document).on('keydown', function (event) {
         var key = event.key || event.keyCode;
         if (key !== "Escape" && key !== "Esc" && key !== 27) return;
