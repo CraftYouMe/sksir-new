@@ -1,4 +1,4 @@
-const CACHE_VERSION = "nav-cache-2026.07.20.1";
+const CACHE_VERSION = "nav-cache-2026.07.19.20";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
