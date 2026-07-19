@@ -59,8 +59,8 @@
 ├── sw.js                     # Service Worker 缓存
 ├── vercel.json               # Vercel 缓存和基础安全响应头
 ├── index.html                # 页面入口
-├── OPTIMIZATION_PLAN.md      # 优化计划清单
-└── AI_PROJECT_BRIEF.md       # 给 AI 接手用的项目简介
+├── README.md                 # 使用与日常维护说明
+└── AGENTS.md                 # 开发约定与敏感区域说明
 ```
 
 ## 日常维护
@@ -141,54 +141,18 @@ node scripts\update-version.js YYYY.MM.DD.N
 ## 开发注意
 
 - 文件中有中文注释和中文 UI 文案，读写请使用 UTF-8。
-- iOS Safari 的背景和首屏高度比较敏感，修改前要确认不会改变壁纸裁切效果。
-- iOS Safari 壁纸铺满逻辑位于 `css/style.css` 末尾的移动端区域，核心选择器是 `html.ios-safari .bg-all`，通过最大可视高度和同图 CSS 背景兜底覆盖安全区和地址栏收放高度。
-- PC 端样式尽量不要被移动端修复影响，移动修复应继续放在 `css/style.css` 末尾，并限制在移动媒体查询或 `html.ios-safari` 作用域下。
-- 首屏目标是 0.5 秒内完成主体结构和当前首屏内容；远程图标、访客统计、状态检测和更新检查都不应阻塞这个窗口。
-- `index.html` 会在内联启动脚本前预加载 `css/style.css`、`font/iconfont.woff2` 和 `font/MiSans-UI.woff2`；实际 stylesheet 必须继续放在启动脚本之后，避免 CSS 下载阻塞启动类、性能模式和 iOS 高度初始化。
-- 书签卡片不是首屏必需内容，`data/sites.js` 和 `js/nav-render.js` 会在首屏后空闲加载；用户提前打开书签时则立即加载。
-- `js/status-dot.js` 和 `css/status-dot.css` 只在用户打开书签时并行加载，不跟随标签预热，也不进入 Service Worker 预缓存；加载慢或失败不能阻塞书签标签和卡片显示。
-- 书签资源就绪后只同步渲染默认分组，其他分组会在空闲时间或首次点击对应标签时补齐。
-- 宽度不超过 768px 时，书签核心资源会在首屏绘制后约 120ms 开始预热；面板打开延迟约 70ms，远程图标在显现动画后每批 4 个加载，避免移动端图片解码卡住标签动画。
-- PC 端仍保持 load 后空闲加载和原有面板打开节奏，不跟随移动端预热策略。
-- 分类栏的窗口尺寸刷新和搜索建议框的聚焦、输入、尺寸刷新会通过 `requestAnimationFrame` 合帧，同一帧只执行一次布局读写。
-- 页脚在桌面端固定为左下角轻量样式；手机端取消外层玻璃背景，使用底部安全区定位版本号和更新入口。
-- 壁纸会在 `set.js` 执行时立即高优先级预加载，不再额外等待首屏后的两帧；图片完成加载和异步解码后才进入可见状态，解码异常时最多等待约 180ms 自动回退。
-- 启动遮罩会短暂等待壁纸 `load/error` 或整体超时后再淡出，避免露出灰色底色。
-- 首屏启动遮罩用于遮住页面组装过程，当前由 CSS 光环和遮罩淡出完成过渡；主体会在遮罩下提前完成合成，避免搜索框毛玻璃从透明状态突然跳出。
-- 通用 `fade`、`fadenum` 关键帧、图标字体映射、移动端和 iOS Safari 规则都保存在 `css/style.css`；原独立 `css/animation.css`、`css/font.css`、`css/mobile.css` 已删除，不要重新拆回首屏阻塞样式。
-- Service Worker 预缓存图标字体的 `woff2` 和本地 MiSans UI 子集；图标字体的 `woff`、`ttf` 仍作为 CSS 兼容回退并在实际需要时按需缓存。
-- 原远程 MiSans 文件约 3.9 MiB，现已替换为 76,764 字节、633 个字符的本地子集。子集使用 `font-display: optional`，慢网络下回退系统字体，不允许首屏后再替换整页文字。
-- OSS 的 `preconnect` 用于壁纸和站点图标，已经包含连接预热；不要再为同一域名重复添加 `dns-prefetch`。
-- 本地 `iziToast` 风格提示框兜底位于 `js/main.js` 开头，原 `js/toast-loader.js` 已删除。
-- JavaScript Cookie v2.2.1 已原样并入 `js/set.js` 顶部，原 `js/js.cookie.js` 已删除；必须保留其 MIT 许可，并确保 Cookies 初始化始终位于设置逻辑之前。
-- HTML 当前只保留 jQuery、主脚本和设置脚本 3 个 defer 请求。
-- 页面会在首屏绘制后写入 `window.__sksirFirstScreenMs`，用于本地调试首屏耗时。
-- Service Worker 会缓存静态资源，手机端测试时如果“看起来没变”，先确认缓存版本是否已更新。
-- 页脚里隐藏的 `#app-version` 会被更新检测读取，不要随手删掉。
-- `api/check.js` 只允许检测 `data/sites.js` 里出现过的域名，并会拦截内网、本地和 metadata 地址。
-- `vercel.json` 控制 `data/app-version.json`、`sw.js`、`/api/check` 的缓存策略和基础安全响应头。
-- 前端隐藏分组密码只是 UI 隐藏，不是真正安全隔离。
+- 首屏性能、移动端、iOS Safari、缓存和安全边界等技术约定统一维护在 `AGENTS.md`。
+- 修改敏感区域前先阅读 `AGENTS.md`，不要在 README 中重复维护同一套规则。
 
 ## 给 AI 接手
 
-让 AI 先阅读：
+让 AI 先阅读根目录的：
 
 ```text
-AI_PROJECT_BRIEF.md
-OPTIMIZATION_PLAN.md
+AGENTS.md
 ```
 
-里面记录了项目目标、关键文件、编码要求、版本更新方式、首屏策略、iOS Safari 注意事项和当前优化进度。
-
-## 后续计划
-
-- 继续观察 iOS Safari 壁纸铺满和键盘收起稳定性
-- 继续压低首次启动耗时，缓存后稳定低于 0.5 秒
-- 打磨启动遮罩、分类切换、卡片交互等轻量动效
-- 复测移动端搜索、键盘、分类栏在连续交互时的流畅度
-- 继续观察冷启动，优先拆首屏外的样式、脚本、DOM、图片和网络任务
-- 收藏变多后，再考虑拆分搜索引擎和壁纸配置
+里面集中记录了项目目标、关键文件、修改流程、首屏策略、iOS Safari 经验和发布检查。
 
 ## 使用到的组件
 
