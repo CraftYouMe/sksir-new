@@ -1,7 +1,8 @@
-const CACHE_VERSION = "nav-cache-2026.07.16.9";
+const CACHE_VERSION = "nav-cache-2026.07.19.2";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
+  "./manifest.webmanifest",
   "./css/style.css",
   "./js/jquery-3.6.0.min.js",
   "./js/main.js",
@@ -12,6 +13,8 @@ const PRECACHE_URLS = [
   "./font/MiSans-UI.woff2",
   "./img/icon/fangdiu.png",
   "./apple-touch-icon.png",
+  "./img/pwa-icon-192.png",
+  "./img/pwa-icon-512.png",
   "./favicon.ico"
 ];
 
@@ -19,7 +22,7 @@ const CACHE_FIRST_HOSTS = new Set([
   "yuanone-blog-picture.oss-cn-beijing.aliyuncs.com"
 ]);
 
-const CACHE_FIRST_EXTENSIONS = /\.(?:css|js|woff2?|ttf|png|jpe?g|gif|webp|avif|svg|ico)(?:[?#].*)?$/i;
+const CACHE_FIRST_EXTENSIONS = /\.(?:css|js|webmanifest|woff2?|ttf|png|jpe?g|gif|webp|avif|svg|ico)(?:[?#].*)?$/i;
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

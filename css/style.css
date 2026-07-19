@@ -712,6 +712,38 @@ body:not(.onsearch) .all-search:hover {
     opacity: 0.72;
 }
 
+.keyword-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.keyword-meta {
+    min-width: 0;
+    margin-left: auto;
+    padding-left: 12px;
+    overflow: hidden;
+    color: rgba(220, 230, 240, 0.54);
+    font-size: 0.76rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.keyword-nav > i {
+    color: rgba(186, 215, 245, 0.9);
+}
+
+.keyword-status {
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    color: rgba(220, 230, 240, 0.58);
+    font-size: 0.76rem;
+    pointer-events: none;
+}
+
 .keyword:hover,
 .keyword.choose {
     cursor: pointer;
@@ -1644,7 +1676,8 @@ input[type="radio"]:checked+label {
     opacity: 0.9;
 }
 
-.update-check {
+.update-check,
+.install-app {
     display: inline-flex;
     align-items: center;
     height: 22px;
@@ -1661,16 +1694,51 @@ input[type="radio"]:checked+label {
     backdrop-filter: blur(8px);
 }
 
-.update-check:hover {
+.update-check:hover,
+.install-app:hover {
     background: rgba(255, 255, 255, 0.22);
 }
 
-.update-check:active {
+.update-check:active,
+.install-app:active {
     transform: scale(0.96);
 }
 
 .update-check[hidden],
+.install-app[hidden],
 .footer-separator[hidden] {
+    display: none;
+}
+
+.network-status {
+    position: fixed;
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    left: 50%;
+    z-index: 10020;
+    max-width: calc(100vw - 32px);
+    padding: 7px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(25, 32, 41, 0.84);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+    font-size: 12px;
+    line-height: 1.35;
+    text-align: center;
+    transform: translateX(-50%);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.network-status.is-offline {
+    border-color: rgba(241, 210, 119, 0.30);
+}
+
+.network-status.is-online {
+    border-color: rgba(155, 231, 215, 0.30);
+}
+
+.network-status[hidden] {
     display: none;
 }
 
@@ -2251,7 +2319,8 @@ input[type="radio"]:checked+label {
         pointer-events: auto;
     }
 
-    .update-check {
+    .update-check,
+    .install-app {
         max-width: calc(100vw - 28px);
         height: 22px;
         line-height: 20px;

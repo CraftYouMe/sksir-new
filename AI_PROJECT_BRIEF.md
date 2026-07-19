@@ -1,58 +1,283 @@
 # AI Project Brief
 
-This file is for AI assistants taking over work on this project. Read it before editing.
+This document is for AI coding assistants working on this project.
+Read this file before inspecting or modifying code.
 
-## Project Purpose
+---
 
-This is a personal daily navigation/start-page site for bookmarks, search, quick links, wallpaper, and link status checks.
+# 1. Project Overview
 
-The user cares most about:
-- Fast and stable first-screen loading.
-- Lightweight but polished animation and transitions.
-- Good daily-use UX on mobile and desktop.
-- Reliable mobile Safari behavior, especially iPhone 15 Pro Max.
-- Minimal disruption to PC layout when fixing mobile issues.
-- Easy day-to-day maintenance of bookmarks and categories.
-- Preserving Chinese comments and text without encoding corruption.
+## Purpose
 
-## Encoding Rule
+This project is a personal daily navigation/start-page website.
 
-Always read and write files as UTF-8. Many files contain Chinese comments and Chinese UI text.
+Main features:
 
-On PowerShell, prefer:
+* Bookmark navigation
+* Search engine switching
+* Quick links
+* Wallpaper system
+* Link status checking
+* Lightweight personalization settings
+
+The project focuses on being fast, stable, and easy to maintain.
+
+---
+
+# 2. User Priorities
+
+When making changes, prioritize in this order:
+
+1. First-screen loading speed
+2. Stability and compatibility
+3. Mobile Safari experience (especially iPhone 15 Pro Max)
+4. Desktop layout preservation
+5. Lightweight animations and polished UX
+6. Easy bookmark/category maintenance
+
+Avoid changes that improve appearance but reduce performance.
+
+---
+
+# 3. Tech Stack
+
+Frontend:
+
+* HTML5
+* CSS3
+* Vanilla JavaScript
+* jQuery (existing usage)
+
+Deployment:
+
+* Vercel
+* Serverless Functions
+
+Storage:
+
+* Cookies
+* LocalStorage
+
+Assets:
+
+* Local fonts
+* Service Worker cache
+
+---
+
+# 4. Encoding Rules
+
+Always read and write files using UTF-8.
+
+Many files contain:
+
+* Chinese comments
+* Chinese UI text
+* Chinese bookmark descriptions
+
+Avoid encoding corruption.
+
+PowerShell example:
 
 ```powershell
-Get-Content -Encoding UTF8 -Path path\to\file
+Get-Content -Encoding UTF8 -Path path\file
 ```
 
-Use `apply_patch` for manual edits.
+---
 
-## Key Files
+# 5. Project Structure
 
-- `index.html`: main page structure, early iOS Safari height/keyboard setup, script/style loading.
-- `css/style.css`: desktop/base styles, boot animation, shared keyframes, icon font mapping, local MiSans UI subset, and the final mobile/iOS Safari override section.
-- `font/MiSans-UI.woff2`: generated local UI subset; currently 76,764 bytes and 633 characters.
-- `font/MiSans-UI.characters.txt`: generated character manifest used to detect stale subsets.
-- `js/main.js`: local toast fallback, first-screen tasks, welcome toast, visitor badge, update check, category indicator, password-gated reward section.
-- `js/set.js`: JavaScript Cookie v2.2.1 bootstrap, search engine settings, wallpaper settings, search suggestions, search UI interactions.
-- `js/nav-render.js`: renders navigation cards from data.
-- `js/status-dot.js`: manual link availability checks.
-- `data/sites.js`: bookmark/category data source.
-- `data/app-version.json`: visible app version used by update check.
-- `sw.js`: service worker static cache.
-- `api/check.js`: serverless link status check endpoint.
-- `vercel.json`: Vercel cache headers and baseline security headers.
-- `OPTIMIZATION_PLAN.md`: simple checklist of completed, pending, and not recommended optimization work.
-- `scripts/check.js`: single local check command for day-to-day maintenance and pre-release checks.
-- `scripts/build-font-subset.js`: validates the generated subset with `--check`, or rebuilds it from a full MiSans source font when given a source path.
-- `scripts/preflight.js`: compatibility wrapper for the old pre-release check command.
-- `scripts/validate-sites.js`: internal validator for `data/sites.js` structure and common maintenance mistakes.
-- `scripts/update-version.js`: updates `data/app-version.json` and `sw.js` cache version together.
+## Main Files
 
-## Versioning
+### index.html
 
-Do not manually edit only one of `data/app-version.json` or `sw.js`.
-Every completed optimization round must bump the version unless the user explicitly says otherwise.
+Responsible for:
+
+* Page structure
+* Initial iOS Safari height handling
+* Critical resource loading
+* Boot initialization
+
+### css/style.css
+
+Responsible for:
+
+* Desktop styles
+* Mobile styles
+* iOS Safari fixes
+* Animations
+* Icon/font mapping
+
+### js/main.js
+
+Responsible for:
+
+* First-screen logic
+* Toast system
+* Navigation initialization
+* Category interaction
+* Version update check
+
+### js/set.js
+
+Responsible for:
+
+* Settings panel
+* Cookies
+* Search configuration
+* Wallpaper settings
+
+### js/nav-render.js
+
+Responsible for:
+
+* Rendering navigation cards
+
+### js/status-dot.js
+
+Responsible for:
+
+* Link status checking enhancement
+
+### data/sites.js
+
+Source of:
+
+* Bookmark data
+* Categories
+* Navigation items
+
+### api/check.js
+
+Responsible for:
+
+* Serverless link checking API
+
+### sw.js
+
+Responsible for:
+
+* Static resource cache
+
+---
+
+# 6. Coding Rules
+
+## Prefer
+
+* Native JavaScript
+* Existing project structure
+* Small targeted changes
+* CSS solutions before adding dependencies
+
+## Avoid
+
+Do not introduce:
+
+* React
+* Vue
+* Large UI frameworks
+* Heavy animation libraries
+* Unnecessary npm packages
+
+Do not rewrite working modules without a clear reason.
+
+---
+
+# 7. Change Workflow
+
+Before modifying code:
+
+1. Read related files.
+2. Understand current implementation.
+3. Explain planned changes briefly.
+4. Check possible impact.
+
+After modifying:
+
+1. Run:
+
+```powershell
+node scripts\check.js
+```
+
+2. Report:
+
+   * Modified files
+   * Main changes
+   * Possible risks
+
+---
+
+# 8. Important Constraints
+
+## Performance
+
+First screen should remain fast.
+
+Target:
+
+* Cached visits: under 500ms
+* No unnecessary blocking requests
+
+Do not block first-screen rendering with:
+
+* Remote icons
+* Status checking
+* Visitor information
+* Update checking
+
+---
+
+## Mobile / iOS Safari
+
+Be careful with:
+
+* Viewport height
+* Safe area
+* Keyboard opening/closing
+* Wallpaper scaling
+* Fixed elements
+
+Do not change iOS Safari related code without testing.
+
+Desktop layout must not be affected by mobile fixes.
+
+Prefer:
+
+```css
+html.ios-safari
+```
+
+or mobile media queries.
+
+---
+
+# 9. Current Architecture Notes
+
+## Bookmark Loading
+
+Bookmarks are loaded from:
+
+```
+data/sites.js
+```
+
+Do not move bookmark data into another system without confirmation.
+
+Hidden bookmark sections are intentionally separated.
+
+---
+
+## Version Management
+
+Never update only one version file.
+
+When releasing changes, keep synchronized:
+
+* data/app-version.json
+* sw.js cache version
+* index.html footer version
 
 Use:
 
@@ -60,88 +285,72 @@ Use:
 node scripts\update-version.js YYYY.MM.DD.N
 ```
 
-This updates:
-- `data/app-version.json` -> `version`
-- `sw.js` -> `CACHE_VERSION = "nav-cache-YYYY.MM.DD.N"`
-- `index.html` -> footer `#app-version`
+---
 
-## Current Implementation Notes
+## Font System
 
-- Bookmarks are rendered from `window.NAV_SITES` in `data/sites.js`.
-- Current bookmark tabs are `常用`, `影音`, `工具`, `收藏`, `装机`, and password-gated `奖励`. Keep public tabs grouped by short categories and keep descriptions brief.
-- Do not move `奖励` items into public tabs unless the user explicitly confirms it; it is only front-end hidden, but the current UX treats it as a private group.
-- Bookmark resources are not part of the blocking script/style list in `index.html`. `js/main.js` loads the core `data/sites.js` and `js/nav-render.js` after load/idle, or immediately through `window.ensureNavSitesLoaded()` when the bookmark panel is opened early.
-- `js/status-dot.js` and `css/status-dot.css` are separate progressive enhancements loaded through `ensureNavStatusResourcesLoaded()` only when `openBox()` opens bookmarks. Bookmark prewarming must not request them, and they must stay out of the Service Worker precache. The base `.status-actions` hide rule lives in `css/style.css` so slow loading cannot expose an unstyled button.
-- On viewports up to 768px, `scheduleNavSitesLoad()` prewarms the core bookmark resources shortly after first paint instead of waiting for window load/idle. Desktop keeps the idle-loading path.
-- Mobile bookmark opening uses a shorter reveal delay and waits one animation frame before adding `.is-visible`. Remote icons start after the panel reveal and load in batches through `loadDeferredNavIcons(root, options)` to avoid decode work during the opening animation.
-- Opening the settings panel must not trigger bookmark resource loading. `js/set.js` opens settings directly and waits for `ensureNavSitesLoaded()` only in `openBox()`.
-- `js/nav-render.js` renders the selected bookmark panel first and leaves hidden panels as lightweight shells. Hidden panels hydrate during idle time after page load, or immediately through `window.ensureNavPanelRendered(index)` before a user-selected tab is shown.
-- Bookmark card clicks are delegated from `.products` in `js/main.js`, so cards added by later hydration still open correctly.
-- `js/set.js` exposes `closeActiveSurface()` for closing search, bookmark, and settings layers; `Esc` uses it and should stay lightweight.
-- Run `node scripts\check.js` for the single normal local check command. It includes bookmark validation, MiSans UI manifest validation, and syntax checks.
-- Remote icons are initially rendered with a local fallback and loaded later for visible panels.
-- First-screen target is 0.5 seconds for assembled page structure on both PC and mobile. Time/search/layout should be ready quickly; remote icons, visitor badge, update check, and status checks must not block that window.
-- `index.html` preloads `css/style.css`, `font/iconfont.woff2`, and `font/MiSans-UI.woff2` before the inline boot script so cold visits can discover critical resources earlier. Keep the real stylesheet link after the boot script; moving it before the script can block early boot classes, performance mode, and iOS height setup.
-- `js/main.js` records `window.__sksirFirstScreenMs` after first paint for local debugging.
-- Visitor badge, welcome toast, update check, and service worker registration are intentionally delayed beyond the critical first-screen window.
-- The local `iziToast`-compatible fallback now lives at the top of `js/main.js`. The old `js/toast-loader.js` was removed so it does not add another defer request. Keep the fallback bootstrap before any `iziToast` calls in `main.js` or `set.js`.
-- JavaScript Cookie v2.2.1 now lives at the top of `js/set.js`; the old `js/js.cookie.js` file was removed. Preserve the complete MIT license and library source, and keep the Cookies bootstrap before all project settings code so existing `bg_img`, `se_list`, and other preference formats remain compatible.
-- `index.html` now has three deferred scripts: jQuery, `main.js`, and `set.js`. Do not restore a separate Cookies request unless a measured regression requires it.
-- First-screen boot mask lives in `css/style.css`: `html.is-booting` shows a lightweight overlay and ring loader, then `js/main.js` adds `is-first-screen-ready` and removes it after fade-out. Page content stays fully composed beneath the overlay so the search box backdrop blur is ready before it becomes visible. Do not animate opacity or transform on the `.con` ancestor during boot; doing so can make the glass effect appear one frame late. The mask waits briefly for wallpaper readiness, but must not wait for icons, visitor badge, update check, or status checks.
-- The base `.all-search` rule must keep an explicit `translateY(0)` and a `transform` transition. Removing either makes the search box jump when `.onsearch` is removed.
-- The search placeholder is visible only in the idle state. Keep the `.onsearch` placeholder opacity override so “千叶一下，你就知道” does not remain visible after the input expands.
-- The footer keeps the daily quote and visible version number on desktop. On mobile widths up to 720px, the quote is hidden and its DOM update is skipped; only the version and update control remain, without an outer glass pill.
-- Shared `fade` / `fadenum` keyframes and icon font mapping live in `css/style.css`. The old standalone `css/animation.css` and `css/font.css`, unused `down` keyframes, and legacy prefixed duplicates were removed so they do not add separate render-blocking stylesheet requests.
-- Mobile and iOS Safari overrides now live at the end of `css/style.css`. The old `css/mobile.css` was removed, reducing the first-screen synchronous stylesheets from two requests to one. Keep mobile fixes in that final section and scope them with mobile media queries or `html.ios-safari` so desktop behavior remains unchanged.
-- The Service Worker precaches `font/iconfont.woff2` and `font/MiSans-UI.woff2`. The icon font `woff` and `ttf` sources remain as compatibility fallbacks and are cached on demand.
-- Wallpaper selection is stored in a cookie named `bg_img`. `js/set.js` calls `startBgImgInit()` during deferred script execution instead of waiting two animation frames after first paint. The preload image uses eager/high-priority hints and waits for `decode()` before revealing, with a short 180ms fallback so Safari cannot leave the wallpaper pending indefinitely. It updates `window.__sksirWallpaperState` and dispatches `sksir-wallpaper-ready` on loaded, error, or empty states so the boot mask does not fade before the wallpaper is ready unless the overall wait times out.
-- Search engine preferences are stored in cookies.
-- Search suggestions use Baidu JSONP from `js/set.js`; calls are short-debounced with `scheduleKeywordReminder()` so rapid typing does not fire a request on every keyup.
-- Search suggestion panel positioning uses `scheduleKeywordPanelUpdate()` to merge focus, click, keyup, and resize layout work into at most one update per animation frame. Keep direct positioning after suggestion data arrives so the panel can display in the correct place immediately.
-- Performance mode is stored in `localStorage` under `sksir-performance-mode`: `auto`, `full`, or `lite`.
-- The early script in `index.html` applies `html.perf-lite` before CSS loads. Auto mode enables it for `prefers-reduced-motion`, `navigator.connection.saveData`, very low `navigator.deviceMemory`, or conservative non-iOS low hardware signals.
-- The settings panel has a `性能模式` tab. `js/set.js` initializes and updates it without requiring a page refresh.
-- The original remote MiSans was about 3.9 MiB. It has been replaced by a generated 76,764-byte local subset covering the current runtime text. `font-display: optional` prevents a late whole-page swap when the subset is not ready.
-- `scripts/build-font-subset.js --check` compares runtime text with `font/MiSans-UI.characters.txt`; this check must remain in `scripts/check.js`. To rebuild, install `fonttools` and `brotli`, then run `node scripts/build-font-subset.js path/to/MiSans-Regular.woff2`. Do not commit the full source font.
-- Keep only one OSS `preconnect` resource hint. Do not add a duplicate `dns-prefetch` for the same host; the remaining `api.dujin.org` hint is used by the optional Bing wallpaper source.
-- iOS Safari gets `html.ios-safari`, `--app-height`, and `--ios-bg-height` early in `index.html`. The final mobile section of `css/style.css` sizes `.bg-all` from the largest known viewport height, uses `100lvh` when available, and makes `#bg` / `.cover` absolute inside it.
-- `js/set.js` mirrors the loaded wallpaper URL into `--ios-wallpaper-image`; only `html.ios-safari .bg-all` uses that CSS background as a same-image fallback if the image layer fails to cover Safari toolbar/safe-area changes.
-- While a form control is focused, the iOS height updater locks page height and waits for the keyboard close animation to settle before writing a new `--app-height`; this avoids the mobile search box close flow shrinking and expanding the first screen.
-- On desktop, `js/main.js` sets `#daily-quote` from a local quote list using the current date, so it is stable within a day and adds no network request. On mobile widths up to 720px, this update is skipped and CSS hides the quote.
-- Keep the footer `#app-version` span even if it is visually subdued because update detection reads it as the runtime version.
-- Keep the hidden `.footer-separator` immediately before `#update-check`; `showUpdateButton` reveals that previous sibling when an update is available.
-- Category tabs use an injected `.category-anim-bg` indicator. `js/main.js` computes its position from the active item's `offsetLeft` and also writes `--category-indicator-x`; mobile CSS moves the indicator with `transform` to avoid creating extra horizontal scroll width.
-- Category indicator refreshes after tab changes and window resizes use `scheduleCategoryIndicatorRefresh()`, so repeated mobile viewport changes do not force multiple layout reads and writes in one frame. Direct category clicks still update the current row immediately.
-- Update detection fetches `data/app-version.json`, compares it numerically with the footer runtime version, and shows a footer refresh button only when the fetched version is newer. Do not reintroduce `localStorage` as the current-version source.
-- `/api/check` is CommonJS so local `node --check api/check.js` works. It loads allowed hosts from `data/sites.js`, rejects non-navigation hosts, blocks local/private/metadata targets, checks DNS-resolved addresses, does not follow redirects, and uses an 8 second timeout.
-- `vercel.json` sets no-store/no-cache headers for `data/app-version.json`, `sw.js`, and `/api/check`, plus baseline security headers. It intentionally does not set a strict CSP yet.
+The project uses a local MiSans UI subset.
 
-## Important Cautions
+Do not replace it with the original large remote font.
 
-- iOS Safari background fixes are sensitive. Avoid changing wallpaper `object-fit`, background image scale, or large safe-area extensions without user confirmation.
-- iOS Safari keyboard fixes are also sensitive. Avoid writing intermediate `visualViewport.height` values during focus/blur because it can cause the page to shrink and expand when the keyboard closes.
-- The browser address bar itself is not webpage-renderable. The page can only control the document area, safe areas, and `theme-color`.
-- PC layout should not be affected by mobile fixes. Prefer selectors scoped to `html.ios-safari` or mobile media queries.
-- High-end devices should keep full visuals by default. Put low-performance visual reductions under `html.perf-lite` instead of removing effects globally.
-- Do not classify iOS devices as low performance from `navigator.hardwareConcurrency` alone; Safari may report privacy-limited or non-representative hardware values.
-- Do not re-enable mobile `.category-row::before` hover shine or scrollbar styling without testing on touch devices; it can create phantom horizontal blank space and break the active indicator position.
-- Service worker caching can make phone testing appear unchanged. Confirm the deployed version and cache state before assuming a CSS fix failed.
-- Do not put status-check styles or scripts back into the `ensureNavSitesLoaded()` completion condition. Mobile Safari may delay or omit a cached stylesheet `load` event, which previously left the bookmark tabs waiting indefinitely.
-- `/api/check` is not a full rate-limited service. If abuse appears in Vercel logs, add external rate limiting or disable the public status endpoint.
-- `js/main.js` contains a front-end password for a hidden section. This is only UI hiding, not real security.
+Keep:
 
-## Recommended Backlog
+* Small file size
+* UTF-8 character compatibility
+* Existing build validation
 
-High confidence:
-- Keep first-screen startup fast; cached visits should stay under 500ms.
-- Preserve and re-test the current iOS Safari wallpaper coverage without changing PC behavior or desktop wallpaper crop.
-- Polish lightweight boot, category, card, and settings transitions.
-- Keep mobile search, keyboard close, and category indicator behavior stable.
-- Keep high-frequency layout work batched with `requestAnimationFrame`; do not restore direct resize/keyup layout refreshes without measuring the impact.
-- Run `scripts/check.js` as part of the normal pre-release check.
+---
 
-Needs user confirmation:
-- Auto-refresh service worker cache when a new version is detected.
-- Moving search engine and wallpaper config out of `js/set.js`.
-- Reworking iOS Safari fullscreen behavior or wallpaper positioning.
-- Adding heavier security work such as strict CSP, external rate limiting, or authentication; this is a static navigation page, so do it only if a real problem appears.
+# 10. Forbidden Changes
+
+Do not:
+
+* Remove iOS Safari compatibility code casually
+* Restore removed duplicate CSS files
+* Add unnecessary external requests
+* Put status checking into first-screen loading
+* Change desktop layout while fixing mobile
+* Treat frontend hidden sections as real security
+
+---
+
+# 11. Current Status
+
+Stable:
+
+* First-screen loading
+* Navigation rendering
+* Mobile Safari layout
+* Wallpaper system
+* Search interaction
+* Performance mode
+
+Be careful when changing:
+
+* Boot animation
+* iOS height handling
+* Wallpaper loading
+* Category indicator animation
+
+---
+
+# 12. Recommended Future Improvements
+
+Possible improvements:
+
+* Better cache management
+* More security protection
+* Improved status API protection
+* Further animation polish
+
+These require evaluation before implementation.
+
+---
+
+# Final Rule For AI
+
+Make the smallest correct change.
+
+Preserve existing behavior unless the user explicitly requests a redesign.
+
+Performance and stability are more important than adding features.

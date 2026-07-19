@@ -351,6 +351,11 @@ function setDefaultSearchEngine(rawValue) {
 
 var keywordRequestSeq = 0;
 var keywordReminderTimer = null;
+var keywordLocalResults = [];
+var keywordRemoteSuggestions = [];
+var keywordRemoteState = "idle";
+var recentNavStorageKey = "sksir-recent-nav-items";
+var recentNavLimit = 6;
 
 function hideKeywordPanel() {
     if (keywordReminderTimer) {
@@ -358,6 +363,9 @@ function hideKeywordPanel() {
         keywordReminderTimer = null;
     }
     keywordRequestSeq++;
+    keywordLocalResults = [];
+    keywordRemoteSuggestions = [];
+    keywordRemoteState = "idle";
     $("#keywords").empty().removeAttr("data-length").hide();
 }
 
@@ -365,8 +373,142 @@ function canShowKeywordPanel(keyword, requestSeq) {
     return requestSeq === keywordRequestSeq &&
         $("body").hasClass("onsearch") &&
         $(".search-engine").is(":hidden") &&
-        $(".wd").val() === keyword &&
-        keyword !== "";
+        $.trim($(".wd").val()) === keyword;
+}
+
+function getRecentNavItems() {
+    try {
+        var items = JSON.parse(localStorage.getItem(recentNavStorageKey) || "[]");
+        return Array.isArray(items) ? items.slice(0, recentNavLimit) : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function recordRecentNavItem(item) {
+    if (!item || !item.url || !/^https?:\/\//i.test(item.url)) return;
+    var recentItems = getRecentNavItems().filter(function (recentItem) {
+        return recentItem.url !== item.url;
+    });
+    recentItems.unshift({
+        name: String(item.name || item.url),
+        url: item.url,
+        desc: String(item.desc || "")
+    });
+    try {
+        localStorage.setItem(recentNavStorageKey, JSON.stringify(recentItems.slice(0, recentNavLimit)));
+    } catch (error) {
+        // Storage can be unavailable in private browsing; navigation still works.
+    }
+}
+
+window.recordRecentNavItem = recordRecentNavItem;
+
+function getSearchableNavItems() {
+    var data = window.NAV_SITES || {};
+    var seenUrls = {};
+    var results = [];
+    (data.tabs || []).forEach(function (tab) {
+        if (tab.lock) return;
+        (tab.items || []).forEach(function (item) {
+            if (!item.url || seenUrls[item.url]) return;
+            seenUrls[item.url] = true;
+            results.push({
+                name: item.name || item.url,
+                url: item.url,
+                desc: item.desc || "",
+                searchText: [item.name, item.desc, item.category, item.searchKey, tab.title, item.url]
+                    .filter(Boolean).join(" ").toLowerCase()
+            });
+        });
+    });
+    return results;
+}
+
+function searchLocalNavItems(keyword) {
+    var query = String(keyword || "").trim().toLowerCase();
+    if (!query) return [];
+    return getSearchableNavItems().map(function (item) {
+        var name = item.name.toLowerCase();
+        var score = name === query ? 0 : name.indexOf(query) === 0 ? 1 : item.searchText.indexOf(query) >= 0 ? 2 : 9;
+        return { item: item, score: score };
+    }).filter(function (result) {
+        return result.score < 9;
+    }).sort(function (left, right) {
+        return left.score - right.score || left.item.name.length - right.item.name.length;
+    }).slice(0, 4).map(function (result) {
+        return result.item;
+    });
+}
+
+function renderKeywordPanel(keyword, requestSeq) {
+    if (!canShowKeywordPanel(keyword, requestSeq)) return;
+    var entries = keywordLocalResults.map(function (item) {
+        return { kind: "nav", name: item.name, desc: item.desc, url: item.url };
+    });
+    keywordRemoteSuggestions.forEach(function (suggestion) {
+        if (!entries.some(function (entry) { return entry.name.toLowerCase() === suggestion.toLowerCase(); })) {
+            entries.push({ kind: "search", name: suggestion });
+        }
+    });
+    entries = entries.slice(0, 8);
+
+    var $panel = $("#keywords").empty();
+    var statusMessages = {
+        loading: "正在获取网络建议...",
+        offline: "当前离线，只显示本地结果",
+        error: "网络建议暂不可用"
+    };
+    var statusMessage = statusMessages[keywordRemoteState] || "";
+    if (!entries.length && !statusMessage) {
+        $panel.removeAttr("data-length").hide();
+        return;
+    }
+    updateKeywordPanel();
+    entries.forEach(function (entry, index) {
+        var $item = $("<div></div>", {
+            class: "keyword" + (entry.kind === "nav" ? " keyword-nav" : ""),
+            "data-id": index + 1,
+            "data-kind": entry.kind,
+            "data-query": entry.name,
+            role: "option"
+        });
+        if (entry.url) $item.attr("data-url", entry.url);
+        $("<i></i>", {
+            class: entry.kind === "nav" ? "iconfont icon-home" : "iconfont icon-sousuo"
+        }).appendTo($item);
+        $("<span></span>", { class: "keyword-label", text: entry.name }).appendTo($item);
+        if (entry.kind === "nav") {
+            $("<span></span>", { class: "keyword-meta", text: entry.desc || "打开书签" }).appendTo($item);
+        }
+        $panel.append($item);
+    });
+    if (statusMessage) {
+        $("<div></div>", {
+            class: "keyword-status",
+            text: statusMessage,
+            role: "status"
+        }).appendTo($panel);
+    }
+    $panel.attr("data-length", entries.length).show();
+}
+
+function loadLocalKeywordResults(keyword, requestSeq) {
+    if (!keyword) {
+        keywordLocalResults = getRecentNavItems();
+        renderKeywordPanel(keyword, requestSeq);
+        return;
+    }
+    var loadTask = typeof window.ensureNavSitesLoaded === "function"
+        ? window.ensureNavSitesLoaded()
+        : Promise.resolve();
+    loadTask.then(function () {
+        if (!canShowKeywordPanel(keyword, requestSeq)) return;
+        keywordLocalResults = keyword ? searchLocalNavItems(keyword) : getRecentNavItems();
+        renderKeywordPanel(keyword, requestSeq);
+    }).catch(function () {
+        // Remote suggestions remain available if bookmark data cannot be loaded.
+    });
 }
 
 function scheduleKeywordReminder(delay) {
@@ -642,42 +784,62 @@ function blurWd() {
 
 // 搜索建议提示
 function keywordReminder() {
-    var keyword = $(".wd").val();
-    if (keyword != "") {
-        var requestSeq = ++keywordRequestSeq;
+    var keyword = $.trim($(".wd").val());
+    var requestSeq = ++keywordRequestSeq;
+    keywordLocalResults = [];
+    keywordRemoteSuggestions = [];
+    keywordRemoteState = keyword ? (navigator.onLine ? "loading" : "offline") : "idle";
+    renderKeywordPanel(keyword, requestSeq);
+    loadLocalKeywordResults(keyword, requestSeq);
+
+    if (keyword != "" && navigator.onLine) {
         $.ajax({
-            url: 'https://suggestion.baidu.com/su?wd=' + keyword,
+            url: 'https://suggestion.baidu.com/su?wd=' + encodeURIComponent(keyword),
             dataType: 'jsonp',
             jsonp: 'cb', //回调函数的参数名(键值)key
+            timeout: 3500,
             success: function (data) {
                 if (!canShowKeywordPanel(keyword, requestSeq)) return;
-                if (!data.s || data.s.length === 0) {
-                    hideKeywordPanel();
-                    return;
-                }
-                //获取宽度
-                updateKeywordPanel();
-                $("#keywords").empty();
-                $.each(data.s, function (i, val) {
-                    var $item = $("<div></div>", {
-                        class: "keyword",
-                        "data-id": i + 1
-                    });
-                    $("<i></i>", {
-                        class: "iconfont icon-sousuo"
-                    }).appendTo($item);
-                    $item.append(document.createTextNode(val));
-                    $('#keywords').append($item);
-                });
-                $("#keywords").attr("data-length", data.s.length).show();
+                keywordRemoteSuggestions = data.s || [];
+                keywordRemoteState = "ready";
+                renderKeywordPanel(keyword, requestSeq);
             },
             error: function () {
-                if (requestSeq === keywordRequestSeq) hideKeywordPanel();
+                if (requestSeq !== keywordRequestSeq) return;
+                keywordRemoteState = "error";
+                renderKeywordPanel(keyword, requestSeq);
             }
         })
-    } else {
-        hideKeywordPanel();
     }
+}
+
+function getDirectNavigationUrl(value, force) {
+    var input = $.trim(value || "");
+    if (!input || /\s/.test(input)) return "";
+    if (/^https?:\/\//i.test(input)) {
+        try {
+            return new URL(input).href;
+        } catch (error) {
+            return "";
+        }
+    }
+
+    var hostPart = input.split(/[/?#]/)[0].replace(/:\d+$/, "");
+    var isLocalhost = /^localhost$/i.test(hostPart);
+    var isIpv4 = /^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostPart);
+    var isDomain = /^(?:[a-z0-9\u4e00-\u9fff](?:[a-z0-9\u4e00-\u9fff-]{0,61}[a-z0-9\u4e00-\u9fff])?\.)+[a-z\u4e00-\u9fff]{2,63}$/i.test(hostPart);
+    if (!force && !isLocalhost && !isIpv4 && !isDomain) return "";
+    if (input.indexOf("@") >= 0) return "";
+    try {
+        return new URL("https://" + input).href;
+    } catch (error) {
+        return "";
+    }
+}
+
+function openDirectNavigation(url) {
+    hideKeywordPanel();
+    window.open(url, "_blank", "noopener,noreferrer");
 }
 
 function updateKeywordPanel() {
@@ -1058,6 +1220,13 @@ $(document).ready(function () {
         $(".search-engine").slideUp(160);
     });
 
+    window.addEventListener("offline", function () {
+        if ($("body").hasClass("onsearch")) scheduleKeywordReminder(0);
+    });
+    window.addEventListener("online", function () {
+        if ($("body").hasClass("onsearch")) scheduleKeywordReminder(120);
+    });
+
 
 
     // 点击其他区域关闭事件
@@ -1093,9 +1262,16 @@ $(document).ready(function () {
         scheduleKeywordReminder(140);
     });
 
-    // 点击自动提示的搜索建议
+    // 点击远程搜索建议或本地书签
     $("#keywords").on("click", ".keyword", function () {
-        var wd = $(this).text();
+        var kind = $(this).attr("data-kind");
+        var wd = $(this).attr("data-query") || $(this).text();
+        if (kind === "nav") {
+            var url = $(this).attr("data-url");
+            recordRecentNavItem({ name: wd, url: url, desc: $(this).find(".keyword-meta").text() });
+            openDirectNavigation(url);
+            return;
+        }
         $(".wd").val(wd);
         $(".search").submit();
         //隐藏输入
@@ -1106,7 +1282,21 @@ $(document).ready(function () {
     // 自动提示键盘方向键选择操作
     $(".wd").keydown(function (event) { //上下键获取焦点
         var key = event.keyCode;
-        if ($.trim($(this).val()).length === 0) return;
+        var $chosen = $("#keywords .keyword.choose");
+        if (key === 13 && $chosen.length && $chosen.attr("data-kind") === "nav") {
+            event.preventDefault();
+            $chosen.trigger("click");
+            return;
+        }
+        if (key === 13 && (event.ctrlKey || event.metaKey)) {
+            var forcedUrl = getDirectNavigationUrl($(this).val(), true);
+            if (forcedUrl) {
+                event.preventDefault();
+                openDirectNavigation(forcedUrl);
+            }
+            return;
+        }
+        if (key !== 38 && key !== 40) return;
 
         var id = $(".choose").attr("data-id");
         if (id === undefined) id = 0;
@@ -1124,8 +1314,62 @@ $(document).ready(function () {
         if (id > length) id = 1;
         if (id < 1) id = length;
 
-        $(".keyword[data-id=" + id + "]").addClass("choose").siblings().removeClass("choose");
-        $(".wd").val($(".keyword[data-id=" + id + "]").text());
+        var $next = $(".keyword[data-id=" + id + "]");
+        $next.addClass("choose").siblings().removeClass("choose");
+        if ($next.attr("data-kind") !== "nav") {
+            $(".wd").val($next.attr("data-query") || $next.text());
+        }
+    });
+
+    $(".search").on("submit", function (event) {
+        var directUrl = getDirectNavigationUrl($(".wd").val(), false);
+        if (!directUrl) return;
+        event.preventDefault();
+        openDirectNavigation(directUrl);
+    });
+
+    $(document).on("click", ".products .quicks, .products .quickjl", function () {
+        var link = this.querySelector("a[href]");
+        if (!link) return;
+        var panel = this.closest(".mainCont[data-nav-tab-index]");
+        var tabIndex = panel ? parseInt(panel.dataset.navTabIndex || "-1", 10) : -1;
+        var tab = window.NAV_SITES && window.NAV_SITES.tabs && window.NAV_SITES.tabs[tabIndex];
+        if (tab && tab.lock) return;
+        recordRecentNavItem({
+            name: $.trim(link.textContent),
+            url: link.href,
+            desc: $(this).find(".quick-desc").text()
+        });
+    });
+
+    $(document).on("keydown", function (event) {
+        if (event.defaultPrevented || event.isComposing || event.ctrlKey || event.metaKey) return;
+        var target = event.target;
+        var isEditing = target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+        if (isEditing) return;
+
+        if (event.key === "/") {
+            event.preventDefault();
+            focusWd();
+            $("#s-button, .se, #menu").show();
+            $(".wd").trigger("focus");
+            scheduleKeywordReminder(0);
+        } else if (event.key === "b" || event.key === "B") {
+            event.preventDefault();
+            $("#time_text").trigger("click");
+        } else if (event.key === ",") {
+            event.preventDefault();
+            openSet();
+            $("#menu").show().addClass("on");
+            $(".power").hide();
+            setSeInit();
+        } else if (event.altKey && /^[1-4]$/.test(event.key)) {
+            var $engine = $(".search-engine-list .se-li").eq(parseInt(event.key, 10) - 1);
+            if ($engine.length) {
+                event.preventDefault();
+                $engine.trigger("click");
+            }
+        }
     });
 
     // 菜单点击

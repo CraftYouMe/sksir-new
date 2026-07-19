@@ -14,6 +14,10 @@
     <title>导航酱 - 但行好事，莫问前程</title>
     <link rel="icon" href="apple-touch-icon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="导航酱">
     <link rel="preload" href="./css/style.css" as="style">
     <link rel="preload" href="./font/iconfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preload" href="./font/MiSans-UI.woff2" as="font" type="font/woff2" crossorigin="anonymous">
@@ -229,6 +233,8 @@
         <img id="bg" decoding="async" fetchpriority="high" alt="">
         <div class="cover"></div>
     </div>
+
+    <div id="network-status" class="network-status" role="status" aria-live="polite" hidden></div>
     <!-- 主体内容 -->
     <section id="section" class="section">
         <div id="content">
@@ -236,7 +242,7 @@
                 <!-- 时间 -->
                 <div class="tool-all">
                     <div class="time">
-                        <span id="time_text"><span id="point"></span></span>
+                        <span id="time_text" title="点击或按 B 打开书签"><span id="point"></span></span>
                         <span id="day"></span>
                     </div>
                     <script>
@@ -267,7 +273,9 @@
                             <div class="se" title="点击切换搜索引擎" style="display: none;">
                                 <i id="icon-se" class="iconfont icon-baidu"></i>
                             </div>
-                            <input class="wd" type="text" name="wd" placeholder="千叶一下，你就知道" autocomplete="off"/>
+                            <input class="wd" type="text" name="wd" placeholder="千叶一下，你就知道" autocomplete="off"
+                                aria-label="搜索、打开书签或输入网址" aria-controls="keywords" aria-autocomplete="list"
+                                title="按 / 快速搜索，Ctrl 或 Command + Enter 打开网址"/>
                             <div class="sou-button">
                                 <div class="s" id="s-button"  style="display: none;">
                                     <i id="icon-sou" class="iconfont icon-sousuo"></i>
@@ -276,7 +284,7 @@
                         </div>
                         <input type="submit" id="search-submit" style="display: none;">
                     </form>
-                    <div id="keywords" style="display: none;"></div>
+                    <div id="keywords" role="listbox" aria-label="搜索建议" style="display: none;"></div>
                     <div class="search-engine" style="display: none;">
                         <div class="search-engine-list">
                             <div class="se-li">
@@ -319,7 +327,7 @@
 
                   
                 <!-- 设置图标 -->
-                <div id="menu" style="display: none;">
+                <div id="menu" title="点击或按 , 打开设置" style="display: none;">
                     <i id="icon-menu" class="iconfont icon-shezhi"></i>
                 </div>
                 <!-- 设置页 -->
@@ -528,9 +536,10 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.16.9">v2026.07.16.9</span>
+                <span id="app-version" class="app-version" data-version="2026.07.19.2">v2026.07.19.2</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
+                <button type="button" id="install-app" class="install-app" hidden>安装应用</button>
             </div>
         </div>
     </section>
