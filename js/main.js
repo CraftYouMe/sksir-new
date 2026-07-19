@@ -19,7 +19,7 @@
         var style = document.createElement("style");
         style.id = "toast-fallback-style";
         style.textContent = [
-            ".toast-fallback-wrap{position:fixed;top:18px;left:50%;z-index:2147483647;display:flex;flex-direction:column;align-items:center;gap:8px;transform:translateX(-50%);pointer-events:none}",
+            ".toast-fallback-wrap{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));left:50%;z-index:2147483647;display:flex;flex-direction:column;align-items:center;gap:8px;transform:translateX(-50%);pointer-events:none}",
             ".toast-fallback{width:fit-content;max-width:min(520px,calc(100vw - 32px));min-height:44px;padding:10px 28px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(20,26,32,.78);box-shadow:0 14px 32px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.14);backdrop-filter:blur(14px) saturate(1.08);-webkit-backdrop-filter:blur(14px) saturate(1.08);color:#fff;text-shadow:none;pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:10px;box-sizing:border-box;text-align:left;animation:toastFallbackIn .22s ease}",
             ".toast-fallback-title{flex:0 0 auto;margin:0;color:#fff;font-size:14px;font-weight:700;line-height:1.35;white-space:nowrap}",
             ".toast-fallback-message{flex:0 1 auto;min-width:0;font-size:14px;line-height:1.35;color:rgba(255,255,255,.74);overflow-wrap:anywhere}",
