@@ -1207,7 +1207,6 @@ $(document).ready(function () {
         $('#s-button').show();
         // 显示引擎按钮
         $('.se').show();
-        $('#menu').show();
         if ($(e.target).closest('.se, .sou-button, .search-engine').length === 0) {
             $(".wd").trigger("focus");
             $(".search-engine").slideUp(160);
@@ -1230,7 +1229,9 @@ $(document).ready(function () {
 
 
     // 点击其他区域关闭事件
-    $(document).on('click', '.close_sou', function () {
+    $(document).on('pointerdown click', '.close_sou', function (event) {
+        if (!$('body').hasClass('onsearch')) return;
+        event.preventDefault();
         closeActiveSurface();
     });
 
@@ -1351,7 +1352,7 @@ $(document).ready(function () {
         if (event.key === "/") {
             event.preventDefault();
             focusWd();
-            $("#s-button, .se, #menu").show();
+            $("#s-button, .se").show();
             $(".wd").trigger("focus");
             scheduleKeywordReminder(0);
         } else if (event.key === "b" || event.key === "B") {

@@ -1830,6 +1830,11 @@ input[type="radio"]:checked+label {
     position: fixed;
     inset: 0;
     z-index: 1;
+    pointer-events: none;
+}
+
+body.onsearch .close_sou {
+    pointer-events: auto;
 }
 
 /*iconcss*/
@@ -2580,19 +2585,6 @@ html.ios-standalone #menu {
 /*小于720px时*/
 @media (max-width: 720px) {
 
-    .con {
-        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: transform;
-    }
-
-    body.onsearch .con {
-        transform: translate3d(0, clamp(-128px, -14vh, -84px), 0);
-    }
-
-    body.onsearch .all-search {
-        transform: translateY(-72%);
-    }
-
     body.onsearch #keywords {
         max-height: min(34vh, 176px);
     }
@@ -2600,6 +2592,11 @@ html.ios-standalone #menu {
     body.onsearch .foot {
         opacity: 0;
         pointer-events: none;
+    }
+
+    /* 搜索态不改变设置入口，也不让它覆盖搜索区域。 */
+    body.onsearch #menu {
+        display: none !important;
     }
 
     .foot {
