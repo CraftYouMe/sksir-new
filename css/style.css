@@ -2567,6 +2567,11 @@ html.ios-standalone #menu {
     right: calc(8px + env(safe-area-inset-right, 0px));
 }
 
+html.ios-keyboard-open section {
+    transform: translate3d(0, var(--ios-keyboard-viewport-offset, 0px), 0);
+    transition: none;
+}
+
 /*小于1200px时*/
 @media (max-width: 1200px) {
 
