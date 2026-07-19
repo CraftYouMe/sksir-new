@@ -1229,9 +1229,10 @@ $(document).ready(function () {
 
 
     // 点击其他区域关闭事件
-    $(document).on('pointerdown click', '.close_sou', function (event) {
-        if (!$('body').hasClass('onsearch')) return;
+    $(document).on('click', '.close_sou', function (event) {
+        if (!$('body').hasClass('onsearch') && !$('#content').hasClass('box')) return;
         event.preventDefault();
+        event.stopPropagation();
         closeActiveSurface();
     });
 
