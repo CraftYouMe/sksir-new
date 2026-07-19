@@ -485,7 +485,7 @@ function scheduleVisitorBadge() {
         link.href = "https://visitor-badge.laobi.icu";
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.style.cssText = "position:fixed;top:14px;left:14px;z-index:9999;";
+        link.style.cssText = "position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:14px;z-index:9999;";
 
         var img = document.createElement("img");
         img.src = "https://visitor-badge.laobi.icu/badge?page_id=sksir-new";
