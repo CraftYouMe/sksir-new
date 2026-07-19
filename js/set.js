@@ -351,6 +351,7 @@ function setDefaultSearchEngine(rawValue) {
 
 var keywordRequestSeq = 0;
 var keywordReminderTimer = null;
+var keywordPanelReadyAt = 0;
 var keywordLocalResults = [];
 var keywordRemoteSuggestions = [];
 var keywordRemoteState = "idle";
@@ -515,10 +516,12 @@ function scheduleKeywordReminder(delay) {
     if (keywordReminderTimer) {
         clearTimeout(keywordReminderTimer);
     }
+    var requestedDelay = typeof delay === "number" ? delay : 120;
+    var openingDelay = Math.max(0, keywordPanelReadyAt - Date.now());
     keywordReminderTimer = setTimeout(function () {
         keywordReminderTimer = null;
         keywordReminder();
-    }, delay || 120);
+    }, Math.max(requestedDelay, openingDelay));
 }
 
 document.addEventListener("click", function (event) {
@@ -766,6 +769,10 @@ function setPerformanceInit() {
 
 // 搜索框高亮
 function focusWd() {
+    if (!$('body').hasClass('onsearch')) {
+        var isMobileSearch = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+        keywordPanelReadyAt = isMobileSearch ? 0 : Date.now() + 320;
+    }
     $("body").addClass("onsearch");
     scheduleKeywordPanelUpdate();
     setTimeout(scheduleKeywordPanelUpdate, 180);
@@ -774,6 +781,7 @@ function focusWd() {
 
 // 搜索框取消高亮
 function blurWd() {
+    keywordPanelReadyAt = 0;
     $("body").removeClass("onsearch");
     //隐藏输入
     $(".wd").val("");
