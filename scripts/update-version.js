@@ -10,27 +10,12 @@ if (!nextVersion || !/^\d{4}\.\d{2}\.\d{2}\.\d+$/.test(nextVersion)) {
 }
 
 const versionPath = path.join(rootDir, "data", "app-version.json");
-const swPath = path.join(rootDir, "sw.js");
 const indexPath = path.join(rootDir, "index.html");
 
 const versionInfo = JSON.parse(fs.readFileSync(versionPath, "utf8"));
 versionInfo.version = nextVersion;
 fs.writeFileSync(versionPath, JSON.stringify(versionInfo, null, 2) + "\n", "utf8");
 
-const swSource = fs.readFileSync(swPath, "utf8");
-const cacheVersionPattern = /^const CACHE_VERSION = "nav-cache-[^"]+";/m;
-
-if (!cacheVersionPattern.test(swSource)) {
-  console.error("Could not find CACHE_VERSION in sw.js");
-  process.exit(1);
-}
-
-const nextSwSource = swSource.replace(
-  cacheVersionPattern,
-  `const CACHE_VERSION = "nav-cache-${nextVersion}";`
-);
-
-fs.writeFileSync(swPath, nextSwSource, "utf8");
 const indexSource = fs.readFileSync(indexPath, "utf8");
 const appVersionPattern = /(<span id="app-version" class="app-version" data-version=")[^"]+(">v)[^<]+(<\/span>)/;
 const nextIndexSource = indexSource.replace(
@@ -44,4 +29,4 @@ if (!appVersionPattern.test(indexSource)) {
 }
 
 fs.writeFileSync(indexPath, nextIndexSource, "utf8");
-console.log(`Updated app version and service worker cache to ${nextVersion}`);
+console.log(`Updated app version to ${nextVersion}`);

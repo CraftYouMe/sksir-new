@@ -8,7 +8,7 @@
 
 1. 首屏加载速度
 2. 稳定性与兼容性
-3. 移动端体验，尤其是 iPhone Safari 和主屏幕应用模式
+3. 移动端体验，尤其是 iPhone Safari
 4. 不影响桌面布局
 5. 轻量、自然的动画
 6. 日常维护简单
@@ -33,7 +33,7 @@ git diff --check
 node scripts\update-version.js YYYY.MM.DD.N
 ```
 
-该命令同步更新 `data/app-version.json`、`sw.js` 和 `index.html` 页脚版本。不要只改其中一个。
+该命令同步更新 `data/app-version.json` 和 `index.html` 页脚版本。不要只改其中一个。
 
 ## 关键文件
 
@@ -87,7 +87,7 @@ node scripts\update-version.js YYYY.MM.DD.N
 - `js/set.js` 将壁纸同步到 `--ios-wallpaper-image` 作为同图兜底。
 - 不要随意改变壁纸 `object-fit`、背景缩放、fixed 定位或安全区扩展。
 - 设置按钮、Toast、访客信息和页脚需要继续尊重 safe-area inset。
-- Service Worker 缓存可能让手机看起来没有更新；判断修复无效前先确认线上版本与缓存。
+- `sw.js` 仅用于注销历史 Service Worker 和清理旧 `nav-cache-*` 缓存，不得重新加入离线缓存或安装能力。
 
 ## 性能与安全边界
 
@@ -100,7 +100,7 @@ node scripts\update-version.js YYYY.MM.DD.N
 
 - `node scripts\check.js` 通过。
 - `git diff --check` 通过。
-- 三处版本号一致。
+- `data/app-version.json` 与 `index.html` 页脚版本一致。
 - PC 首页、搜索、收藏和设置正常。
-- iPhone Safari 与主屏幕模式检查搜索键盘、背景铺满和安全区。
+- iPhone Safari 检查搜索键盘、背景铺满和安全区。
 - 安卓手机检查输入框、建议列表和分类横向滚动。

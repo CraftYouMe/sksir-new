@@ -34,7 +34,7 @@ const checks = [
     args: ["--check", projectPath("js", "status-dot.js")]
   },
   {
-    name: "Syntax check service worker",
+    name: "Syntax check service worker retirement",
     args: ["--check", projectPath("sw.js")]
   },
   {

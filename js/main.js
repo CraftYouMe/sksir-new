@@ -166,9 +166,8 @@ $(function () {
     scheduleVisitorBadge();
     scheduleWelcomeToast();
     scheduleUpdateCheck();
-    scheduleStaticCache();
+    retireLegacyPwa();
     initNetworkStatus();
-    initPwaInstall();
     setDailyQuote();
 });
 var now = new Date(), hour = now.getHours()
@@ -499,14 +498,29 @@ function scheduleVisitorBadge() {
     }, 3600);
 }
 
-function scheduleStaticCache() {
-    if (!("serviceWorker" in navigator)) return;
-    if (!/^https?:$/.test(window.location.protocol)) return;
-
+function retireLegacyPwa() {
     runAfterLoadIdle(function () {
-        navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" }).catch(function (error) {
-            console.warn("Service worker registration failed", error);
-        });
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                return Promise.all(registrations.map(function (registration) {
+                    return registration.unregister();
+                }));
+            }).catch(function (error) {
+                console.warn("Service worker cleanup failed", error);
+            });
+        }
+
+        if ("caches" in window) {
+            caches.keys().then(function (keys) {
+                return Promise.all(keys.filter(function (key) {
+                    return key.indexOf("nav-cache-") === 0;
+                }).map(function (key) {
+                    return caches.delete(key);
+                }));
+            }).catch(function (error) {
+                console.warn("Legacy cache cleanup failed", error);
+            });
+        }
     }, 3200);
 }
 
@@ -539,73 +553,6 @@ function initNetworkStatus() {
     window.addEventListener("online", function () {
         if (wasOffline) show("网络已恢复", "online", 1800);
         wasOffline = false;
-    });
-}
-
-function initPwaInstall() {
-    var installButton = document.getElementById("install-app");
-    if (!installButton) return;
-    var deferredPrompt = null;
-    var isStandalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-    isStandalone = isStandalone || window.navigator.standalone === true;
-    if (isStandalone) return;
-
-    function showInstallButton() {
-        installButton.hidden = false;
-        var separator = document.querySelector(".footer-separator");
-        if (separator) separator.hidden = false;
-    }
-
-    function hideInstallButton() {
-        installButton.hidden = true;
-        var separator = document.querySelector(".footer-separator");
-        var updateButton = document.getElementById("update-check");
-        if (separator && (!updateButton || updateButton.hidden)) separator.hidden = true;
-    }
-
-    window.addEventListener("beforeinstallprompt", function (event) {
-        event.preventDefault();
-        deferredPrompt = event;
-        showInstallButton();
-    });
-
-    var isIos = /iP(?:hone|ad|od)/.test(navigator.userAgent) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    var isIosSafari = isIos && /Safari/i.test(navigator.userAgent) &&
-        !/(?:CriOS|FxiOS|EdgiOS|OPiOS)/i.test(navigator.userAgent);
-    if (isIosSafari) {
-        runAfterFirstPaint(showInstallButton, 900);
-    }
-
-    installButton.addEventListener("click", function () {
-        if (deferredPrompt) {
-            installButton.disabled = true;
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function () {
-                deferredPrompt = null;
-                installButton.disabled = false;
-                hideInstallButton();
-            }).catch(function () {
-                installButton.disabled = false;
-            });
-            return;
-        }
-
-        iziToast.show({
-            timeout: 4200,
-            class: "setting-toast",
-            title: "安装到主屏幕",
-            message: "请点击 Safari 菜单并选择添加到主屏幕",
-            backgroundColor: "transparent",
-            close: false,
-            position: "topCenter",
-            displayMode: "replace"
-        });
-    });
-
-    window.addEventListener("appinstalled", function () {
-        deferredPrompt = null;
-        hideInstallButton();
     });
 }
 

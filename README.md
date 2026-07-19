@@ -20,7 +20,7 @@
 - 随机预设壁纸、每日必应、自定义远程壁纸
 - 远程图标延迟加载，失败时回退到本地图标
 - 手动检测当前分类下网站存活状态
-- Service Worker 静态缓存和版本更新提示
+- 页面版本更新提示
 - 性能模式：自动/完整/轻量，低配设备可减少动效
 - 首屏非关键任务延后，目标 PC/手机 0.5 秒内主体内容可见
 - 首屏启动遮罩会短暂覆盖组装过程，并以轻量过渡显现完整页面
@@ -56,7 +56,7 @@
 ├── scripts/preflight.js      # 兼容旧检查入口
 ├── scripts/validate-sites.js # 内部收藏数据校验
 ├── scripts/update-version.js # 统一更新版本号和 SW 缓存号
-├── sw.js                     # Service Worker 缓存
+├── sw.js                     # 旧 Service Worker 退役与缓存清理
 ├── vercel.json               # Vercel 缓存和基础安全响应头
 ├── index.html                # 页面入口
 ├── README.md                 # 使用与日常维护说明
@@ -109,7 +109,7 @@
 node scripts\check.js
 ```
 
-它会校验收藏数据、MiSans UI 字符清单，并对主要前端脚本、Service Worker、Vercel API 和维护脚本做语法检查。
+它会校验收藏数据、MiSans UI 字符清单，并对主要前端脚本、旧 Service Worker 退役脚本、Vercel API 和维护脚本做语法检查。
 
 ### 更新字体子集
 
@@ -124,7 +124,7 @@ node scripts\build-font-subset.js path\to\MiSans-Regular.woff2
 
 ### 更新版本
 
-不要手动只改 `data/app-version.json` 或只改 `sw.js`。
+不要手动只改 `data/app-version.json` 或页脚版本。
 
 每轮优化完成后都要使用脚本统一更新版本：
 
@@ -135,7 +135,6 @@ node scripts\update-version.js YYYY.MM.DD.N
 它会同时更新：
 
 - `data/app-version.json` 的 `version`
-- `sw.js` 里的 `CACHE_VERSION`
 - `index.html` 页脚显示的当前版本号
 
 ## 开发注意

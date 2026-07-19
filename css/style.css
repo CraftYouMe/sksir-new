@@ -1676,8 +1676,7 @@ input[type="radio"]:checked+label {
     opacity: 0.9;
 }
 
-.update-check,
-.install-app {
+.update-check {
     display: inline-flex;
     align-items: center;
     height: 22px;
@@ -1694,18 +1693,15 @@ input[type="radio"]:checked+label {
     backdrop-filter: blur(8px);
 }
 
-.update-check:hover,
-.install-app:hover {
+.update-check:hover {
     background: rgba(255, 255, 255, 0.22);
 }
 
-.update-check:active,
-.install-app:active {
+.update-check:active {
     transform: scale(0.96);
 }
 
 .update-check[hidden],
-.install-app[hidden],
 .footer-separator[hidden] {
     display: none;
 }
@@ -1834,10 +1830,6 @@ input[type="radio"]:checked+label {
 }
 
 body.onsearch .close_sou {
-    pointer-events: auto;
-}
-
-#content.box .close_sou {
     pointer-events: auto;
 }
 
@@ -2328,8 +2320,7 @@ body.onsearch .close_sou {
         pointer-events: auto;
     }
 
-    .update-check,
-    .install-app {
+    .update-check {
         max-width: calc(100vw - 28px);
         height: 22px;
         line-height: 20px;
@@ -2588,14 +2579,6 @@ html.ios-standalone #menu {
 
 /*小于720px时*/
 @media (max-width: 720px) {
-
-    body.onsearch .all-search {
-        transform: translateY(0);
-    }
-
-    body.onsearch .search-engine {
-        transform: translateY(0) !important;
-    }
 
     body.onsearch #keywords {
         max-height: min(34vh, 176px);
