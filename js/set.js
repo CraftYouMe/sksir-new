@@ -1230,9 +1230,16 @@ $(document).ready(function () {
 
     // 点击其他区域关闭事件
     $(document).on('click', '.close_sou', function (event) {
-        if (!$('body').hasClass('onsearch') && !$('#content').hasClass('box')) return;
+        if (!$('body').hasClass('onsearch')) return;
         event.preventDefault();
         event.stopPropagation();
+        closeActiveSurface();
+    });
+
+    $(document).on('click', function (event) {
+        if (!$('#content').hasClass('bookmarks-open')) return;
+        if ($(event.target).closest('.mark, .tool-all, #menu').length) return;
+        event.preventDefault();
         closeActiveSurface();
     });
 

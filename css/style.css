@@ -1833,10 +1833,6 @@ body.onsearch .close_sou {
     pointer-events: auto;
 }
 
-#content.box .close_sou {
-    pointer-events: auto;
-}
-
 /*iconcss*/
 .iconcss{
     padding-right: 5px;
