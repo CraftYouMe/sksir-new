@@ -2580,6 +2580,28 @@ html.ios-standalone #menu {
 /*小于720px时*/
 @media (max-width: 720px) {
 
+    .con {
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: transform;
+    }
+
+    body.onsearch .con {
+        transform: translate3d(0, clamp(-128px, -14vh, -84px), 0);
+    }
+
+    body.onsearch .all-search {
+        transform: translateY(-72%);
+    }
+
+    body.onsearch #keywords {
+        max-height: min(34vh, 176px);
+    }
+
+    body.onsearch .foot {
+        opacity: 0;
+        pointer-events: none;
+    }
+
     .foot {
         position: fixed;
         left: 0;
