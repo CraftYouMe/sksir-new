@@ -252,10 +252,6 @@ img.error {
     /* transform: translateY(-150%); */
 }
 
-.search-cancel {
-    display: none;
-}
-
 @keyframes fade {
     from {
         opacity: 0;
@@ -1841,6 +1837,10 @@ body.onsearch .close_sou {
     pointer-events: auto;
 }
 
+#content.box .close_sou {
+    pointer-events: auto;
+}
+
 /*iconcss*/
 .iconcss{
     padding-right: 5px;
@@ -2589,68 +2589,12 @@ html.ios-standalone #menu {
 /*小于720px时*/
 @media (max-width: 720px) {
 
-    .sou {
-        width: calc(100% - 28px);
-        max-width: 560px;
-    }
-
-    .sou .search {
-        width: 100%;
-    }
-
-    .all-search,
-    body:not(.onsearch) .all-search:hover {
-        width: 100%;
-    }
-
-    .all-search {
-        height: 46px;
-        transition:
-            transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1),
-            background-color 0.2s ease,
-            border-color 0.2s ease,
-            box-shadow 0.2s ease;
-    }
-
-    .con .sou form .wd {
-        min-width: 0;
-        font-size: 16px;
-    }
-
-    body.onsearch .sou .search {
-        width: calc(100% - 62px);
-    }
-
     body.onsearch .all-search {
-        transform: translateY(-54px);
-    }
-
-    body.onsearch .search-cancel {
-        position: absolute;
-        top: 0;
-        right: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 54px;
-        height: 46px;
-        padding: 0;
-        border: 0;
-        outline: 0;
-        color: rgba(255, 255, 255, 0.92);
-        background: transparent;
-        font-size: 16px;
-        cursor: pointer;
-        transform: translateY(-54px);
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    body.onsearch .search-cancel:active {
-        opacity: 0.58;
+        transform: translateY(0);
     }
 
     body.onsearch .search-engine {
-        transform: translateY(-54px) !important;
+        transform: translateY(0) !important;
     }
 
     body.onsearch #keywords {
