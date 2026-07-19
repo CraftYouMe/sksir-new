@@ -194,6 +194,9 @@
             if (iosStandaloneMode) {
                 document.documentElement.classList.add("ios-standalone");
                 setIosStandaloneBackgroundHeight();
+                function resetIosStandaloneScroll() {
+                    if (window.scrollY || window.pageYOffset) window.scrollTo(0, 0);
+                }
                 window.addEventListener("pageshow", setIosStandaloneBackgroundHeight, { passive: true });
                 window.addEventListener("load", function () {
                     setIosStandaloneBackgroundHeight();
@@ -203,55 +206,13 @@
                 window.addEventListener("orientationchange", function () {
                     window.setTimeout(setIosStandaloneBackgroundHeight, 360);
                 }, { passive: true });
-            }
-
-            if (isIosDevice() && window.visualViewport) {
-                var iosKeyboardOffsetFrame = 0;
-                var iosKeyboardOffsetTimers = [];
-
-                function clearIosKeyboardOffsetTimers() {
-                    iosKeyboardOffsetTimers.forEach(function (timer) {
-                        window.clearTimeout(timer);
-                    });
-                    iosKeyboardOffsetTimers = [];
-                }
-
-                function updateIosKeyboardViewportOffset() {
-                    iosKeyboardOffsetFrame = 0;
-                    if (!isFormControl(document.activeElement)) return;
-                    var viewportOffset = window.visualViewport.offsetTop || 0;
-                    var scrollOffset = window.scrollY || window.pageYOffset || 0;
-                    var offset = Math.max(0, Math.ceil(Math.max(viewportOffset, scrollOffset)));
-                    document.documentElement.style.setProperty("--ios-keyboard-viewport-offset", offset + "px");
-                }
-
-                function scheduleIosKeyboardViewportOffset() {
-                    if (iosKeyboardOffsetFrame) return;
-                    iosKeyboardOffsetFrame = window.requestAnimationFrame(updateIosKeyboardViewportOffset);
-                }
-
+                window.addEventListener("scroll", resetIosStandaloneScroll, { passive: true });
                 document.addEventListener("focusin", function (event) {
                     if (!isFormControl(event.target)) return;
-                    document.documentElement.classList.add("ios-keyboard-open");
-                    clearIosKeyboardOffsetTimers();
-                    scheduleIosKeyboardViewportOffset();
-                    [60, 180, 360].forEach(function (delay) {
-                        iosKeyboardOffsetTimers.push(window.setTimeout(scheduleIosKeyboardViewportOffset, delay));
-                    });
+                    resetIosStandaloneScroll();
+                    window.setTimeout(resetIosStandaloneScroll, 80);
+                    window.setTimeout(resetIosStandaloneScroll, 240);
                 }, true);
-
-                document.addEventListener("focusout", function (event) {
-                    if (!isFormControl(event.target)) return;
-                    clearIosKeyboardOffsetTimers();
-                    iosKeyboardOffsetTimers.push(window.setTimeout(function () {
-                        document.documentElement.classList.remove("ios-keyboard-open");
-                        document.documentElement.style.setProperty("--ios-keyboard-viewport-offset", "0px");
-                    }, 480));
-                }, true);
-
-                window.visualViewport.addEventListener("resize", scheduleIosKeyboardViewportOffset, { passive: true });
-                window.visualViewport.addEventListener("scroll", scheduleIosKeyboardViewportOffset, { passive: true });
-                window.addEventListener("scroll", scheduleIosKeyboardViewportOffset, { passive: true });
             }
 
             var iosSafari = isIosSafari();
@@ -620,7 +581,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.19.13">v2026.07.19.13</span>
+                <span id="app-version" class="app-version" data-version="2026.07.19.14">v2026.07.19.14</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
                 <button type="button" id="install-app" class="install-app" hidden>安装应用</button>
