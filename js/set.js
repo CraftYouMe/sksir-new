@@ -623,7 +623,7 @@ function setBootWallpaperState(status, src) {
 
 function setIosWallpaperFallback(src) {
     var root = document.documentElement;
-    if (!root || !root.classList.contains("ios-safari")) return;
+    if (!root || (!root.classList.contains("ios-safari") && !root.classList.contains("ios-standalone"))) return;
 
     if (!src) {
         root.style.removeProperty("--ios-wallpaper-image");

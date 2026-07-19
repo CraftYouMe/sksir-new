@@ -2539,6 +2539,29 @@ html.ios-safari .cover {
     min-height: 100%;
 }
 
+/* iOS 主屏幕应用首次绘制时 fixed 元素可能少算底部安全区，背景单独使用完整设备高度。 */
+html.ios-standalone {
+    background-color: var(--body-background-color);
+    background-image: var(--ios-wallpaper-image, none);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+html.ios-standalone .bg-all,
+html.ios-standalone #bg,
+html.ios-standalone .cover {
+    height: var(--ios-standalone-bg-height, 100vh);
+    min-height: var(--ios-standalone-bg-height, 100vh);
+}
+
+html.ios-standalone .bg-all {
+    background-image: var(--ios-wallpaper-image, none);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 /*小于1200px时*/
 @media (max-width: 1200px) {
 
