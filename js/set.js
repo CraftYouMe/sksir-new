@@ -357,6 +357,224 @@ var keywordRemoteSuggestions = [];
 var keywordRemoteState = "idle";
 var recentNavStorageKey = "sksir-recent-nav-items";
 var recentNavLimit = 6;
+var quickLaunchEnabledKey = "sksir-quick-launch-enabled";
+var quickLaunchClicksKey = "sksir-quick-launch-clicks";
+var quickLaunchOrderKey = "sksir-quick-launch-order";
+var quickLaunchLimit = 8;
+var quickLaunchSuppressClickUntil = 0;
+
+function readQuickLaunchStorage(key, fallback) {
+    try {
+        var value = localStorage.getItem(key);
+        return value === null ? fallback : JSON.parse(value);
+    } catch (error) {
+        return fallback;
+    }
+}
+
+function writeQuickLaunchStorage(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        // Storage can be unavailable in private browsing; keep the UI usable.
+    }
+}
+
+function isQuickLaunchEnabled() {
+    return readQuickLaunchStorage(quickLaunchEnabledKey, true) !== false;
+}
+
+function normalizeQuickLaunchUrl(url) {
+    try {
+        return new URL(url, window.location.href).href;
+    } catch (error) {
+        return url;
+    }
+}
+
+function getQuickLaunchItems() {
+    var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
+    if (!Array.isArray(tabs)) return [];
+    var items = [];
+    var seenUrls = {};
+    tabs.forEach(function (tab) {
+        if (tab.lock || !Array.isArray(tab.items)) return;
+        tab.items.forEach(function (item) {
+            if (!item || !item.url || !item.icon) return;
+            var normalizedUrl = normalizeQuickLaunchUrl(item.url);
+            if (seenUrls[normalizedUrl]) return;
+            seenUrls[normalizedUrl] = true;
+            items.push({
+                name: item.name || item.url,
+                url: normalizedUrl,
+                icon: item.icon,
+                desc: item.desc || "",
+                target: item.target || "_blank",
+                rel: item.rel || "noopener noreferrer",
+                sourceIndex: items.length
+            });
+        });
+    });
+    return items;
+}
+
+function sortQuickLaunchItems(items) {
+    var clicks = readQuickLaunchStorage(quickLaunchClicksKey, {});
+    var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
+    var orderMap = {};
+    if (Array.isArray(manualOrder) && manualOrder.length) {
+        manualOrder.forEach(function (url, index) {
+            orderMap[url] = index;
+        });
+    }
+    return items.sort(function (a, b) {
+        if (manualOrder.length) {
+            var aOrder = Object.prototype.hasOwnProperty.call(orderMap, a.url) ? orderMap[a.url] : 9999;
+            var bOrder = Object.prototype.hasOwnProperty.call(orderMap, b.url) ? orderMap[b.url] : 9999;
+            if (aOrder !== bOrder) return aOrder - bOrder;
+        }
+        var countDiff = (clicks[b.url] || 0) - (clicks[a.url] || 0);
+        return countDiff || a.sourceIndex - b.sourceIndex;
+    });
+}
+
+function recordQuickLaunchClick(url) {
+    if (!url) return;
+    url = normalizeQuickLaunchUrl(url);
+    var clicks = readQuickLaunchStorage(quickLaunchClicksKey, {});
+    clicks[url] = (clicks[url] || 0) + 1;
+    writeQuickLaunchStorage(quickLaunchClicksKey, clicks);
+}
+
+function refreshQuickLaunchAutoOrder() {
+    var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
+    if (!Array.isArray(manualOrder) || !manualOrder.length) {
+        setTimeout(renderQuickLaunch, 0);
+    }
+}
+
+function saveQuickLaunchOrder() {
+    var order = $("#quick-launch .quick-launch-item").map(function () {
+        return $(this).attr("data-url");
+    }).get();
+    writeQuickLaunchStorage(quickLaunchOrderKey, order);
+}
+
+function bindQuickLaunchDrag(item) {
+    var startX = 0;
+    var startY = 0;
+    var dragging = false;
+
+    item.addEventListener("pointerdown", function (event) {
+        if (event.button !== undefined && event.button !== 0) return;
+        startX = event.clientX;
+        startY = event.clientY;
+        dragging = false;
+        item.setPointerCapture(event.pointerId);
+    });
+
+    item.addEventListener("pointermove", function (event) {
+        if (!item.hasPointerCapture(event.pointerId)) return;
+        if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 7) return;
+        dragging = true;
+        item.classList.add("is-dragging");
+        var target = document.elementFromPoint(event.clientX, event.clientY);
+        var targetItem = target && target.closest && target.closest(".quick-launch-item");
+        if (!targetItem || targetItem === item || targetItem.parentNode !== item.parentNode) return;
+        var targetRect = targetItem.getBoundingClientRect();
+        var insertAfter = event.clientX > targetRect.left + targetRect.width / 2;
+        targetItem.parentNode.insertBefore(item, insertAfter ? targetItem.nextSibling : targetItem);
+    });
+
+    function finishDrag(event) {
+        if (item.hasPointerCapture(event.pointerId)) item.releasePointerCapture(event.pointerId);
+        item.classList.remove("is-dragging");
+        if (!dragging) return;
+        quickLaunchSuppressClickUntil = Date.now() + 400;
+        saveQuickLaunchOrder();
+        event.preventDefault();
+        dragging = false;
+    }
+
+    item.addEventListener("pointerup", finishDrag);
+    item.addEventListener("pointercancel", finishDrag);
+    item.addEventListener("dragstart", function (event) {
+        event.preventDefault();
+    });
+}
+
+function renderQuickLaunch() {
+    var panel = document.getElementById("quick-launch");
+    if (!panel) return Promise.resolve();
+    if (!isQuickLaunchEnabled()) {
+        panel.hidden = true;
+        panel.replaceChildren();
+        return Promise.resolve();
+    }
+
+    var items = sortQuickLaunchItems(getQuickLaunchItems()).slice(0, quickLaunchLimit);
+    var iconTasks = [];
+    panel.replaceChildren();
+    items.forEach(function (entry) {
+        var link = document.createElement("a");
+        link.className = "quick-launch-item";
+        link.href = entry.url;
+        link.target = entry.target;
+        link.rel = entry.rel;
+        link.title = entry.name;
+        link.setAttribute("aria-label", entry.name);
+        link.setAttribute("data-url", entry.url);
+
+        var icon = document.createElement("img");
+        icon.src = entry.icon;
+        icon.alt = "";
+        icon.loading = "lazy";
+        icon.decoding = "async";
+        iconTasks.push(new Promise(function (resolve) {
+            var settled = false;
+            var timer = setTimeout(finish, 1800);
+            function finish() {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timer);
+                resolve();
+            }
+            icon.addEventListener("load", finish, { once: true });
+        }));
+        icon.onerror = function () {
+            this.onerror = null;
+            this.src = "./img/icon/fangdiu.png";
+        };
+        link.appendChild(icon);
+        link.addEventListener("click", function (event) {
+            event.stopPropagation();
+            if (Date.now() < quickLaunchSuppressClickUntil) {
+                event.preventDefault();
+                return;
+            }
+            recordQuickLaunchClick(entry.url);
+            recordRecentNavItem(entry);
+            refreshQuickLaunchAutoOrder();
+        });
+        bindQuickLaunchDrag(link);
+        panel.appendChild(link);
+    });
+    panel.hidden = items.length === 0;
+    return Promise.all(iconTasks);
+}
+
+function initQuickLaunch() {
+    $("#quick-launch-enabled").prop("checked", isQuickLaunchEnabled());
+    if (!isQuickLaunchEnabled()) return renderQuickLaunch();
+    var ready = typeof window.ensureNavSitesLoaded === "function"
+        ? window.ensureNavSitesLoaded()
+        : Promise.resolve();
+    return ready.then(renderQuickLaunch).catch(function () {
+        $("#quick-launch").prop("hidden", true);
+    });
+}
+
+window.prepareQuickLaunchForBoot = initQuickLaunch;
 
 function hideKeywordPanel() {
     if (keywordReminderTimer) {
@@ -1356,6 +1574,26 @@ $(document).ready(function () {
             name: $.trim(link.textContent),
             url: link.href,
             desc: $(this).find(".quick-desc").text()
+        });
+        recordQuickLaunchClick(link.href);
+        refreshQuickLaunchAutoOrder();
+    });
+
+    $(document).on("change", ".set-quick-launch", function () {
+        writeQuickLaunchStorage(quickLaunchEnabledKey, this.checked);
+        initQuickLaunch();
+    });
+
+    $(document).on("click", "#quick-launch-auto", function () {
+        try {
+            localStorage.removeItem(quickLaunchOrderKey);
+        } catch (error) {}
+        initQuickLaunch();
+        iziToast.show({
+            timeout: 1600,
+            class: "setting-toast",
+            title: "快捷入口",
+            message: "已恢复按点击次数自动调整"
         });
     });
 

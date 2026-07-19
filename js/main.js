@@ -160,7 +160,10 @@ $(document).ready(function () {
 //加载完成后执行
 $(function () {
     //载入动画
-    markFirstScreenVisible();
+    var quickLaunchReady = typeof window.prepareQuickLaunchForBoot === "function"
+        ? window.prepareQuickLaunchForBoot()
+        : Promise.resolve();
+    markFirstScreenVisible(quickLaunchReady);
 
     scheduleNavSitesLoad();
     scheduleVisitorBadge();
@@ -172,7 +175,7 @@ $(function () {
 });
 var now = new Date(), hour = now.getHours()
 
-function markFirstScreenVisible() {
+function markFirstScreenVisible(firstScreenTask) {
     runAfterFirstPaint(function () {
         var elapsed = window.performance && typeof window.performance.now === "function"
             ? window.performance.now()
@@ -180,17 +183,18 @@ function markFirstScreenVisible() {
         if (window.performance && typeof window.performance.now === "function") {
             window.__sksirFirstScreenMs = Math.round(elapsed);
         }
-        scheduleFirstScreenReveal(elapsed);
+        scheduleFirstScreenReveal(elapsed, firstScreenTask);
     }, 0);
 }
 
-function scheduleFirstScreenReveal(elapsed) {
+function scheduleFirstScreenReveal(elapsed, firstScreenTask) {
     var root = document.documentElement;
     var minVisibleMs = root.classList.contains("perf-lite") ? 180 : 420;
     var maxWallpaperWaitMs = root.classList.contains("perf-lite") ? 1800 : 3200;
     var remaining = Math.max(0, minVisibleMs - (elapsed || 0));
     var minTimeReady = false;
     var wallpaperReady = false;
+    var firstScreenContentReady = false;
     var revealed = false;
 
     if (window.__sksirBootFallbackTimer) {
@@ -209,8 +213,15 @@ function scheduleFirstScreenReveal(elapsed) {
         revealWhenReady();
     });
 
+    Promise.resolve(firstScreenTask).catch(function (error) {
+        console.warn("First screen content failed to prepare", error);
+    }).then(function () {
+        firstScreenContentReady = true;
+        revealWhenReady();
+    });
+
     function revealWhenReady() {
-        if (revealed || !minTimeReady || !wallpaperReady) return;
+        if (revealed || !minTimeReady || !wallpaperReady || !firstScreenContentReady) return;
         revealed = true;
         root.classList.add("is-first-screen-ready");
         setTimeout(function () {

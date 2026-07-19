@@ -402,6 +402,67 @@ html.perf-lite.is-booting::after {
     transform: translateY(-38%) !important;
 }
 
+.quick-launch {
+    position: absolute;
+    top: 43px;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 36px;
+    padding-top: 12px;
+    transition: opacity 0.2s ease, transform 0.25s ease;
+}
+
+.quick-launch[hidden] {
+    display: none;
+}
+
+.quick-launch-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    background: rgba(24, 31, 40, 0.58);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+    cursor: grab;
+    touch-action: none;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.quick-launch-item:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+}
+
+.quick-launch-item:active,
+.quick-launch-item.is-dragging {
+    cursor: grabbing;
+    transform: scale(0.92);
+    opacity: 0.72;
+}
+
+.quick-launch-item img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.onsearch .quick-launch,
+.box .quick-launch {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+}
+
 
 /*时间*/
 .tool-all {
@@ -1833,6 +1894,102 @@ body.onsearch .close_sou {
     pointer-events: auto;
 }
 
+.quick-launch-settings {
+    margin-top: 18px;
+}
+
+.quick-launch-setting-title {
+    margin-bottom: 10px;
+    color: var(--main-text-color);
+    font-size: 0.92rem;
+}
+
+#quick-launch-setting {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.quick-launch-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 32px;
+    margin-bottom: 14px;
+    cursor: pointer;
+}
+
+.quick-launch-toggle input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.quick-launch-toggle-track {
+    position: relative;
+    width: 38px;
+    height: 22px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    box-sizing: border-box;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.quick-launch-toggle-track::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s ease;
+}
+
+.quick-launch-toggle input:checked + .quick-launch-toggle-track {
+    border-color: rgba(155, 231, 215, 0.52);
+    background: rgba(82, 190, 165, 0.68);
+}
+
+.quick-launch-toggle input:checked + .quick-launch-toggle-track::after {
+    background: #ffffff;
+    transform: translateX(16px);
+}
+
+.quick-launch-toggle input:focus-visible + .quick-launch-toggle-track {
+    outline: 2px solid rgba(255, 255, 255, 0.72);
+    outline-offset: 2px;
+}
+
+.quick-launch-toggle-text {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.86rem;
+}
+
+.quick-launch-auto {
+    height: 30px;
+    margin: 0 0 14px;
+    padding: 0 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    background: var(--main-button-color);
+    color: var(--main-text-color);
+    cursor: pointer;
+}
+
+.quick-launch-setting-tip {
+    margin-top: -6px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.78rem;
+}
+
 /*iconcss*/
 .iconcss{
     padding-right: 5px;
@@ -2579,6 +2736,21 @@ html.ios-standalone #menu {
 
 /*小于720px时*/
 @media (max-width: 720px) {
+
+    .quick-launch {
+        gap: 9px;
+        padding-top: 10px;
+    }
+
+    .quick-launch-item {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+    }
+
+    .quick-launch-item:nth-child(n + 7) {
+        display: none;
+    }
 
     body.onsearch #keywords {
         max-height: min(34vh, 176px);

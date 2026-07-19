@@ -315,6 +315,7 @@
                         </div>
                         <input type="submit" id="search-submit" style="display: none;">
                     </form>
+                    <div id="quick-launch" class="quick-launch" aria-label="快捷入口" hidden></div>
                     <div id="keywords" role="listbox" aria-label="搜索建议" style="display: none;"></div>
                     <div class="search-engine" style="display: none;">
                         <div class="search-engine-list">
@@ -553,6 +554,20 @@
                                                 </div>
 
                                             </div>
+                                            <div class="from_row quick-launch-settings">
+                                                <div class="from_row_content">
+                                                    <div class="quick-launch-setting-title">快捷入口</div>
+                                                    <div id="quick-launch-setting">
+                                                        <label class="quick-launch-toggle" for="quick-launch-enabled">
+                                                            <input type="checkbox" id="quick-launch-enabled" class="set-quick-launch">
+                                                            <span class="quick-launch-toggle-track" aria-hidden="true"></span>
+                                                            <span class="quick-launch-toggle-text">显示快捷入口</span>
+                                                        </label>
+                                                        <button type="button" id="quick-launch-auto" class="quick-launch-auto">恢复自动顺序</button>
+                                                    </div>
+                                                    <div class="quick-launch-setting-tip">按点击次数自动调整，移动首页图标可自定义顺序</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -567,7 +582,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.20.8">v2026.07.20.8</span>
+                <span id="app-version" class="app-version" data-version="2026.07.20.12">v2026.07.20.12</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>
