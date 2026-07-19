@@ -1139,6 +1139,12 @@ function hideSe() {
 
 $(document).ready(function () {
 
+    // Prepare the mobile search layout before iOS focuses the input.
+    document.addEventListener("touchstart", function (event) {
+        if (!event.target.closest || !event.target.closest(".sou")) return;
+        focusWd();
+    }, { capture: true, passive: true });
+
     // 搜索框数据加载
     searchData();
 

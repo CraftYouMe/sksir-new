@@ -2567,11 +2567,6 @@ html.ios-standalone #menu {
     right: calc(8px + env(safe-area-inset-right, 0px));
 }
 
-html.ios-standalone,
-html.ios-standalone body {
-    overflow: hidden;
-}
-
 /*小于1200px时*/
 @media (max-width: 1200px) {
 
@@ -2596,6 +2591,34 @@ html.ios-standalone body {
 
     .onsearch .search-engine {
         transform: translateY(0) !important;
+    }
+
+    /* 手机搜索使用独立顶部栏：输入框在键盘出现前已经可见，避免 iOS 平移整个首页。 */
+    body.onsearch .sou {
+        position: fixed;
+        top: calc(12px + env(safe-area-inset-top, 0px));
+        left: 0;
+        z-index: 10010;
+        width: 100%;
+        max-width: none;
+        padding: 0 16px;
+        box-sizing: border-box;
+        transition: none;
+    }
+
+    body.onsearch .all-search {
+        width: 100%;
+        transform: none !important;
+    }
+
+    body.onsearch .tool-all {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.12s ease;
+    }
+
+    body.onsearch #menu {
+        display: none !important;
     }
 
     .foot {

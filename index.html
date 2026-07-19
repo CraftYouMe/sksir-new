@@ -194,9 +194,6 @@
             if (iosStandaloneMode) {
                 document.documentElement.classList.add("ios-standalone");
                 setIosStandaloneBackgroundHeight();
-                function resetIosStandaloneScroll() {
-                    if (window.scrollY || window.pageYOffset) window.scrollTo(0, 0);
-                }
                 window.addEventListener("pageshow", setIosStandaloneBackgroundHeight, { passive: true });
                 window.addEventListener("load", function () {
                     setIosStandaloneBackgroundHeight();
@@ -206,13 +203,6 @@
                 window.addEventListener("orientationchange", function () {
                     window.setTimeout(setIosStandaloneBackgroundHeight, 360);
                 }, { passive: true });
-                window.addEventListener("scroll", resetIosStandaloneScroll, { passive: true });
-                document.addEventListener("focusin", function (event) {
-                    if (!isFormControl(event.target)) return;
-                    resetIosStandaloneScroll();
-                    window.setTimeout(resetIosStandaloneScroll, 80);
-                    window.setTimeout(resetIosStandaloneScroll, 240);
-                }, true);
             }
 
             var iosSafari = isIosSafari();
@@ -581,7 +571,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.19.14">v2026.07.19.14</span>
+                <span id="app-version" class="app-version" data-version="2026.07.19.15">v2026.07.19.15</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
                 <button type="button" id="install-app" class="install-app" hidden>安装应用</button>
