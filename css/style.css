@@ -2585,6 +2585,19 @@ html.ios-standalone #menu {
 /*小于720px时*/
 @media (max-width: 720px) {
 
+    /*
+     * 预先把首屏交互区放在键盘上沿之上，减少移动浏览器聚焦输入框时
+     * 为保证控件可见而平移整个视觉视口。仅移动时间和搜索区域，导航、
+     * 页脚以及 iOS 的视口高度处理保持不变。
+     */
+    .tool-all {
+        transform: translate3d(0, calc(var(--time-block-offset) - clamp(36px, 6vh, 56px)), 0) !important;
+    }
+
+    .sou {
+        transform: translate3d(0, clamp(-56px, -6vh, -36px), 0);
+    }
+
     body.onsearch #keywords {
         max-height: min(34vh, 176px);
     }
