@@ -2580,47 +2580,6 @@ html.ios-standalone #menu {
 /*小于720px时*/
 @media (max-width: 720px) {
 
-    /* 移动端由系统键盘调整可视区域，避免再叠加搜索框和时间的主动上移动画。 */
-    .onsearch .all-search {
-        transform: translateY(0) !important;
-    }
-
-    .onsearch .tool-all {
-        --time-block-offset: -120%;
-    }
-
-    .onsearch .search-engine {
-        transform: translateY(0) !important;
-    }
-
-    /* 手机搜索使用独立顶部栏：输入框在键盘出现前已经可见，避免 iOS 平移整个首页。 */
-    body.onsearch .sou {
-        position: fixed;
-        top: calc(12px + env(safe-area-inset-top, 0px));
-        left: 0;
-        z-index: 10010;
-        width: 100%;
-        max-width: none;
-        padding: 0 16px;
-        box-sizing: border-box;
-        transition: none;
-    }
-
-    body.onsearch .all-search {
-        width: 100%;
-        transform: none !important;
-    }
-
-    body.onsearch .tool-all {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.12s ease;
-    }
-
-    body.onsearch #menu {
-        display: none !important;
-    }
-
     .foot {
         position: fixed;
         left: 0;
