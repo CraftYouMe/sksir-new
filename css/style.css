@@ -2548,6 +2548,18 @@ html.ios-safari.ios-standalone #content {
     min-height: 100%;
 }
 
+html.ios-safari.ios-standalone {
+    background-color: var(--body-background-color);
+    background-image: var(--ios-wallpaper-image, none);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+html.ios-safari.ios-standalone body {
+    background-color: transparent;
+}
+
 html.ios-safari.ios-standalone .bg-all {
     inset: 0;
     width: 100%;
