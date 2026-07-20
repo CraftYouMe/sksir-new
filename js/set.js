@@ -360,8 +360,14 @@ var recentNavLimit = 6;
 var quickLaunchEnabledKey = "sksir-quick-launch-enabled";
 var quickLaunchClicksKey = "sksir-quick-launch-clicks";
 var quickLaunchOrderKey = "sksir-quick-launch-order";
-var quickLaunchLimit = 8;
+var quickLaunchCustomKey = "sksir-quick-launch-custom";
+var quickLaunchDesktopLimitKey = "sksir-quick-launch-desktop-limit";
+var quickLaunchMobileLimitKey = "sksir-quick-launch-mobile-limit";
+var quickLaunchStorageKeys = [quickLaunchEnabledKey, quickLaunchClicksKey, quickLaunchOrderKey,
+    quickLaunchCustomKey, quickLaunchDesktopLimitKey, quickLaunchMobileLimitKey];
+var quickLaunchCustomLimit = 24;
 var quickLaunchSuppressClickUntil = 0;
+var quickLaunchResizeFrame = 0;
 
 function readQuickLaunchStorage(key, fallback) {
     try {
@@ -392,11 +398,88 @@ function normalizeQuickLaunchUrl(url) {
     }
 }
 
+function normalizeQuickLaunchWebUrl(url) {
+    try {
+        var parsed = new URL(String(url || "").trim());
+        return /^(https?:)$/.test(parsed.protocol) ? parsed.href : "";
+    } catch (error) {
+        return "";
+    }
+}
+
+function clampQuickLaunchLimit(value, fallback, maximum) {
+    value = parseInt(value, 10);
+    return Number.isFinite(value) ? Math.max(4, Math.min(maximum, value)) : fallback;
+}
+
+function getQuickLaunchLimit() {
+    var mobile = window.matchMedia && window.matchMedia("(max-width: 720px)").matches;
+    var key = mobile ? quickLaunchMobileLimitKey : quickLaunchDesktopLimitKey;
+    return clampQuickLaunchLimit(readQuickLaunchStorage(key, mobile ? 6 : 8), mobile ? 6 : 8, mobile ? 8 : 12);
+}
+
+function getQuickLaunchCustomItems() {
+    var stored = readQuickLaunchStorage(quickLaunchCustomKey, []);
+    if (!Array.isArray(stored)) return [];
+    var seen = {};
+    return stored.slice(0, quickLaunchCustomLimit).reduce(function (items, item) {
+        if (!item || typeof item !== "object") return items;
+        var url = normalizeQuickLaunchWebUrl(item.url);
+        if (!url || seen[url]) return items;
+        seen[url] = true;
+        var icon = normalizeQuickLaunchWebUrl(item.icon);
+        items.push({
+            name: String(item.name || new URL(url).hostname).trim().slice(0, 30),
+            url: url,
+            icon: icon || new URL("/favicon.ico", url).href,
+            desc: String(item.desc || "自定义快捷入口").slice(0, 80),
+            target: "_blank",
+            rel: "noopener noreferrer",
+            custom: true,
+            sourceIndex: items.length
+        });
+        return items;
+    }, []);
+}
+
+function repairQuickLaunchStorage() {
+    var custom = getQuickLaunchCustomItems();
+    writeQuickLaunchStorage(quickLaunchCustomKey, custom.map(function (item) {
+        return { name: item.name, url: item.url, icon: item.icon, desc: item.desc };
+    }));
+
+    var clicks = readQuickLaunchStorage(quickLaunchClicksKey, {});
+    var cleanClicks = {};
+    if (clicks && typeof clicks === "object" && !Array.isArray(clicks)) {
+        Object.keys(clicks).slice(0, 500).forEach(function (url) {
+            var normalized = normalizeQuickLaunchWebUrl(url);
+            var count = Math.floor(Number(clicks[url]));
+            if (normalized && Number.isFinite(count) && count > 0) cleanClicks[normalized] = Math.min(count, 1000000);
+        });
+    }
+    writeQuickLaunchStorage(quickLaunchClicksKey, cleanClicks);
+
+    var order = readQuickLaunchStorage(quickLaunchOrderKey, []);
+    var seenOrder = {};
+    order = Array.isArray(order) ? order.reduce(function (clean, url) {
+        var normalized = normalizeQuickLaunchWebUrl(url);
+        if (normalized && !seenOrder[normalized]) {
+            seenOrder[normalized] = true;
+            clean.push(normalized);
+        }
+        return clean;
+    }, []).slice(0, 24) : [];
+    writeQuickLaunchStorage(quickLaunchOrderKey, order);
+}
+
 function getQuickLaunchItems() {
     var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
-    if (!Array.isArray(tabs)) return [];
-    var items = [];
+    var items = getQuickLaunchCustomItems();
     var seenUrls = {};
+    items.forEach(function (item) {
+        seenUrls[item.url] = true;
+    });
+    if (!Array.isArray(tabs)) return items;
     tabs.forEach(function (tab) {
         if (tab.lock || !Array.isArray(tab.items)) return;
         tab.items.forEach(function (item) {
@@ -434,6 +517,7 @@ function sortQuickLaunchItems(items) {
             if (aOrder !== bOrder) return aOrder - bOrder;
         }
         var countDiff = (clicks[b.url] || 0) - (clicks[a.url] || 0);
+        if (!countDiff && a.custom !== b.custom) return a.custom ? -1 : 1;
         return countDiff || a.sourceIndex - b.sourceIndex;
     });
 }
@@ -512,8 +596,7 @@ function renderQuickLaunch() {
         return Promise.resolve();
     }
 
-    var items = sortQuickLaunchItems(getQuickLaunchItems()).slice(0, quickLaunchLimit);
-    var iconTasks = [];
+    var items = sortQuickLaunchItems(getQuickLaunchItems()).slice(0, getQuickLaunchLimit());
     panel.replaceChildren();
     items.forEach(function (entry) {
         var link = document.createElement("a");
@@ -530,17 +613,6 @@ function renderQuickLaunch() {
         icon.alt = "";
         icon.loading = "lazy";
         icon.decoding = "async";
-        iconTasks.push(new Promise(function (resolve) {
-            var settled = false;
-            var timer = setTimeout(finish, 1800);
-            function finish() {
-                if (settled) return;
-                settled = true;
-                clearTimeout(timer);
-                resolve();
-            }
-            icon.addEventListener("load", finish, { once: true });
-        }));
         icon.onerror = function () {
             this.onerror = null;
             this.src = "./img/icon/fangdiu.png";
@@ -560,20 +632,117 @@ function renderQuickLaunch() {
         panel.appendChild(link);
     });
     panel.hidden = items.length === 0;
-    return Promise.all(iconTasks);
+    return Promise.resolve();
 }
 
 function initQuickLaunch() {
     $("#quick-launch-enabled").prop("checked", isQuickLaunchEnabled());
+    $("#quick-launch-desktop-limit").val(String(clampQuickLaunchLimit(readQuickLaunchStorage(quickLaunchDesktopLimitKey, 8), 8, 12)));
+    $("#quick-launch-mobile-limit").val(String(clampQuickLaunchLimit(readQuickLaunchStorage(quickLaunchMobileLimitKey, 6), 6, 8)));
+    renderQuickLaunchCustomList();
+    renderQuickLaunchLibraryTabs();
     if (!isQuickLaunchEnabled()) return renderQuickLaunch();
-    var ready = typeof window.ensureNavSitesLoaded === "function"
-        ? window.ensureNavSitesLoaded()
-        : Promise.resolve();
-    return ready.then(renderQuickLaunch).catch(function () {
-        $("#quick-launch").prop("hidden", true);
+    renderQuickLaunch();
+    return Promise.resolve();
+}
+
+function renderQuickLaunchCustomList() {
+    var panel = document.getElementById("quick-launch-custom-list");
+    if (!panel) return;
+    var items = getQuickLaunchCustomItems();
+    panel.replaceChildren();
+    if (!items.length) {
+        var empty = document.createElement("div");
+        empty.className = "quick-launch-custom-empty";
+        empty.textContent = "暂无自定义入口";
+        panel.appendChild(empty);
+        return;
+    }
+    items.forEach(function (item) {
+        var row = document.createElement("div");
+        row.className = "quick-launch-custom-item";
+        var text = document.createElement("span");
+        text.textContent = item.name;
+        text.title = item.url;
+        var remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "quick-launch-custom-remove";
+        remove.setAttribute("data-url", item.url);
+        remove.setAttribute("aria-label", "删除 " + item.name);
+        remove.textContent = "删除";
+        row.appendChild(text);
+        row.appendChild(remove);
+        panel.appendChild(row);
     });
 }
 
+function renderQuickLaunchLibraryTabs() {
+    var select = document.getElementById("quick-launch-library-tab");
+    if (!select) return;
+    var selected = select.value;
+    var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
+    select.replaceChildren(new Option("选择标签", ""));
+    if (!Array.isArray(tabs)) return renderQuickLaunchLibraryItems();
+    tabs.forEach(function (tab, index) {
+        if (!tab || tab.lock || !Array.isArray(tab.items) || !tab.items.length) return;
+        select.appendChild(new Option(tab.title || ("标签 " + (index + 1)), String(index)));
+    });
+    if (Array.from(select.options).some(function (option) { return option.value === selected; })) {
+        select.value = selected;
+    }
+    renderQuickLaunchLibraryItems();
+}
+
+function renderQuickLaunchLibraryItems() {
+    var tabSelect = document.getElementById("quick-launch-library-tab");
+    var itemSelect = document.getElementById("quick-launch-library-item");
+    if (!tabSelect || !itemSelect) return;
+    var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
+    var tabIndex = parseInt(tabSelect.value, 10);
+    var tab = Array.isArray(tabs) && Number.isFinite(tabIndex) ? tabs[tabIndex] : null;
+    itemSelect.replaceChildren(new Option("选择网站", ""));
+    if (!tab || tab.lock || !Array.isArray(tab.items)) {
+        itemSelect.disabled = true;
+        return;
+    }
+    tab.items.forEach(function (item, index) {
+        if (!item || !normalizeQuickLaunchWebUrl(item.url)) return;
+        itemSelect.appendChild(new Option(item.name || item.url, String(index)));
+    });
+    itemSelect.disabled = itemSelect.options.length < 2;
+}
+
+function saveQuickLaunchCustomItem(entry) {
+    var items = getQuickLaunchCustomItems();
+    var existing = items.find(function (item) { return item.url === entry.url; });
+    if (!existing && items.length >= quickLaunchCustomLimit) return { full: true };
+    if (existing) {
+        items = items.map(function (item) { return item.url === entry.url ? entry : item; });
+    } else {
+        items.unshift(entry);
+    }
+    writeQuickLaunchStorage(quickLaunchCustomKey, items.map(function (item) {
+        return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
+    }));
+    renderQuickLaunchCustomList();
+    renderQuickLaunch();
+    return { updated: !!existing };
+}
+
+function showQuickLaunchMessage(message, isError) {
+    iziToast.show({
+        timeout: 2000,
+        class: "setting-toast",
+        title: isError ? "无法添加" : "快捷入口",
+        message: message
+    });
+}
+
+repairQuickLaunchStorage();
+document.addEventListener("sksir-nav-sites-ready", function () {
+    renderQuickLaunch();
+    renderQuickLaunchLibraryTabs();
+});
 window.prepareQuickLaunchForBoot = initQuickLaunch;
 
 function hideKeywordPanel() {
@@ -1463,9 +1632,13 @@ $(document).ready(function () {
     });
 
     $(document).on('click', function (event) {
-        if (!$('#content').hasClass('bookmarks-open')) return;
-        if ($(event.target).closest('.mark, .tool-all, #menu').length) return;
+        var settingOpen = $('#content').hasClass('setting-open');
+        var bookmarksOpen = $('#content').hasClass('bookmarks-open');
+        if (!settingOpen && !bookmarksOpen) return;
+        var activePanel = settingOpen ? '.set' : '.mark';
+        if ($(event.target).closest(activePanel + ', .tool-all, #menu').length) return;
         event.preventDefault();
+        event.stopPropagation();
         closeActiveSurface();
     });
 
@@ -1594,6 +1767,74 @@ $(document).ready(function () {
             class: "setting-toast",
             title: "快捷入口",
             message: "已恢复按点击次数自动调整"
+        });
+    });
+
+    $(document).on("change", ".quick-launch-limit", function () {
+        var mobile = this.id === "quick-launch-mobile-limit";
+        var value = clampQuickLaunchLimit(this.value, mobile ? 6 : 8, mobile ? 8 : 12);
+        writeQuickLaunchStorage(mobile ? quickLaunchMobileLimitKey : quickLaunchDesktopLimitKey, value);
+        renderQuickLaunch();
+    });
+
+    $(document).on("change", "#quick-launch-library-tab", renderQuickLaunchLibraryItems);
+
+    $(document).on("click", "#quick-launch-library-add", function () {
+        var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
+        var tabIndex = parseInt($("#quick-launch-library-tab").val(), 10);
+        var itemIndex = parseInt($("#quick-launch-library-item").val(), 10);
+        var tab = Array.isArray(tabs) && Number.isFinite(tabIndex) ? tabs[tabIndex] : null;
+        var item = tab && !tab.lock && Array.isArray(tab.items) && Number.isFinite(itemIndex) ? tab.items[itemIndex] : null;
+        var url = item && normalizeQuickLaunchWebUrl(item.url);
+        if (!item || !url) return showQuickLaunchMessage("请选择收藏网站", true);
+        var result = saveQuickLaunchCustomItem({
+            name: String(item.name || item.url).trim().slice(0, 30),
+            url: url,
+            icon: normalizeQuickLaunchWebUrl(item.icon) || new URL("/favicon.ico", url).href,
+            desc: String(item.desc || "").slice(0, 80)
+        });
+        if (result.full) return showQuickLaunchMessage("只能添加 " + quickLaunchCustomLimit + " 个自定义入口", true);
+        showQuickLaunchMessage(result.updated ? "已更新快捷入口" : "已添加到快捷入口");
+    });
+
+    $(document).on("submit", "#quick-launch-custom-form", function (event) {
+        event.preventDefault();
+        var name = $.trim($("#quick-launch-custom-name").val()).slice(0, 30);
+        var url = normalizeQuickLaunchWebUrl($("#quick-launch-custom-url").val());
+        var rawIcon = $.trim($("#quick-launch-custom-icon").val());
+        var icon = rawIcon ? normalizeQuickLaunchWebUrl(rawIcon) : "";
+        if (!name) return showQuickLaunchMessage("请填写入口名称", true);
+        if (!url) return showQuickLaunchMessage("网址请使用 http:// 或 https:// 开头", true);
+        if (rawIcon && !icon) return showQuickLaunchMessage("图标网址请使用 http:// 或 https:// 开头", true);
+
+        var saved = { name: name, url: url, icon: icon || new URL("/favicon.ico", url).href };
+        var result = saveQuickLaunchCustomItem(saved);
+        if (result.full) return showQuickLaunchMessage("只能添加 " + quickLaunchCustomLimit + " 个自定义入口", true);
+        this.reset();
+        showQuickLaunchMessage(result.updated ? "已更新自定义入口" : "已添加自定义入口");
+    });
+
+    $(document).on("click", ".quick-launch-custom-remove", function () {
+        var url = $(this).attr("data-url");
+        var items = getQuickLaunchCustomItems().filter(function (item) { return item.url !== url; });
+        writeQuickLaunchStorage(quickLaunchCustomKey, items.map(function (item) {
+            return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
+        }));
+        renderQuickLaunchCustomList();
+        renderQuickLaunch();
+        showQuickLaunchMessage("已删除自定义入口");
+    });
+
+    $(window).on("storage", function (event) {
+        if (quickLaunchStorageKeys.indexOf(event.originalEvent && event.originalEvent.key) === -1) return;
+        initQuickLaunch();
+    });
+
+    $(window).on("resize", function () {
+        if (quickLaunchResizeFrame) cancelAnimationFrame(quickLaunchResizeFrame);
+        quickLaunchResizeFrame = requestAnimationFrame(function () {
+            quickLaunchResizeFrame = 0;
+            renderQuickLaunch();
         });
     });
 

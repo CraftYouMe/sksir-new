@@ -399,6 +399,7 @@ function ensureNavSitesLoaded() {
             if (!document.querySelector(".mark .mainCont")) {
                 throw new Error("Navigation tabs were not rendered");
             }
+            document.dispatchEvent(new CustomEvent("sksir-nav-sites-ready"));
         })
         .then(function () {
             return true;

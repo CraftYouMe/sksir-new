@@ -519,15 +519,16 @@
                         </div>
                         <!-- 性能模式设置 -->
                         <div class="mainConts">
-                            <div class="set_blocks">
+                            <div class="set_blocks performance-settings-block">
                                 <div class="set_tip">
                                     <span class="set_text" id="performance_text">自动模式会在系统减少动态效果、省流量或明显低配设备上启用轻量动效</span>
                                 </div>
                                 <div class="set_blocks_content">
                                     <div class="from_container">
                                         <div class="froms">
-                                            <div class="from_row">
+                                            <div class="from_row performance-mode-card">
                                                 <div class="from_row_content">
+                                                    <div class="performance-setting-title">动效质量</div>
                                                     <div id="performance">
                                                         <div class="form-radio">
                                                             <input type="radio" id="performance-auto" class="set-performance"
@@ -556,16 +557,61 @@
                                             </div>
                                             <div class="from_row quick-launch-settings">
                                                 <div class="from_row_content">
-                                                    <div class="quick-launch-setting-title">快捷入口</div>
+                                                    <div class="quick-launch-setting-head">
+                                                        <div class="quick-launch-setting-title">快捷入口</div>
+                                                        <button type="button" id="quick-launch-auto" class="quick-launch-auto">恢复自动顺序</button>
+                                                    </div>
                                                     <div id="quick-launch-setting">
                                                         <label class="quick-launch-toggle" for="quick-launch-enabled">
                                                             <input type="checkbox" id="quick-launch-enabled" class="set-quick-launch">
                                                             <span class="quick-launch-toggle-track" aria-hidden="true"></span>
                                                             <span class="quick-launch-toggle-text">显示快捷入口</span>
                                                         </label>
-                                                        <button type="button" id="quick-launch-auto" class="quick-launch-auto">恢复自动顺序</button>
                                                     </div>
-                                                    <div class="quick-launch-setting-tip">按点击次数自动调整，移动首页图标可自定义顺序</div>
+                                                    <div class="quick-launch-count-settings" aria-label="快捷入口显示数量">
+                                                        <label>电脑端
+                                                            <select id="quick-launch-desktop-limit" class="quick-launch-limit">
+                                                                <option value="4">4 个</option>
+                                                                <option value="6">6 个</option>
+                                                                <option value="8">8 个</option>
+                                                                <option value="10">10 个</option>
+                                                                <option value="12">12 个</option>
+                                                            </select>
+                                                        </label>
+                                                        <label>手机端
+                                                            <select id="quick-launch-mobile-limit" class="quick-launch-limit">
+                                                                <option value="4">4 个</option>
+                                                                <option value="5">5 个</option>
+                                                                <option value="6">6 个</option>
+                                                                <option value="7">7 个</option>
+                                                                <option value="8">8 个</option>
+                                                            </select>
+                                                        </label>
+                                                    </div>
+                                                    <form id="quick-launch-custom-form" class="quick-launch-custom-form" novalidate>
+                                                        <div class="quick-launch-custom-heading">自定义入口</div>
+                                                        <div class="quick-launch-library-picker">
+                                                            <select id="quick-launch-library-tab" aria-label="选择收藏标签">
+                                                                <option value="">选择标签</option>
+                                                            </select>
+                                                            <select id="quick-launch-library-item" aria-label="选择收藏网站" disabled>
+                                                                <option value="">选择网站</option>
+                                                            </select>
+                                                            <button type="button" id="quick-launch-library-add">添加选中</button>
+                                                        </div>
+                                                        <div class="quick-launch-custom-divider"><span>手动添加</span></div>
+                                                        <div class="quick-launch-custom-fields">
+                                                            <input type="text" id="quick-launch-custom-name" maxlength="30"
+                                                                placeholder="名称" aria-label="快捷入口名称" autocomplete="off" required>
+                                                            <input type="url" id="quick-launch-custom-url" maxlength="500"
+                                                                placeholder="https://example.com" aria-label="快捷入口网址" autocomplete="off" required>
+                                                            <input type="url" id="quick-launch-custom-icon" maxlength="500"
+                                                                placeholder="图标 URL 可以不填" aria-label="快捷入口图标网址" autocomplete="off">
+                                                            <button type="submit" class="quick-launch-custom-add">添加</button>
+                                                        </div>
+                                                    </form>
+                                                    <div id="quick-launch-custom-list" class="quick-launch-custom-list" aria-live="polite"></div>
+                                                    <div class="quick-launch-setting-tip">默认开启，按点击次数自动调整，移动首页图标可自定义顺序。设置只保存在本机。</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -582,7 +628,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.20.12">v2026.07.20.12</span>
+                <span id="app-version" class="app-version" data-version="2026.07.20.17">v2026.07.20.17</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>
