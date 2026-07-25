@@ -6,6 +6,26 @@
 :root {
     --body-background-color: #333333;
     --main-text-color: #efefef;
+    --text-primary: rgba(255, 255, 255, 0.96);
+    --text-secondary: rgba(255, 255, 255, 0.72);
+    --text-muted: rgba(255, 255, 255, 0.52);
+    --glass-surface: rgba(18, 24, 32, 0.34);
+    --glass-surface-strong: rgba(18, 24, 32, 0.62);
+    --glass-surface-hover: rgba(255, 255, 255, 0.17);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-border-strong: rgba(255, 255, 255, 0.28);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    --shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.18);
+    --shadow-panel: 0 24px 70px rgba(0, 0, 0, 0.28);
+    --radius-control: 14px;
+    --radius-panel: 22px;
+    --space-unit: 8px;
+    --motion-fast: 180ms;
+    --motion-normal: 260ms;
+    --motion-slow: 420ms;
+    --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --page-max-width: 1120px;
+    --search-max-width: 680px;
     --main-text-form-color: #333333;
     --main-text-form-hover-color: #efefef;
     /* --main-background-color: #ffffff40;
@@ -238,15 +258,19 @@ img.error {
 
 .con {
     width: 100%;
+    max-width: var(--page-max-width);
+    min-height: 320px;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    padding: 24px;
+    box-sizing: border-box;
 }
 
 .sou {
-    max-width: 680px;
-    width: calc(100% - 60px);
+    max-width: var(--search-max-width);
+    width: min(var(--search-max-width), calc(100vw - 60px));
     position: relative;
     z-index: 2;
     /* transform: translateY(-150%); */
@@ -410,10 +434,10 @@ html.perf-lite.is-booting::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: calc(var(--space-unit) + 2px);
     min-height: 36px;
     padding-top: 12px;
-    transition: opacity 0.2s ease, transform 0.25s ease;
+    transition: opacity var(--motion-fast) ease, transform var(--motion-normal) var(--motion-ease);
 }
 
 .quick-launch[hidden] {
@@ -427,18 +451,27 @@ html.perf-lite.is-booting::after {
     width: 34px;
     height: 34px;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 10px;
-    background: rgba(24, 31, 40, 0.58);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+    border: 1px solid var(--glass-border);
+    border-radius: 11px;
+    background: var(--glass-surface-strong);
+    box-shadow: var(--glass-highlight), 0 8px 22px rgba(0, 0, 0, 0.16);
     cursor: grab;
     touch-action: none;
     backface-visibility: hidden;
     transform: translateZ(0);
+    -webkit-backdrop-filter: blur(12px) saturate(1.08);
+    backdrop-filter: blur(12px) saturate(1.08);
+    transition:
+        transform var(--motion-fast) var(--motion-ease),
+        background-color var(--motion-fast) ease,
+        border-color var(--motion-fast) ease,
+        box-shadow var(--motion-fast) ease;
 }
 
 .quick-launch-item:hover {
-    background: rgba(255, 255, 255, 0.18);
+    border-color: var(--glass-border-strong);
+    background: var(--glass-surface-hover);
+    box-shadow: var(--glass-highlight), 0 12px 28px rgba(0, 0, 0, 0.20);
     transform: translateY(-2px);
 }
 
@@ -498,8 +531,11 @@ html.perf-lite.is-booting::after {
     font-size: 3rem;
     line-height: 1.1;
     margin: 6px 0px;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.035em;
     text-shadow: var(--main-text-shadow);
-    transition: 0.2s;
+    transition: transform var(--motion-fast) var(--motion-ease), opacity var(--motion-fast) ease;
 }
 
 #time_text:hover {
@@ -517,9 +553,10 @@ html.perf-lite.is-booting::after {
 #day {
     font-size: 1.15rem;
     line-height: 1.2;
-    opacity: 0.8;
+    color: var(--text-secondary);
     margin: 4px 0px;
     text-shadow: var(--main-text-shadow);
+    letter-spacing: 0.04em;
 }
 
 
@@ -546,30 +583,30 @@ html.perf-lite.is-booting::after {
     align-items: center;
     box-sizing: border-box;
     width: 70%;
-    height: 43px;
-    border-radius: 30px;
+    height: 46px;
+    border-radius: 999px;
     color: var(--main-text-color);
-    border: 1px solid rgba(255, 255, 255, 0.20);
-    background-color: rgba(18, 24, 32, 0.26);
+    border: 1px solid var(--glass-border);
+    background-color: var(--glass-surface);
     box-shadow:
-        0 12px 34px rgba(0, 0, 0, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        var(--shadow-soft),
+        var(--glass-highlight),
         inset 0 -1px 0 rgba(0, 0, 0, 0.12);
     -webkit-backdrop-filter: blur(14px) saturate(1.15);
     backdrop-filter: blur(14px) saturate(1.15);
     transform: translateY(0);
     overflow: hidden;
     transition:
-        transform 0.3s ease,
-        width 0.5s ease,
-        background-color 0.25s ease,
-        border-color 0.25s ease,
-        box-shadow 0.25s ease;
+        transform var(--motion-normal) ease,
+        width var(--motion-slow) var(--motion-ease),
+        background-color var(--motion-fast) ease,
+        border-color var(--motion-fast) ease,
+        box-shadow var(--motion-fast) ease;
 }
 
 body:not(.onsearch) .all-search:hover {
-    border-color: rgba(255, 255, 255, 0.34);
-    background-color: rgba(18, 24, 32, 0.34);
+    border-color: var(--glass-border-strong);
+    background-color: rgba(18, 24, 32, 0.44);
     box-shadow:
         0 16px 40px rgba(0, 0, 0, 0.24),
         inset 0 1px 0 rgba(255, 255, 255, 0.24),
@@ -822,8 +859,12 @@ body:not(.onsearch) .all-search:hover {
 .set {
     flex-direction: column;
     align-items: center;
-    background: var(--main-background-color);
-    border-radius: 8px;
+    background: var(--glass-surface-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-panel), var(--glass-highlight);
+    -webkit-backdrop-filter: blur(20px) saturate(1.12);
+    backdrop-filter: blur(20px) saturate(1.12);
     height: 500px;
     max-height: 500px;
     width: 80%;
@@ -839,6 +880,11 @@ body:not(.onsearch) .all-search:hover {
     overflow: hidden;
     background: transparent;
     animation: none;
+    width: min(1080px, calc(100vw - 64px));
+    height: min(680px, calc(100vh - 96px));
+    max-width: 1080px;
+    max-height: 680px;
+    margin-top: 0;
 }
 
 .mark::before {
@@ -872,6 +918,130 @@ body:not(.onsearch) .all-search:hover {
 .mark.is-visible .products .mainCont.selected .quick-alls,
 .mark.is-visible .products .mainCont.selected .quick-jl {
     animation: navContentIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bookmark-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 72px;
+    padding: 14px 18px 10px 22px;
+    gap: 18px;
+    box-sizing: border-box;
+}
+
+.bookmark-title {
+    color: var(--text-primary);
+    font-size: 1.12rem;
+    font-weight: 700;
+}
+
+.bookmark-subtitle {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+}
+
+.bookmark-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.bookmark-search {
+    display: flex;
+    align-items: center;
+    width: min(280px, 34vw);
+    height: 38px;
+    padding: 0 12px;
+    gap: 8px;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    box-sizing: border-box;
+}
+
+.bookmark-search i {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.bookmark-search input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 16px;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.bookmark-search input::placeholder {
+    color: var(--text-muted);
+}
+
+.bookmark-search:focus-within {
+    border-color: rgba(155, 231, 215, 0.58);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 3px rgba(155, 231, 215, 0.12);
+}
+
+.bookmark-close {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.bookmark-close:hover {
+    border-color: var(--glass-border-strong);
+    background: var(--glass-surface-hover);
+}
+
+.bookmark-close:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.82);
+    outline-offset: 2px;
+}
+
+.bookmark-empty {
+    position: absolute;
+    inset: 52% 20px auto;
+    z-index: 4;
+    color: var(--text-secondary);
+    text-align: center;
+    pointer-events: none;
+}
+
+.bookmark-loading {
+    position: absolute;
+    inset: 50% 20px auto;
+    z-index: 5;
+    color: var(--text-secondary);
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+}
+
+.mark.is-loading .bookmark-loading {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mark.is-loading .tab,
+.mark.is-loading .products {
+    opacity: 0;
 }
 
 @keyframes navContentIn {
@@ -994,6 +1164,11 @@ body:not(.onsearch) .all-search:hover {
     height: 100%;
 }
 
+.mark .products {
+    min-height: 0;
+    flex: 1 1 auto;
+}
+
 .products .mainCont,
 .productss .mainConts {
     display: none;
@@ -1025,7 +1200,8 @@ body:not(.onsearch) .all-search:hover {
     align-content: flex-start;
     width: 100%;
     margin: 0px 20px 20px 20px;
-    height: 390px;
+    height: calc(100% - 50px);
+    min-height: 0;
     overflow: auto;
 }
 
@@ -1131,7 +1307,7 @@ body:not(.onsearch) .all-search:hover {
     align-content: flex-start;
     width: 100%;
     margin: 0px 20px 20px 20px;
-    height: 316px;
+    height: calc(100% - 12px);
     overflow: auto;
 }
 
@@ -1316,21 +1492,27 @@ body:not(.onsearch) .all-search:hover {
     width: 44px;
     height: 44px;
     position: absolute;
-    right: 8px;
-    top: 8px;
+    right: calc(14px + env(safe-area-inset-right, 0px));
+    top: calc(14px + env(safe-area-inset-top, 0px));
     z-index: 2000000;
     cursor: pointer;
-    transition: 0.5s;
-    border-radius: 8px;
-    transition: 0.3s;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-control);
+    background: var(--glass-surface);
+    box-shadow: var(--glass-highlight), 0 10px 28px rgba(0, 0, 0, 0.16);
+    -webkit-backdrop-filter: blur(12px) saturate(1.08);
+    backdrop-filter: blur(12px) saturate(1.08);
+    transition:
+        transform var(--motion-fast) var(--motion-ease),
+        background-color var(--motion-fast) ease,
+        border-color var(--motion-fast) ease;
     animation: fade 1s;
 }
 
 #menu:hover {
     cursor: pointer;
-    transition: 0.3s;
-    background: var(--main-background-color);
-    border-radius: 8px;
+    border-color: var(--glass-border-strong);
+    background: var(--glass-surface-hover);
 }
 
 #menu:active {
@@ -1345,6 +1527,14 @@ body:not(.onsearch) .all-search:hover {
     height: 100%;
     font-size: 1.75rem;
     transition: 0.3s;
+}
+
+#menu:focus-visible,
+#time_text:focus-visible,
+.quick-launch-item:focus-visible,
+.all-search:focus-within {
+    outline: 2px solid rgba(255, 255, 255, 0.82);
+    outline-offset: 3px;
 }
 
 .set_blocks {
@@ -2799,6 +2989,7 @@ html.perf-lite .category-row::before,
 html.perf-lite .category-item::before,
 html.perf-lite .category-item::after,
 html.perf-lite .toast-fallback,
+html.perf-lite .quick-launch-item,
 html.perf-lite .quick,
 html.perf-lite .quicks,
 html.perf-lite .quickjl {
@@ -2815,6 +3006,8 @@ html.perf-lite .toast-fallback-wrap {
 }
 
 html.perf-lite .all-search,
+html.perf-lite .quick-launch-item,
+html.perf-lite #menu,
 html.perf-lite .search-engine,
 html.perf-lite #keywords,
 html.perf-lite .mark,
@@ -2864,6 +3057,7 @@ html.perf-lite #point {
     .category-item::before,
     .category-item::after,
     .toast-fallback,
+    .quick-launch-item,
     .quick,
     .quicks,
     .quickjl {
@@ -2880,6 +3074,8 @@ html.perf-lite #point {
     }
 
     .all-search,
+    .quick-launch-item,
+    #menu,
     .search-engine,
     #keywords,
     .mark,
@@ -2995,6 +3191,11 @@ html.ios-standalone #menu {
 
 /*小于720px时*/
 @media (max-width: 720px) {
+
+    .con {
+        min-height: 280px;
+        padding: 16px;
+    }
 
     .quick-launch {
         gap: 9px;
@@ -3310,5 +3511,114 @@ html.ios-standalone #menu {
 
     .iziToast-wrapper {
         padding: 10px 0px !important;
+    }
+}
+
+/* ==========================================================================
+   Phase 4 bookmark center final responsive overrides
+   ========================================================================== */
+.mark {
+    margin-top: 0;
+}
+
+@media (max-width: 720px) {
+    body.bookmarks-surface-open #menu,
+    body.bookmarks-surface-open #visitor-badge {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    .mark {
+        width: calc(100vw - 16px);
+        height: calc(var(--app-height, 100vh) - 20px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        max-height: none;
+        border-radius: 18px;
+    }
+
+    .bookmark-head {
+        min-height: 66px;
+        padding: 10px 10px 8px 14px;
+        gap: 10px;
+    }
+
+    .bookmark-subtitle {
+        display: none;
+    }
+
+    .bookmark-head-actions {
+        flex: 1 1 auto;
+        justify-content: flex-end;
+        min-width: 0;
+    }
+
+    .bookmark-search {
+        width: min(220px, calc(100vw - 138px));
+        min-width: 116px;
+    }
+
+    .bookmark-close {
+        flex: 0 0 40px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .mark .tab {
+        flex: 0 0 40px;
+        height: 40px;
+        min-height: 40px;
+        max-height: 40px;
+        justify-content: flex-start;
+        margin-bottom: 8px;
+        padding: 0 8px;
+        gap: 4px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .mark .tab::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mark .tab .tab-item {
+        flex: 0 0 58px;
+        width: 58px;
+        min-width: 58px;
+        height: 40px;
+        min-height: 40px;
+        padding: 0 8px;
+        font-size: 0.84rem;
+        line-height: 40px;
+    }
+
+    .mark .products {
+        overflow: hidden;
+    }
+
+    .quick-all,
+    .quick-alls,
+    .quick-jl {
+        height: calc(100% - 48px);
+        margin: 0 10px 10px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        box-sizing: border-box;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 420px) {
+    .bookmark-title {
+        font-size: 1rem;
+    }
+
+    .quick-desc {
+        display: none;
+    }
+
+    .quick,
+    .quicks {
+        min-height: 46px;
     }
 }

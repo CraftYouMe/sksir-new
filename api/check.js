@@ -4,7 +4,6 @@ const dns = require("dns").promises;
 const fs = require("fs");
 const net = require("net");
 const path = require("path");
-const vm = require("vm");
 
 const REQUEST_TIMEOUT_MS = 8000;
 const SLOW_THRESHOLD_MS = 5000;
@@ -39,44 +38,28 @@ function isPlainObject(value) {
 }
 
 function loadSitesData() {
-  const sitesPath = path.resolve(process.cwd(), "data", "sites.js");
-  const source = fs.readFileSync(sitesPath, "utf8");
-  const sandbox = {
-    window: Object.create(null)
-  };
-
-  vm.createContext(sandbox);
-  vm.runInContext(source, sandbox, {
-    filename: sitesPath,
-    timeout: 1000
-  });
-
-  return sandbox.window.NAV_SITES;
+  const sitesPath = path.resolve(process.cwd(), "data", "sites.json");
+  return JSON.parse(fs.readFileSync(sitesPath, "utf8"));
 }
 
 function collectAllowedHosts() {
   const sites = loadSitesData();
   const hosts = new Set();
 
-  if (!isPlainObject(sites) || !Array.isArray(sites.tabs)) {
-    throw new Error("Invalid NAV_SITES data");
+  if (!isPlainObject(sites) || !Array.isArray(sites.sites)) {
+    throw new Error("Invalid normalized sites data");
   }
 
-  sites.tabs.forEach((tab) => {
-    if (!isPlainObject(tab) || !Array.isArray(tab.items)) return;
-
-    tab.items.forEach((item) => {
-      if (!isPlainObject(item) || typeof item.url !== "string") return;
-
-      try {
-        const itemUrl = new URL(item.url);
-        if (itemUrl.protocol === "http:" || itemUrl.protocol === "https:") {
-          hosts.add(normalizeHostname(itemUrl.hostname));
-        }
-      } catch (error) {
-        // data/sites.js is validated by scripts/validate-sites.js; ignore malformed entries here.
+  sites.sites.forEach((item) => {
+    if (!isPlainObject(item) || typeof item.url !== "string") return;
+    try {
+      const itemUrl = new URL(item.url);
+      if (itemUrl.protocol === "http:" || itemUrl.protocol === "https:") {
+        hosts.add(normalizeHostname(itemUrl.hostname));
       }
-    });
+    } catch (error) {
+      // data/sites.json is validated by scripts/validate-sites.js.
+    }
   });
 
   return hosts;

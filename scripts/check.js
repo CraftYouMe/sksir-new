@@ -50,6 +50,22 @@ const checks = [
     args: ["--check", projectPath("scripts", "validate-sites.js")]
   },
   {
+    name: "Syntax check sites-lib.js",
+    args: ["--check", projectPath("scripts", "sites-lib.js")]
+  },
+  {
+    name: "Syntax check migrate-sites.js",
+    args: ["--check", projectPath("scripts", "migrate-sites.js")]
+  },
+  {
+    name: "Syntax check manage-sites.js",
+    args: ["--check", projectPath("scripts", "manage-sites.js")]
+  },
+  {
+    name: "Syntax check bookmark editor",
+    args: ["--check", projectPath("tools", "bookmark-editor", "editor.js")]
+  },
+  {
     name: "Syntax check build-font-subset.js",
     args: ["--check", projectPath("scripts", "build-font-subset.js")]
   }

@@ -1,3 +1,4 @@
+// Generated from data/sites.json by scripts/migrate-sites.js. Do not edit directly.
 window.NAV_SITES = {
   "iconFallback": "./img/icon/fangdiu.png",
   "tabs": [
@@ -14,7 +15,7 @@ window.NAV_SITES = {
           "desc": "视频弹幕社区",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "favoriteCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -25,7 +26,7 @@ window.NAV_SITES = {
           "desc": "AI 对话助手",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "skipCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -36,7 +37,7 @@ window.NAV_SITES = {
           "desc": "国产 AI 助手",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "favoriteCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -57,7 +58,7 @@ window.NAV_SITES = {
           "desc": "稳定番剧入口",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "favoriteCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -68,7 +69,7 @@ window.NAV_SITES = {
           "desc": "高清番剧站",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "favoriteCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -149,7 +150,7 @@ window.NAV_SITES = {
           "desc": "虚拟号码接码",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "skipCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -160,7 +161,7 @@ window.NAV_SITES = {
           "desc": "网络代理入口",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "favoriteCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -183,17 +184,17 @@ window.NAV_SITES = {
           "rel": "noopener noreferrer"
         }
       ],
-      "categoryRowClass": "category-row-common",
+      "statusCheck": true,
+      "containerClass": "quick-alls",
       "categories": [
         "全部",
-        "AI工具",
         "影音娱乐",
+        "AI工具",
         "开发部署",
         "实用工具",
         "创作社区"
       ],
-      "statusCheck": true,
-      "containerClass": "quick-alls"
+      "categoryRowClass": "category-row-common"
     },
     {
       "title": "影音",
@@ -310,15 +311,15 @@ window.NAV_SITES = {
           "rel": "noopener noreferrer"
         }
       ],
-      "categoryRowClass": "category-row-tool",
+      "statusCheck": true,
+      "containerClass": "quick-alls",
       "categories": [
         "全部",
         "番剧动漫",
         "在线影视",
         "漫画阅读"
       ],
-      "statusCheck": true,
-      "containerClass": "quick-alls"
+      "categoryRowClass": "category-row-tool"
     },
     {
       "title": "工具",
@@ -455,7 +456,8 @@ window.NAV_SITES = {
           "rel": "noopener noreferrer"
         }
       ],
-      "categoryRowClass": "category-row-tool",
+      "statusCheck": true,
+      "containerClass": "quick-alls",
       "categories": [
         "全部",
         "图片处理",
@@ -463,8 +465,7 @@ window.NAV_SITES = {
         "图标素材",
         "音乐工具"
       ],
-      "statusCheck": true,
-      "containerClass": "quick-alls"
+      "categoryRowClass": "category-row-tool"
     },
     {
       "title": "收藏",
@@ -509,7 +510,7 @@ window.NAV_SITES = {
           "desc": "虚拟号码接码",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "skipCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -540,7 +541,7 @@ window.NAV_SITES = {
           "desc": "AI 对话助手",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "skipCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -561,7 +562,7 @@ window.NAV_SITES = {
           "desc": "长文本 AI 助手",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "skipCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -572,7 +573,7 @@ window.NAV_SITES = {
           "desc": "API Key 管理",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "skipCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -623,7 +624,7 @@ window.NAV_SITES = {
           "desc": "游戏官网入口",
           "target": "_blank",
           "rel": "noopener noreferrer",
-          "skipCheck": "true"
+          "skipCheck": true
         },
         {
           "className": "quicks",
@@ -693,8 +694,7 @@ window.NAV_SITES = {
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pubscholar.ico",
           "desc": "公益学术检索",
           "target": "_blank",
-          "rel": "noopener noreferrer",
-          "linkTitle": ""
+          "rel": "noopener noreferrer"
         },
         {
           "className": "quicks",
@@ -777,7 +777,8 @@ window.NAV_SITES = {
           "rel": "noopener noreferrer"
         }
       ],
-      "categoryRowClass": "category-row-favorite",
+      "statusCheck": true,
+      "containerClass": "quick-alls",
       "categories": [
         "全部",
         "软件服务",
@@ -787,8 +788,7 @@ window.NAV_SITES = {
         "社区学习",
         "快捷下载"
       ],
-      "statusCheck": true,
-      "containerClass": "quick-alls"
+      "categoryRowClass": "category-row-favorite"
     },
     {
       "title": "装机",
@@ -835,7 +835,8 @@ window.NAV_SITES = {
           "rel": "noopener noreferrer"
         }
       ],
-      "categoryRowClass": "category-row-tool",
+      "statusCheck": true,
+      "containerClass": "quick-alls",
       "categories": [
         "全部",
         "装机必备",
@@ -843,123 +844,144 @@ window.NAV_SITES = {
         "驱动下载",
         "系统修复"
       ],
-      "statusCheck": true,
-      "containerClass": "quick-alls"
+      "categoryRowClass": "category-row-tool"
     },
     {
       "title": "奖励",
       "selected": false,
       "items": [
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "番剧狗 👍",
           "url": "https://pipigou719.top",
-          "searchKey": "番剧狗",
+          "category": "",
           "icon": "./img/icon/fangdiu.png",
-          "title": "",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "番剧狗"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "萌道动漫",
           "url": "https://www.mengdaow.org/",
-          "searchKey": "mengdao",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/mengdao.ico",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "mengdao"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "禁漫天堂",
           "url": "https://18comic.vip",
-          "searchKey": "JM天堂",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/jmcomic.ico",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "JM天堂"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "BiKa",
           "url": "https://manhuabika.com/",
-          "searchKey": "bika",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bika.png",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "bika"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "Pixiv",
           "url": "https://pixiv.net/",
-          "searchKey": "pixiv",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "pixiv"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "E-hentai",
           "url": "https://e-hentai.org/",
-          "searchKey": "ehentai",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/Ehentai.ico",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "ehentai"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "CinWiKi",
           "url": "https://cin.wiki/",
-          "searchKey": "cinwiki",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/cinwiki.ico",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "cinwiki"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "AQDLT",
           "url": "https://vip.aqdm327.com:20844",
-          "searchKey": "AQDLT",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/aqdlt.png",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "AQDLT"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "AQ发布页",
           "url": "https://rentry.org/aqd",
-          "searchKey": "AQDLTFBY",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/aqdlt.png",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "AQDLTFBY"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "海角社区",
           "url": "https://www.haijiao.com/",
-          "searchKey": "haijiao",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/haijiao.ico",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "haijiao"
         },
         {
-          "className": "quickjl",
+          "className": "quicks",
           "name": "Xvideos",
           "url": "https://xvideos.com/",
-          "searchKey": "Xvideos",
+          "category": "",
           "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/xvideos.ico",
+          "desc": "",
           "target": "_blank",
-          "rel": "noopener noreferrer"
+          "rel": "noopener noreferrer",
+          "searchKey": "Xvideos"
         }
       ],
+      "statusCheck": true,
+      "containerClass": "quick-jl",
+      "containerStyle": "visibility:hidden;",
       "lock": {
         "inputType": "password",
         "placeholder": "输入密码，防君子",
         "inputId": "passInput",
         "buttonId": "passBtn",
         "buttonText": "开启"
-      },
-      "containerClass": "quick-jl",
-      "containerStyle": "visibility:hidden;"
+      }
     }
   ]
 };

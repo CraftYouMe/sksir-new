@@ -7,7 +7,7 @@ const outputPath = path.join(rootDir, "font", "MiSans-UI.woff2");
 const charactersPath = path.join(rootDir, "font", "MiSans-UI.characters.txt");
 const sourceFiles = [
   "index.html",
-  "data/sites.js",
+  "data/sites.json",
   "js/main.js",
   "js/set.js",
   "js/nav-render.js",

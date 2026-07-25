@@ -1,0 +1,839 @@
+{
+  "schemaVersion": 1,
+  "iconFallback": "./img/icon/fangdiu.png",
+  "groups": [
+    {
+      "name": "常用",
+      "selected": true,
+      "statusCheck": true,
+      "categoryRowClass": "category-row-common"
+    },
+    {
+      "name": "影音",
+      "selected": false,
+      "statusCheck": true,
+      "categoryRowClass": "category-row-tool"
+    },
+    {
+      "name": "工具",
+      "selected": false,
+      "statusCheck": true,
+      "categoryRowClass": "category-row-tool"
+    },
+    {
+      "name": "收藏",
+      "selected": false,
+      "statusCheck": true,
+      "categoryRowClass": "category-row-favorite"
+    },
+    {
+      "name": "装机",
+      "selected": false,
+      "statusCheck": true,
+      "categoryRowClass": "category-row-tool"
+    },
+    {
+      "name": "奖励",
+      "selected": false,
+      "statusCheck": true,
+      "hidden": true,
+      "lock": {
+        "inputType": "password",
+        "placeholder": "输入密码，防君子",
+        "inputId": "passInput",
+        "buttonId": "passBtn",
+        "buttonText": "开启"
+      },
+      "containerClass": "quick-jl",
+      "containerStyle": "visibility:hidden;"
+    }
+  ],
+  "sites": [
+    {
+      "id": "bilibili",
+      "name": "BiliBili",
+      "url": "https://BiliBili.com",
+      "group": "常用",
+      "category": "影音娱乐",
+      "description": "视频弹幕社区",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bilibili.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT",
+      "url": "https://chat.openai.com/",
+      "group": "常用",
+      "category": "AI工具",
+      "description": "AI 对话助手",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "url": "https://www.deepseek.com/",
+      "group": "常用",
+      "category": "AI工具",
+      "description": "国产 AI 助手",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepseek.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "freemodel-ai",
+      "name": "Freemodel AI",
+      "url": "https://freemodel.dev/",
+      "group": "常用",
+      "category": "AI工具",
+      "description": "AI 模型入口",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vite.svg"
+    },
+    {
+      "id": "age",
+      "name": "AGE动漫",
+      "url": "https://rentry.la/agefans",
+      "group": "常用",
+      "category": "影音娱乐",
+      "description": "稳定番剧入口",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/age.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "bimiacg-icu",
+      "name": "哔咪动画",
+      "url": "https://www.bimiacg.icu/",
+      "group": "常用",
+      "category": "影音娱乐",
+      "description": "高清番剧站",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bimi.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "tvtv-cc",
+      "name": "影视森林",
+      "url": "https://www.tvtv.cc/",
+      "group": "常用",
+      "category": "影音娱乐",
+      "description": "影视聚合导航",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/yssl.ico"
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "url": "https://github.com/",
+      "group": "常用",
+      "category": "开发部署",
+      "description": "代码托管平台",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/github.png"
+    },
+    {
+      "id": "vercel",
+      "name": "Vercel",
+      "url": "https://vercel.com/",
+      "group": "常用",
+      "category": "开发部署",
+      "description": "前端部署平台",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vercel.ico"
+    },
+    {
+      "id": "railway",
+      "name": "Railway",
+      "url": "https://railway.app",
+      "group": "常用",
+      "category": "开发部署",
+      "description": "云端部署平台",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/railway.ico"
+    },
+    {
+      "id": "blog",
+      "name": "Blog",
+      "url": "https://blog.sksir.top",
+      "group": "常用",
+      "category": "开发部署",
+      "description": "个人博客",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/blog.ico"
+    },
+    {
+      "id": "deepl",
+      "name": "DeepL",
+      "url": "https://www.deepl.com/",
+      "group": "常用",
+      "category": "实用工具",
+      "description": "高质量翻译",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepl.png"
+    },
+    {
+      "id": "uu-tools",
+      "name": "UU Tools",
+      "url": "https://uutool.cn/",
+      "group": "常用",
+      "category": "实用工具",
+      "description": "在线工具合集",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/uutools.ico"
+    },
+    {
+      "id": "hero-sms",
+      "name": "HERO SMS",
+      "url": "https://hero-sms.com/cn",
+      "group": "常用",
+      "category": "实用工具",
+      "description": "虚拟号码接码",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/herosms.png",
+      "statusCheck": false
+    },
+    {
+      "id": "fixunlink-com",
+      "name": "全球通",
+      "url": "https://fixunlink.com/",
+      "group": "常用",
+      "category": "实用工具",
+      "description": "网络代理入口",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/quanqiu.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "pixiv",
+      "name": "Pixiv",
+      "url": "https://pixiv.net/",
+      "group": "常用",
+      "category": "创作社区",
+      "description": "插画社区",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico"
+    },
+    {
+      "id": "yinhuadm-one",
+      "name": "樱花动漫",
+      "url": "https://www.yinhuadm.one/",
+      "group": "常用",
+      "category": "影音娱乐",
+      "description": "番剧备用站",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sakura.ico"
+    },
+    {
+      "id": "age-2",
+      "name": "AGE动漫",
+      "url": "https://rentry.la/agefans",
+      "group": "影音",
+      "category": "番剧动漫",
+      "description": "稳定番剧入口",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/age.ico"
+    },
+    {
+      "id": "bimiacg-icu-2",
+      "name": "哔咪动画",
+      "url": "https://www.bimiacg.icu/",
+      "group": "影音",
+      "category": "番剧动漫",
+      "description": "高清番剧站",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bimi.ico"
+    },
+    {
+      "id": "omofun",
+      "name": "Omofun",
+      "url": "https://fb.omoo.tv/",
+      "group": "影音",
+      "category": "番剧动漫",
+      "description": "移动端较快",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/omofun.ico"
+    },
+    {
+      "id": "yinhuadm-one-2",
+      "name": "樱花动漫",
+      "url": "https://www.yinhuadm.one/",
+      "group": "影音",
+      "category": "番剧动漫",
+      "description": "番剧备用站",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/sakura.ico"
+    },
+    {
+      "id": "tvtv-cc-2",
+      "name": "影视森林",
+      "url": "https://www.tvtv.cc/",
+      "group": "影音",
+      "category": "在线影视",
+      "description": "影视聚合导航",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/yssl.ico"
+    },
+    {
+      "id": "libvio",
+      "name": "LIBVIO",
+      "url": "https://www.libvio.app",
+      "group": "影音",
+      "category": "在线影视",
+      "description": "剧集网盘资源",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/LIBOVIO.ico"
+    },
+    {
+      "id": "mtyy1-cc",
+      "name": "麦田影院",
+      "url": "https://www.mtyy1.cc/",
+      "group": "影音",
+      "category": "在线影视",
+      "description": "影视在线播放",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/mtyy.ico"
+    },
+    {
+      "id": "findno",
+      "name": "FindNO",
+      "url": "https://findno.tv/",
+      "group": "影音",
+      "category": "在线影视",
+      "description": "海外剧集入口",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/findno.ico"
+    },
+    {
+      "id": "auete",
+      "name": "AUETE",
+      "url": "https://auete.pro/",
+      "group": "影音",
+      "category": "在线影视",
+      "description": "高清影视入口",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/auete.ico"
+    },
+    {
+      "id": "555",
+      "name": "555影视",
+      "url": "https://www.555yy3.com/",
+      "group": "影音",
+      "category": "在线影视",
+      "description": "影视备用站",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/555yy3.ico"
+    },
+    {
+      "id": "kox",
+      "name": "KOX漫画",
+      "url": "https://kox.moe/",
+      "group": "影音",
+      "category": "漫画阅读",
+      "description": "免费漫画站",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/kox.ico"
+    },
+    {
+      "id": "iloveimg",
+      "name": "iLoveIMG",
+      "url": "https://www.iloveimg.com/zh-cn",
+      "group": "工具",
+      "category": "图片处理",
+      "description": "图片批量处理",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iloveimg.png"
+    },
+    {
+      "id": "ai",
+      "name": "AI抠图",
+      "url": "https://www.koukoutu.com/removebgtool/all",
+      "group": "工具",
+      "category": "图片处理",
+      "description": "在线去背景",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "docsmall",
+      "name": "Docsmall",
+      "url": "https://docsmall.com/image-compress",
+      "group": "工具",
+      "category": "图片处理",
+      "description": "图片 PDF 压缩",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/docsmall.png"
+    },
+    {
+      "id": "cdkm",
+      "name": "CDKM",
+      "url": "https://cdkm.com/cn/",
+      "group": "工具",
+      "category": "文件处理",
+      "description": "在线文件转换",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/cdkm.ico"
+    },
+    {
+      "id": "rename-tools-zh",
+      "name": "批量重命名",
+      "url": "https://rename.tools/zh",
+      "group": "工具",
+      "category": "文件处理",
+      "description": "批量改文件名",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "cn-office-converter-com",
+      "name": "格式转换器",
+      "url": "https://cn.office-converter.com/",
+      "group": "工具",
+      "category": "文件处理",
+      "description": "多格式在线转换",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/office.ico"
+    },
+    {
+      "id": "fontello",
+      "name": "Fontello",
+      "url": "https://fontello.com/",
+      "group": "工具",
+      "category": "图标素材",
+      "description": "图标字体生成",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/fontello.ico"
+    },
+    {
+      "id": "font-awesome",
+      "name": "Font Awesome",
+      "url": "https://fontawesome.com.cn/",
+      "group": "工具",
+      "category": "图标素材",
+      "description": "常用图标库",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/fontswesome.ico"
+    },
+    {
+      "id": "icons8",
+      "name": "Icons8",
+      "url": "https://icons8.com/",
+      "group": "工具",
+      "category": "图标素材",
+      "description": "图标插画素材",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/icons8.png"
+    },
+    {
+      "id": "iconfont",
+      "name": "Iconfont",
+      "url": "https://www.iconfont.cn/",
+      "group": "工具",
+      "category": "图标素材",
+      "description": "阿里图标库",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iconfont.png"
+    },
+    {
+      "id": "flaticon",
+      "name": "Flaticon",
+      "url": "https://www.flaticon.com/",
+      "group": "工具",
+      "category": "图标素材",
+      "description": "图标素材库",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/flaticon.ico"
+    },
+    {
+      "id": "icomoon",
+      "name": "IcoMoon",
+      "url": "https://icomoon.io/app/#/select",
+      "group": "工具",
+      "category": "图标素材",
+      "description": "图标字体合并",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/icomoon.ico"
+    },
+    {
+      "id": "tunemymusic",
+      "name": "TuneMyMusic",
+      "url": "https://www.tunemymusic.com/zh-CN",
+      "group": "工具",
+      "category": "音乐工具",
+      "description": "歌单迁移工具",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/tunemymusic.png"
+    },
+    {
+      "id": "adguard",
+      "name": "AdGuard",
+      "url": "https://adguard.com/zh_cn",
+      "group": "收藏",
+      "category": "软件服务",
+      "description": "广告拦截工具",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/adguard.ico"
+    },
+    {
+      "id": "bitwarden",
+      "name": "Bitwarden",
+      "url": "https://bitwarden.com/",
+      "group": "收藏",
+      "category": "软件服务",
+      "description": "密码管理器",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bitwarden.ico"
+    },
+    {
+      "id": "pixpin",
+      "name": "PixPin",
+      "url": "https://pixpinapp.com/",
+      "group": "收藏",
+      "category": "软件服务",
+      "description": "截图贴图工具",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixpin2.ico"
+    },
+    {
+      "id": "hero-sms-2",
+      "name": "HERO SMS",
+      "url": "https://hero-sms.com/cn",
+      "group": "收藏",
+      "category": "软件服务",
+      "description": "虚拟号码接码",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/herosms.png",
+      "statusCheck": false
+    },
+    {
+      "id": "watt-toolkit",
+      "name": "Watt Toolkit",
+      "url": "https://steampp.net/",
+      "group": "收藏",
+      "category": "软件服务",
+      "description": "Steam 加速工具",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/WattToolkit.ico"
+    },
+    {
+      "id": "uu-tools-2",
+      "name": "UU Tools",
+      "url": "https://uutool.cn/",
+      "group": "收藏",
+      "category": "软件服务",
+      "description": "在线工具合集",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/img/uutools.ico"
+    },
+    {
+      "id": "chatgpt-2",
+      "name": "ChatGPT",
+      "url": "https://chat.openai.com/",
+      "group": "收藏",
+      "category": "AI工具",
+      "description": "AI 对话助手",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "copilot",
+      "name": "Copilot",
+      "url": "https://copilot.microsoft.com/",
+      "group": "收藏",
+      "category": "AI工具",
+      "description": "微软 AI 助手",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/copilot.ico"
+    },
+    {
+      "id": "claude",
+      "name": "Claude",
+      "url": "https://claude.ai/login",
+      "group": "收藏",
+      "category": "AI工具",
+      "description": "长文本 AI 助手",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/claude.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "openai-key",
+      "name": "OpenAI Key",
+      "url": "https://platform.openai.com/account/api-keys",
+      "group": "收藏",
+      "category": "AI工具",
+      "description": "API Key 管理",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "github-2",
+      "name": "GitHub",
+      "url": "https://github.com/",
+      "group": "收藏",
+      "category": "开发部署",
+      "description": "代码托管平台",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/github.png"
+    },
+    {
+      "id": "vercel-2",
+      "name": "Vercel",
+      "url": "https://vercel.com/",
+      "group": "收藏",
+      "category": "开发部署",
+      "description": "前端部署平台",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/vercel.ico"
+    },
+    {
+      "id": "railway-2",
+      "name": "Railway",
+      "url": "https://railway.app",
+      "group": "收藏",
+      "category": "开发部署",
+      "description": "云端部署平台",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/railway.ico"
+    },
+    {
+      "id": "steam",
+      "name": "Steam",
+      "url": "https://store.steampowered.com/",
+      "group": "收藏",
+      "category": "游戏账号",
+      "description": "游戏平台商店",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/steam.ico"
+    },
+    {
+      "id": "escapefromtarkov-com",
+      "name": "逃离塔科夫",
+      "url": "https://www.escapefromtarkov.com/",
+      "group": "收藏",
+      "category": "游戏账号",
+      "description": "游戏官网入口",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/takefu.ico",
+      "statusCheck": false
+    },
+    {
+      "id": "krafton",
+      "name": "KRAFTON",
+      "url": "https://accounts.krafton.com/",
+      "group": "收藏",
+      "category": "游戏账号",
+      "description": "PUBG 账号入口",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pubg.ico"
+    },
+    {
+      "id": "minecraft",
+      "name": "Minecraft",
+      "url": "https://www.minecraft.net/zh-hans",
+      "group": "收藏",
+      "category": "游戏账号",
+      "description": "Minecraft 官网",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/minecraft.webp"
+    },
+    {
+      "id": "arkgacha",
+      "name": "Arkgacha",
+      "url": "https://arkgacha.kwer.top/",
+      "group": "收藏",
+      "category": "游戏账号",
+      "description": "方舟抽卡分析",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/arkgacha.ico"
+    },
+    {
+      "id": "pixiv-2",
+      "name": "Pixiv",
+      "url": "https://pixiv.net/",
+      "group": "收藏",
+      "category": "社区学习",
+      "description": "插画社区",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico"
+    },
+    {
+      "id": "iplaysoft-com",
+      "name": "异次元",
+      "url": "https://www.iplaysoft.com/",
+      "group": "收藏",
+      "category": "社区学习",
+      "description": "软件资源资讯",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iplaysoft.ico"
+    },
+    {
+      "id": "zh-khanacademy-org",
+      "name": "可汗学院",
+      "url": "https://zh.khanacademy.org/",
+      "group": "收藏",
+      "category": "社区学习",
+      "description": "公益学习平台",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/khanacademy.ico"
+    },
+    {
+      "id": "pubscholar",
+      "name": "PubScholar",
+      "url": "https://pubscholar.cn/",
+      "group": "收藏",
+      "category": "社区学习",
+      "description": "公益学术检索",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pubscholar.ico"
+    },
+    {
+      "id": "reshacker",
+      "name": "ResHacker",
+      "url": "https://farone.lanzoub.com/inB670tcsgde",
+      "group": "收藏",
+      "category": "快捷下载",
+      "description": "资源编译工具",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "winfr",
+      "name": "WinFR",
+      "url": "https://farone.lanzoub.com/iREpz0tcsehg",
+      "group": "收藏",
+      "category": "快捷下载",
+      "description": "数据恢复工具",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "farone-lanzoub-com-iloew0tcqsmd",
+      "name": "配置读取",
+      "url": "https://farone.lanzoub.com/iLOEw0tcqsmd",
+      "group": "收藏",
+      "category": "快捷下载",
+      "description": "硬件信息读取",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "newfiletime",
+      "name": "NewFileTime",
+      "url": "https://farone.lanzoub.com/il9U40tctybg",
+      "group": "收藏",
+      "category": "快捷下载",
+      "description": "文件时间修改",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "treesize",
+      "name": "TreeSize",
+      "url": "https://farone.lanzoub.com/iM0S40tcugad",
+      "group": "收藏",
+      "category": "快捷下载",
+      "description": "磁盘空间分析",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "mouserecorder",
+      "name": "MouseRecorder",
+      "url": "https://farone.lanzoub.com/ib4BU0tidyhc",
+      "group": "收藏",
+      "category": "快捷下载",
+      "description": "鼠标录制工具",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "jiyutrainer",
+      "name": "JiYuTrainer",
+      "url": "https://farone.lanzoub.com/ix5Qs0ujztqf",
+      "group": "收藏",
+      "category": "快捷下载",
+      "description": "极域广播解除",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "java-x64",
+      "name": "Java x64",
+      "url": "https://farone.lanzoub.com/i0XG20upi4xg",
+      "group": "收藏",
+      "category": "快捷下载",
+      "description": "Java 64 位安装包",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "cyhaoka-vip",
+      "name": "电脑开荒",
+      "url": "http://www.cyhaoka.vip/",
+      "group": "装机",
+      "category": "装机必备",
+      "description": "装机软件合集",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/kaihuang.ico"
+    },
+    {
+      "id": "tbtool-cn",
+      "name": "图吧工具箱",
+      "url": "https://www.tbtool.cn/",
+      "group": "装机",
+      "category": "硬件检测",
+      "description": "硬件检测合集",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/toolstuba.ico"
+    },
+    {
+      "id": "amd",
+      "name": "AMD驱动",
+      "url": "https://www.amd.com/zh-cn/support/download/drivers.html",
+      "group": "装机",
+      "category": "驱动下载",
+      "description": "AMD 驱动下载",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/adm.ico"
+    },
+    {
+      "id": "dll",
+      "name": "DLL修复",
+      "url": "https://cn.dll-files.com",
+      "group": "装机",
+      "category": "系统修复",
+      "description": "DLL 文件修复",
+      "icon": "./img/icon/fangdiu.png"
+    },
+    {
+      "id": "pipigou719-top",
+      "name": "番剧狗 👍",
+      "url": "https://pipigou719.top",
+      "group": "奖励",
+      "icon": "./img/icon/fangdiu.png",
+      "hidden": true,
+      "searchKey": "番剧狗"
+    },
+    {
+      "id": "mengdaow-org",
+      "name": "萌道动漫",
+      "url": "https://www.mengdaow.org/",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/mengdao.ico",
+      "hidden": true,
+      "searchKey": "mengdao"
+    },
+    {
+      "id": "18comic-vip",
+      "name": "禁漫天堂",
+      "url": "https://18comic.vip",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/jmcomic.ico",
+      "hidden": true,
+      "searchKey": "JM天堂"
+    },
+    {
+      "id": "bika",
+      "name": "BiKa",
+      "url": "https://manhuabika.com/",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bika.png",
+      "hidden": true,
+      "searchKey": "bika"
+    },
+    {
+      "id": "pixiv-3",
+      "name": "Pixiv",
+      "url": "https://pixiv.net/",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/pixiv.ico",
+      "hidden": true,
+      "searchKey": "pixiv"
+    },
+    {
+      "id": "e-hentai",
+      "name": "E-hentai",
+      "url": "https://e-hentai.org/",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/Ehentai.ico",
+      "hidden": true,
+      "searchKey": "ehentai"
+    },
+    {
+      "id": "cinwiki",
+      "name": "CinWiKi",
+      "url": "https://cin.wiki/",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/cinwiki.ico",
+      "hidden": true,
+      "searchKey": "cinwiki"
+    },
+    {
+      "id": "aqdlt",
+      "name": "AQDLT",
+      "url": "https://vip.aqdm327.com:20844",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/aqdlt.png",
+      "hidden": true,
+      "searchKey": "AQDLT"
+    },
+    {
+      "id": "aq",
+      "name": "AQ发布页",
+      "url": "https://rentry.org/aqd",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/aqdlt.png",
+      "hidden": true,
+      "searchKey": "AQDLTFBY"
+    },
+    {
+      "id": "haijiao-com",
+      "name": "海角社区",
+      "url": "https://www.haijiao.com/",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/haijiao.ico",
+      "hidden": true,
+      "searchKey": "haijiao"
+    },
+    {
+      "id": "xvideos",
+      "name": "Xvideos",
+      "url": "https://xvideos.com/",
+      "group": "奖励",
+      "icon": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/xvideos.ico",
+      "hidden": true,
+      "searchKey": "Xvideos"
+    }
+  ]
+}

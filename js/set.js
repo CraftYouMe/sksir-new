@@ -1353,6 +1353,7 @@ function isMobileNavViewport() {
 }
 
 function openSet() {
+    document.body.classList.remove("bookmarks-surface-open");
     $("#menu").addClass('on');
 
     $("#content").addClass('box setting-open').removeClass('bookmarks-open');
@@ -1394,10 +1395,11 @@ function openBox() {
     var requestId = bookmarkOpenRequestId;
     var mobileNav = isMobileNavViewport();
     var liteMode = document.documentElement.classList.contains("perf-lite");
+    document.body.classList.add("bookmarks-surface-open");
     $("#content").addClass('box bookmarks-open').removeClass('setting-open');
-    $(".mark").removeClass("is-visible");
+    $(".mark").addClass("is-visible is-loading");
     $(".mark").css({
-        "display": "none",
+        "display": "flex",
     });
     setBackgroundFocusEffect(true);
 
@@ -1417,6 +1419,7 @@ function openBox() {
             return;
         }
 
+        $(".mark").removeClass("is-loading");
         bookmarkOpenTimer = setTimeout(function () {
             bookmarkOpenTimer = null;
             if (requestId !== bookmarkOpenRequestId) return;
@@ -1476,11 +1479,17 @@ function loadVisibleNavIcons() {
 // 书签关闭
 function closeBox() {
     cancelBookmarkOpenTasks();
+    document.body.classList.remove("bookmarks-surface-open");
     $("#content").removeClass('box bookmarks-open setting-open');
     $(".mark").removeClass("is-visible");
+    $(".mark").removeClass("is-loading");
     $(".mark").css({
         "display": "none",
     });
+    var bookmarkSearch = document.getElementById("bookmark-search-input");
+    if (bookmarkSearch) bookmarkSearch.value = "";
+    var bookmarkEmpty = document.getElementById("bookmark-empty");
+    if (bookmarkEmpty) bookmarkEmpty.hidden = true;
     setBackgroundFocusEffect(false);
 }
 

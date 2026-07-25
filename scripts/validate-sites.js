@@ -1,52 +1,29 @@
 const fs = require("fs");
 const path = require("path");
-const vm = require("vm");
+const {
+  deriveCategories,
+  isPlainObject,
+  loadNormalizedSites,
+  serializeRuntimeJs
+} = require("./sites-lib");
 
 const rootDir = path.resolve(__dirname, "..");
-const sitesPath = path.join(rootDir, "data", "sites.js");
-const args = new Set(process.argv.slice(2));
-const strict = args.has("--strict");
-const ALL_CATEGORY = "\u5168\u90e8";
-
-if (args.has("-h") || args.has("--help")) {
-  console.log([
-    "Usage: node scripts/validate-sites.js [--strict]",
-    "",
-    "Checks data/sites.js without changing files.",
-    "--strict exits with code 1 when warnings are found."
-  ].join("\n"));
-  process.exit(0);
-}
-
+const jsonPath = path.join(rootDir, "data", "sites.json");
+const runtimePath = path.join(rootDir, "data", "sites.js");
+const strict = process.argv.includes("--strict");
 const errors = [];
 const warnings = [];
 
-function addIssue(list, location, message) {
+function issue(list, location, message) {
   list.push({ location, message });
 }
 
-function addError(location, message) {
-  addIssue(errors, location, message);
-}
-
-function addWarning(location, message) {
-  addIssue(warnings, location, message);
-}
-
-function isPlainObject(value) {
-  return Object.prototype.toString.call(value) === "[object Object]";
-}
-
-function isNonEmptyString(value) {
+function nonEmpty(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function isBooleanish(value) {
-  return typeof value === "boolean" || value === "true" || value === "false";
-}
-
-function isHttpUrl(value) {
-  if (!isNonEmptyString(value)) return false;
+function httpUrl(value) {
+  if (!nonEmpty(value)) return false;
   try {
     const url = new URL(value);
     return url.protocol === "http:" || url.protocol === "https:";
@@ -55,321 +32,117 @@ function isHttpUrl(value) {
   }
 }
 
-function isAssetRef(value) {
-  if (!isNonEmptyString(value) || /[\r\n]/.test(value)) return false;
-
-  const trimmed = value.trim();
-  if (/^javascript:/i.test(trimmed)) return false;
-
+function asset(value) {
+  if (value === "auto") return true;
+  if (!nonEmpty(value) || /[\r\n]/.test(value)) return false;
   try {
-    const url = new URL(trimmed, "https://local.invalid/");
-    if (url.protocol === "data:") return /^data:image\//i.test(trimmed);
+    const url = new URL(value, "https://local.invalid/");
     return url.protocol === "http:" || url.protocol === "https:";
   } catch (error) {
     return false;
   }
 }
 
-function normalizeUrl(value) {
-  try {
-    const url = new URL(value);
-    url.hash = "";
-    return url.toString();
-  } catch (error) {
-    return String(value || "").trim();
-  }
+function normalizedUrl(value) {
+  const url = new URL(value);
+  url.hash = "";
+  return url.toString();
 }
 
-function displayName(value, fallback) {
-  return isNonEmptyString(value) ? value.trim() : fallback;
-}
-
-function tabLocation(tab, index) {
-  return `tabs[${index}] "${displayName(tab && tab.title, "untitled")}"`;
-}
-
-function itemLocation(tab, tabIndex, item, itemIndex) {
-  return `${tabLocation(tab, tabIndex)}.items[${itemIndex}] "${displayName(item && item.name, "unnamed")}"`;
-}
-
-function loadSites() {
-  const source = fs.readFileSync(sitesPath, "utf8");
-  const sandbox = {
-    window: Object.create(null)
-  };
-
-  vm.createContext(sandbox);
-  vm.runInContext(source, sandbox, {
-    filename: sitesPath,
-    timeout: 1000
-  });
-
-  return sandbox.window.NAV_SITES;
-}
-
-function validateOptionalString(owner, location, key) {
-  if (Object.prototype.hasOwnProperty.call(owner, key) && typeof owner[key] !== "string") {
-    addError(location, `${key} must be a string when present`);
+function validate(data) {
+  if (!isPlainObject(data)) {
+    issue(errors, "root", "must be an object");
+    return { groups: 0, sites: 0, duplicates: 0 };
   }
-}
+  if (data.schemaVersion !== 1) issue(errors, "schemaVersion", "must be 1");
+  if (!asset(data.iconFallback)) issue(errors, "iconFallback", "invalid asset reference");
+  if (!Array.isArray(data.groups) || !data.groups.length) issue(errors, "groups", "must be non-empty");
+  if (!Array.isArray(data.sites) || !data.sites.length) issue(errors, "sites", "must be non-empty");
+  if (errors.length) return { groups: 0, sites: 0, duplicates: 0 };
 
-function validateLock(lock, location) {
-  if (!isPlainObject(lock)) {
-    addError(location, "lock must be an object");
-    return;
-  }
-
-  ["placeholder", "inputId", "buttonId", "buttonText"].forEach((key) => {
-    validateOptionalString(lock, `${location}.lock`, key);
-  });
-
-  if (
-    Object.prototype.hasOwnProperty.call(lock, "inputType") &&
-    !["password", "text", "search"].includes(lock.inputType)
-  ) {
-    addWarning(`${location}.lock`, "inputType is unusual; expected password, text, or search");
-  }
-}
-
-function validateItem(item, tab, tabIndex, itemIndex, categorySet, tabUrlMap) {
-  const location = itemLocation(tab, tabIndex, item, itemIndex);
-
-  if (!isPlainObject(item)) {
-    addError(location, "item must be an object");
-    return;
-  }
-
-  if (!isNonEmptyString(item.name)) addError(location, "name is required");
-  if (!isNonEmptyString(item.url)) {
-    addError(location, "url is required");
-  } else if (!isHttpUrl(item.url)) {
-    addError(location, "url must be an absolute http(s) URL");
-  } else {
-    const normalizedUrl = normalizeUrl(item.url);
-    if (tabUrlMap.has(normalizedUrl)) {
-      addWarning(location, `duplicate URL in the same tab; first seen at ${tabUrlMap.get(normalizedUrl)}`);
-    } else {
-      tabUrlMap.set(normalizedUrl, location);
-    }
-  }
-
-  [
-    "className",
-    "name",
-    "url",
-    "category",
-    "icon",
-    "desc",
-    "target",
-    "rel",
-    "searchKey",
-    "title",
-    "linkTitle"
-  ].forEach((key) => validateOptionalString(item, location, key));
-
-  if (categorySet) {
-    if (!isNonEmptyString(item.category)) {
-      addError(location, "category is required because the tab has category filters");
-    } else if (!categorySet.has(item.category)) {
-      addWarning(location, `category "${item.category}" is not listed in this tab's categories`);
-    }
-  }
-
-  if (!Object.prototype.hasOwnProperty.call(item, "icon")) {
-    addWarning(location, "icon is missing; local fallback text/icon will be used");
-  } else if (!isAssetRef(item.icon)) {
-    addError(location, "icon must be a valid remote or local asset reference");
-  }
-
-  ["skipCheck", "favoriteCheck"].forEach((key) => {
-    if (Object.prototype.hasOwnProperty.call(item, key) && !isBooleanish(item[key])) {
-      addError(location, `${key} must be true/false or "true"/"false"`);
-    }
-  });
-
-  if (Object.prototype.hasOwnProperty.call(item, "target")) {
-    const allowedTargets = new Set(["_blank", "_self", "_parent", "_top"]);
-    if (!allowedTargets.has(item.target)) {
-      addWarning(location, `target "${item.target}" is unusual`);
-    }
-  }
-
-  if ((item.target || "_blank") === "_blank") {
-    const rel = isNonEmptyString(item.rel) ? item.rel.toLowerCase().split(/\s+/) : [];
-    if (!rel.includes("noopener")) {
-      addWarning(location, "target _blank should include rel=\"noopener\"");
-    }
-  }
-}
-
-function validateCategories(tab, location) {
-  if (!Object.prototype.hasOwnProperty.call(tab, "categories")) return null;
-
-  if (!Array.isArray(tab.categories)) {
-    addError(location, "categories must be an array when present");
-    return null;
-  }
-
-  if (!tab.categories.length) {
-    addWarning(location, "categories is empty; remove it or add filter labels");
-    return new Set();
-  }
-
-  const categorySet = new Set();
-  tab.categories.forEach((category, index) => {
-    const categoryLocation = `${location}.categories[${index}]`;
-    if (!isNonEmptyString(category)) {
-      addError(categoryLocation, "category label must be a non-empty string");
-      return;
-    }
-
-    if (categorySet.has(category)) {
-      addError(categoryLocation, `duplicate category "${category}"`);
-    }
-
-    categorySet.add(category);
-  });
-
-  if (tab.categories[0] !== ALL_CATEGORY) {
-    addWarning(`${location}.categories[0]`, `first category should be "${ALL_CATEGORY}"`);
-  }
-
-  return categorySet;
-}
-
-function validateTab(tab, index) {
-  const location = tabLocation(tab, index);
-
-  if (!isPlainObject(tab)) {
-    addError(location, "tab must be an object");
-    return 0;
-  }
-
-  if (!isNonEmptyString(tab.title)) addError(location, "title is required");
-  validateOptionalString(tab, location, "categoryRowClass");
-  validateOptionalString(tab, location, "containerClass");
-  validateOptionalString(tab, location, "containerStyle");
-
-  if (Object.prototype.hasOwnProperty.call(tab, "selected") && typeof tab.selected !== "boolean") {
-    addError(location, "selected must be a boolean when present");
-  }
-
-  if (Object.prototype.hasOwnProperty.call(tab, "statusCheck") && typeof tab.statusCheck !== "boolean") {
-    addError(location, "statusCheck must be a boolean when present");
-  }
-
-  const categorySet = validateCategories(tab, location);
-
-  if (Object.prototype.hasOwnProperty.call(tab, "lock")) {
-    validateLock(tab.lock, location);
-  }
-
-  if (!Array.isArray(tab.items)) {
-    addError(location, "items must be an array");
-    return 0;
-  }
-
-  if (!tab.items.length) {
-    addWarning(location, "items is empty");
-  }
-
-  const tabUrlMap = new Map();
-  const usedCategories = new Set();
-
-  tab.items.forEach((item, itemIndex) => {
-    if (isPlainObject(item) && isNonEmptyString(item.category)) {
-      usedCategories.add(item.category);
-    }
-    validateItem(item, tab, index, itemIndex, categorySet, tabUrlMap);
-  });
-
-  if (categorySet) {
-    categorySet.forEach((category) => {
-      if (category !== ALL_CATEGORY && !usedCategories.has(category)) {
-        addWarning(location, `category "${category}" has no items`);
-      }
+  const groups = new Map();
+  let selected = 0;
+  data.groups.forEach((group, index) => {
+    const at = `groups[${index}]`;
+    if (!isPlainObject(group) || !nonEmpty(group.name)) return issue(errors, at, "name is required");
+    if (groups.has(group.name)) issue(errors, at, `duplicate name "${group.name}"`);
+    groups.set(group.name, group);
+    if (group.selected === true) selected += 1;
+    ["selected", "statusCheck", "hidden"].forEach((key) => {
+      if (key in group && typeof group[key] !== "boolean") issue(errors, at, `${key} must be boolean`);
     });
-  }
+    if (group.hidden === true && !isPlainObject(group.lock)) issue(errors, at, "hidden group must keep lock");
+  });
+  if (selected !== 1) issue(errors, "groups", "exactly one group must be selected");
 
-  return tab.items.length;
-}
-
-function validateSites(sites) {
-  if (!isPlainObject(sites)) {
-    addError("window.NAV_SITES", "NAV_SITES must be an object");
-    return { tabCount: 0, itemCount: 0 };
-  }
-
-  if (!isAssetRef(sites.iconFallback)) {
-    addError("window.NAV_SITES.iconFallback", "iconFallback must be a valid remote or local asset reference");
-  }
-
-  if (!Array.isArray(sites.tabs)) {
-    addError("window.NAV_SITES.tabs", "tabs must be an array");
-    return { tabCount: 0, itemCount: 0 };
-  }
-
-  if (!sites.tabs.length) {
-    addError("window.NAV_SITES.tabs", "tabs must not be empty");
-    return { tabCount: 0, itemCount: 0 };
-  }
-
-  const titles = new Map();
-  let selectedCount = 0;
-  let itemCount = 0;
-
-  sites.tabs.forEach((tab, index) => {
-    if (isPlainObject(tab) && tab.selected === true) selectedCount += 1;
-
-    if (isPlainObject(tab) && isNonEmptyString(tab.title)) {
-      if (titles.has(tab.title)) {
-        addError(tabLocation(tab, index), `duplicate tab title; first seen at ${titles.get(tab.title)}`);
-      } else {
-        titles.set(tab.title, tabLocation(tab, index));
-      }
+  const ids = new Set();
+  const groupUrls = new Map();
+  const globalUrls = new Map();
+  data.sites.forEach((site, index) => {
+    const at = `sites[${index}]`;
+    if (!isPlainObject(site)) return issue(errors, at, "must be an object");
+    ["id", "name", "url", "group"].forEach((key) => {
+      if (!nonEmpty(site[key])) issue(errors, at, `${key} is required`);
+    });
+    if (nonEmpty(site.id)) {
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(site.id)) issue(errors, at, "id must be an ASCII slug");
+      if (ids.has(site.id)) issue(errors, at, `duplicate id "${site.id}"`);
+      ids.add(site.id);
     }
-
-    itemCount += validateTab(tab, index);
+    if (!httpUrl(site.url)) issue(errors, at, "url must be absolute http(s)");
+    if (!groups.has(site.group)) issue(errors, at, `unknown group "${site.group}"`);
+    if ("icon" in site && !asset(site.icon)) issue(errors, at, "invalid icon reference");
+    ["category", "description", "icon", "searchKey", "title", "linkTitle"].forEach((key) => {
+      if (key in site && typeof site[key] !== "string") issue(errors, at, `${key} must be string`);
+    });
+    ["featured", "statusCheck", "hidden"].forEach((key) => {
+      if (key in site && typeof site[key] !== "boolean") issue(errors, at, `${key} must be boolean`);
+    });
+    if (groups.get(site.group)?.hidden === true && site.hidden !== true) {
+      issue(errors, at, "site in hidden group must remain hidden");
+    }
+    if (httpUrl(site.url)) {
+      const url = normalizedUrl(site.url);
+      if (!groupUrls.has(site.group)) groupUrls.set(site.group, new Set());
+      if (groupUrls.get(site.group).has(url)) issue(errors, at, "duplicate URL in the same group");
+      groupUrls.get(site.group).add(url);
+      globalUrls.set(url, (globalUrls.get(url) || 0) + 1);
+    }
   });
 
-  if (selectedCount > 1) {
-    addError("window.NAV_SITES.tabs", "only one tab can be selected");
+  data.groups.forEach((group) => {
+    deriveCategories(data.sites.filter((site) => site.group === group.name));
+  });
+
+  if (fs.readFileSync(runtimePath, "utf8") !== serializeRuntimeJs(data)) {
+    issue(errors, "data/sites.js", "stale runtime artifact; run migrate-sites.js --generate-runtime");
   }
 
-  return { tabCount: sites.tabs.length, itemCount };
+  return {
+    groups: data.groups.length,
+    sites: data.sites.length,
+    duplicates: [...globalUrls.values()].filter((count) => count > 1).length
+  };
 }
 
-function printIssues(label, issues) {
-  if (!issues.length) return;
-  console.log(`${label}:`);
-  issues.forEach((issue) => {
-    console.log(`- ${issue.location}: ${issue.message}`);
-  });
-}
-
-let stats = { tabCount: 0, itemCount: 0 };
-
+let stats = { groups: 0, sites: 0, duplicates: 0 };
 try {
-  stats = validateSites(loadSites());
+  stats = validate(loadNormalizedSites(jsonPath));
 } catch (error) {
-  addError("data/sites.js", error.message);
+  issue(errors, "data/sites.json", error.message);
 }
 
-printIssues("Errors", errors);
-printIssues("Warnings", warnings);
-
-const summary = [
-  `Checked data/sites.js: ${stats.tabCount} tabs, ${stats.itemCount} items`,
-  `${errors.length} error(s)`,
-  `${warnings.length} warning(s)`
-].join(", ");
-
-console.log(summary);
-
-if (errors.length || (strict && warnings.length)) {
-  process.exitCode = 1;
-} else if (warnings.length) {
-  console.log("Result: passed with warnings. Use --strict to fail on warnings.");
-} else {
-  console.log("Result: passed.");
+function print(label, list) {
+  if (!list.length) return;
+  console.log(`${label}:`);
+  list.forEach((entry) => console.log(`- ${entry.location}: ${entry.message}`));
 }
+
+print("Errors", errors);
+print("Warnings", warnings);
+console.log(
+  `Checked data/sites.json: ${stats.groups} groups, ${stats.sites} sites, ` +
+  `${stats.duplicates} cross-group duplicate URL(s), ${errors.length} error(s), ${warnings.length} warning(s)`
+);
+if (errors.length || (strict && warnings.length)) process.exitCode = 1;
+else console.log(warnings.length ? "Result: passed with warnings." : "Result: passed.");

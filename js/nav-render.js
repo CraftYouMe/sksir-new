@@ -1,5 +1,42 @@
 (function () {
   var data = window.NAV_SITES || {};
+
+  if (!Array.isArray(data.tabs) && Array.isArray(data.groups) && Array.isArray(data.sites)) {
+    data = {
+      iconFallback: data.iconFallback,
+      tabs: data.groups.map(function (group) {
+        var groupSites = data.sites.filter(function (site) {
+          return site.group === group.name;
+        });
+        var categories = [];
+        groupSites.forEach(function (site) {
+          if (site.category && categories.indexOf(site.category) < 0) categories.push(site.category);
+        });
+        return {
+          title: group.name,
+          selected: group.selected === true,
+          statusCheck: group.statusCheck !== false,
+          lock: group.lock,
+          containerClass: group.containerClass || "quick-alls",
+          categoryRowClass: group.categoryRowClass,
+          categories: categories.length ? ["全部"].concat(categories) : [],
+          items: groupSites.map(function (site) {
+            return {
+              className: "quicks",
+              name: site.name,
+              url: site.url,
+              category: site.category || "",
+              icon: site.icon === "auto" || !site.icon ? data.iconFallback : site.icon,
+              desc: site.description || "",
+              favoriteCheck: site.featured === true,
+              skipCheck: site.statusCheck === false
+            };
+          })
+        };
+      })
+    };
+  }
+
   var tabs = Array.isArray(data.tabs) ? data.tabs : [];
   var iconFallback = data.iconFallback || "./img/icon/fangdiu.png";
   var deferredHydrationScheduled = false;
@@ -130,10 +167,18 @@
     loadBatch();
   }
 
-  function createCard(item) {
+  function createCard(item, tab) {
     var card = createDiv(item.className || "quicks");
     if (item.category) card.dataset.category = item.category;
     if (item.searchKey) card.dataset.s = item.searchKey;
+    card.dataset.bookmarkSearch = [
+      item.name,
+      item.desc,
+      item.category,
+      item.searchKey,
+      tab && tab.title,
+      item.url
+    ].filter(Boolean).join(" ").toLowerCase();
     if (Object.prototype.hasOwnProperty.call(item, "title")) card.title = item.title || "";
 
     var link = document.createElement("a");
@@ -166,7 +211,7 @@
     if (!tab || !container) return false;
 
     (tab.items || []).forEach(function (item) {
-      container.appendChild(createCard(item));
+      container.appendChild(createCard(item, tab));
     });
 
     panel.dataset.navHydrated = "1";

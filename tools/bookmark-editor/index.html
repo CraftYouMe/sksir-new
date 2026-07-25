@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>收藏管理器</title>
+  <link rel="stylesheet" href="/editor.css">
+</head>
+<body>
+  <header>
+    <div><h1>收藏管理器</h1><p>数据只在本机保存到 <code>data/sites.json</code></p></div>
+    <div class="actions"><button id="add">新增网站</button><button id="save" class="primary">预览并保存</button></div>
+  </header>
+  <main>
+    <aside>
+      <input id="search" type="search" placeholder="搜索名称或网址" aria-label="搜索收藏">
+      <label>分组<select id="group-filter"><option value="">全部分组</option></select></label>
+      <div id="summary"></div>
+    </aside>
+    <section><div id="list" class="list" aria-live="polite"></div></section>
+  </main>
+  <dialog id="editor">
+    <form id="form" method="dialog">
+      <h2 id="form-title">新增网站</h2>
+      <input id="edit-index" type="hidden">
+      <label>网站名称<input id="name" required maxlength="60"></label>
+      <label>网站网址<input id="url" type="url" required placeholder="https://example.com/"></label>
+      <div class="grid">
+        <label>分组<select id="group" required></select></label>
+        <label>分类<input id="category" list="categories"></label>
+      </div>
+      <datalist id="categories"></datalist>
+      <label>简介<input id="description" maxlength="120"></label>
+      <label>图标模式<select id="icon-mode"><option value="auto">自动</option><option value="custom">自定义</option></select></label>
+      <label id="icon-row" hidden>图标地址<input id="icon" placeholder="https://… 或 ./img/…"></label>
+      <details><summary>高级选项</summary>
+        <label>稳定 ID<input id="site-id" pattern="[a-z0-9-]+"></label>
+        <label><input id="featured" type="checkbox"> 快捷入口候选</label>
+        <label><input id="status-check" type="checkbox" checked> 参与状态检测</label>
+        <label><input id="hidden" type="checkbox"> 隐藏站点</label>
+      </details>
+      <div id="form-error" class="error" role="alert"></div>
+      <menu><button type="button" id="cancel">取消</button><button class="primary" value="default">应用修改</button></menu>
+    </form>
+  </dialog>
+  <dialog id="preview"><div><h2>保存预览</h2><pre id="diff"></pre><div id="save-error" class="error"></div><menu><button id="preview-cancel">取消</button><button id="confirm-save" class="primary">确认保存</button></menu></div></dialog>
+  <script src="/editor.js"></script>
+</body>
+</html>

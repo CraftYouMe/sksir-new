@@ -352,9 +352,25 @@
                 </div>
 
                 <!-- 书签页 -->
-                <div class="mark" style="display: none;">
+                <div class="mark" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="bookmark-title">
+                    <div class="bookmark-head">
+                        <div>
+                            <div id="bookmark-title" class="bookmark-title">收藏中心</div>
+                            <div class="bookmark-subtitle">快速查看、分类和搜索收藏</div>
+                        </div>
+                        <div class="bookmark-head-actions">
+                            <label class="bookmark-search">
+                                <i class="iconfont icon-sousuo" aria-hidden="true"></i>
+                                <input id="bookmark-search-input" type="search" placeholder="搜索收藏"
+                                    autocomplete="off" aria-label="搜索当前收藏分类">
+                            </label>
+                            <button type="button" id="bookmark-close" class="bookmark-close" aria-label="关闭收藏中心">&times;</button>
+                        </div>
+                    </div>
                     <div class="tab" data-nav-tabs></div>
                     <div class="content products" data-nav-products></div>
+                    <div class="bookmark-loading" role="status">正在加载收藏...</div>
+                    <div id="bookmark-empty" class="bookmark-empty" hidden>当前分类暂无收藏</div>
                 </div>
 
                   
@@ -628,7 +644,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.20.17">v2026.07.20.17</span>
+                <span id="app-version" class="app-version" data-version="2026.07.26.1">v2026.07.26.1</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>

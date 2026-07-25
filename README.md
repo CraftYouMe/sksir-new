@@ -10,7 +10,7 @@
 
 ## 当前功能
 
-- 多分类导航卡片，数据集中维护在 `data/sites.js`
+- 多分类导航卡片，源数据集中维护在 `data/sites.json`
 - 常用搜索引擎切换、自定义、重置
 - 百度搜索建议、输入防抖和键盘上下选择
 - 搜索框下方快捷入口：默认开启，支持自定义添加、显示数量、点击排序和拖动顺序
@@ -43,7 +43,8 @@
 .
 ├── api/check.js              # 网站状态检测接口
 ├── css/                      # 样式文件
-├── data/sites.js             # 导航站点数据
+├── data/sites.json           # 规范化导航站点源数据
+├── data/sites.js             # 自动生成的线上兼容数据
 ├── data/app-version.json     # 当前版本号
 ├── font/MiSans-UI.woff2      # 本地 MiSans 页面字符子集
 ├── font/MiSans-UI.characters.txt # 字体子集字符清单
@@ -55,19 +56,45 @@
 ├── scripts/build-font-subset.js # 生成/校验 MiSans UI 子集
 ├── scripts/preflight.js      # 兼容旧检查入口
 ├── scripts/validate-sites.js # 内部收藏数据校验
+├── scripts/migrate-sites.js  # 数据迁移和线上兼容文件生成
+├── scripts/manage-sites.js   # 启动本地收藏管理器
+├── tools/bookmark-editor/    # 本地收藏管理器页面
 ├── scripts/update-version.js # 同步更新数据文件和页脚版本号
 ├── sw.js                     # 旧 Service Worker 退役与缓存清理
 ├── vercel.json               # Vercel 缓存和基础安全响应头
+├── docs/REFACTOR_PLAN.md      # 分阶段重构实施手册
 ├── index.html                # 页面入口
 ├── README.md                 # 使用与日常维护说明
 └── AGENTS.md                 # 开发约定与敏感区域说明
 ```
 
+## 重构计划
+
+后续页面、收藏维护和代码结构整改统一按
+[`docs/REFACTOR_PLAN.md`](docs/REFACTOR_PLAN.md) 分阶段实施。该文档包含每个阶段的范围、步骤、兼容边界、验收标准和交付记录格式。
+
 ## 日常维护
 
 ### 更新收藏
 
-主要改 `data/sites.js`。
+推荐启动本地收藏管理器：
+
+```powershell
+node scripts\manage-sites.js
+```
+
+然后打开命令行显示的 `http://127.0.0.1:4173`。管理器支持：
+
+- 按名称或网址搜索；
+- 新增、编辑和删除网站；
+- 选择已有分组和分类，或直接输入新分类；
+- 上下调整站点顺序；
+- 自动建议稳定 ID；
+- 自动或自定义图标；
+- 保存前显示新增、修改和删除数量；
+- 阻止非法 URL、重复 ID 和同组重复网址。
+
+服务只监听 `127.0.0.1`，退出命令后即停止，不会向线上站点添加管理接口。保存会同时更新规范化源数据 `data/sites.json` 和线上兼容文件 `data/sites.js`。
 
 当前导航分组：
 
@@ -78,28 +105,33 @@
 - `装机`：装机必备、硬件检测、驱动下载、系统修复。
 - `奖励`：密码隐藏分组，不要随手移动到公开分组。
 
-每个站点通常包含：
+如需手工维护，只修改 `data/sites.json`。每个站点通常包含：
 
-```js
+```json
 {
-  "className": "quicks",
+  "id": "example",
   "name": "站点名称",
   "url": "https://example.com/",
+  "group": "常用",
   "category": "分类名",
-  "icon": "https://example.com/favicon.ico",
-  "desc": "一句说明",
-  "target": "_blank",
-  "rel": "noopener noreferrer"
+  "description": "一句说明",
+  "icon": "auto",
+  "statusCheck": true
 }
 ```
 
 如果某个站点不适合检测存活状态，可以加：
 
-```js
-"skipCheck": "true"
+```json
+"statusCheck": false
 ```
 
-新增分类时要同步改对应 tab 的 `categories`，并保证每个公开站点都有 `category`、`icon` 和简短 `desc`。改完运行 `node scripts\check.js`。
+分类会根据站点条目自动生成，不需要维护分类数组。手工修改后运行：
+
+```powershell
+node scripts\migrate-sites.js --generate-runtime
+node scripts\check.js
+```
 
 ### 快捷入口
 
