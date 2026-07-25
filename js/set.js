@@ -938,29 +938,12 @@ function setPerformanceInit() {
 
 // 搜索框高亮
 function focusWd() {
-    if (!$('body').hasClass('onsearch')) {
-        var isMobileSearch = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
-        if (window.SksirSearchUI) {
-            window.SksirSearchUI.setPanelReadyAt(isMobileSearch ? 0 : Date.now() + 320);
-        }
-    }
-    $("body").addClass("onsearch");
-    if (typeof window.scheduleKeywordPanelUpdate === "function") {
-        window.scheduleKeywordPanelUpdate();
-        setTimeout(window.scheduleKeywordPanelUpdate, 180);
-        setTimeout(window.scheduleKeywordPanelUpdate, 320);
-    }
+    if (window.SksirSearchUI) window.SksirSearchUI.focus();
 }
 
 // 搜索框取消高亮
 function blurWd() {
-    if (window.SksirSearchUI) window.SksirSearchUI.setPanelReadyAt(0);
-    $("body").removeClass("onsearch");
-    //隐藏输入
-    $(".wd").val("");
-    $(".search-engine").hide();
-    //隐藏搜索建议
-    hideKeywordPanel();
+    if (window.SksirSearchUI) window.SksirSearchUI.blur();
 }
 
 // 搜索建议提示
@@ -996,6 +979,12 @@ function openDirectNavigation(url) {
     hideKeywordPanel();
     window.open(url, "_blank", "noopener,noreferrer");
 }
+
+window.SksirSearchActions = {
+    getDirectNavigationUrl: getDirectNavigationUrl,
+    openDirectNavigation: openDirectNavigation,
+    recordRecentNavItem: recordRecentNavItem
+};
 
 // 搜索框数据加载
 function searchData() {
@@ -1294,20 +1283,6 @@ $(document).ready(function () {
 
     // 点击事件
     $(document).on('click', function (e) {
-        // 选择搜索引擎点击
-        if ($(".search-engine").is(":hidden") && $(".se").is(e.target) || $(".search-engine").is(":hidden") && $("#icon-se").is(e.target)) {
-            if ($(".se").is(e.target) || $("#icon-se").is(e.target)) {
-                //获取宽度
-                $(".search-engine").css("width", $('.sou').width() - 30);
-                //出现动画
-                $(".search-engine").slideDown(160);
-            }
-        } else {
-            if (!$(".search-engine").is(e.target) && $(".search-engine").has(e.target).length === 0) {
-                $(".search-engine").slideUp(160);
-            }
-        }
-
         // 自动提示隐藏
         if (!$(".sou").is(e.target) && $(".sou").has(e.target).length === 0) {
             hideKeywordPanel();
@@ -1333,17 +1308,6 @@ $(document).ready(function () {
         }
     });
 
-    // 搜索引擎列表点击
-    $(".search-engine-list").on("click", ".se-li", function () {
-        var url = $(this).attr('data-url');
-        var name = $(this).attr('data-name');
-        var icon = $(this).attr('data-icon');
-        $(".search").attr("action", url);
-        $(".wd").attr("name", name);
-        $("#icon-se").attr("class", icon);
-        $(".search-engine").slideUp(160);
-    });
-
     // 搜索框点击事件
     $(document).on('click', '.sou', function (e) {
         focusWd();
@@ -1353,24 +1317,13 @@ $(document).ready(function () {
         $('.se').show();
         if ($(e.target).closest('.se, .sou-button, .search-engine').length === 0) {
             $(".wd").trigger("focus");
-            $(".search-engine").slideUp(160);
         }
     });
 
     $(document).on('click', '.wd', function () {
         focusWd();
         scheduleKeywordReminder(80);
-        $(".search-engine").slideUp(160);
     });
-
-    window.addEventListener("offline", function () {
-        if ($("body").hasClass("onsearch")) scheduleKeywordReminder(0);
-    });
-    window.addEventListener("online", function () {
-        if ($("body").hasClass("onsearch")) scheduleKeywordReminder(120);
-    });
-
-
 
     // 点击其他区域关闭事件
     $(document).on('click', '.close_sou', function (event) {
@@ -1400,91 +1353,6 @@ $(document).ready(function () {
         }
     });
 
-    // 点击搜索引擎时隐藏自动提示
-    $(document).on('click', '.se', function () {
-        hideKeywordPanel();
-    });
-
-    // 恢复自动提示
-    $(document).on('click', '.se-li', function () {
-        hideKeywordPanel();
-    });
-
-    // 自动提示 (调用百度 api）
-    $('.wd').keyup(function (event) {
-        var key = event.keyCode;
-        // 屏蔽上下键
-        var shieldKey = [38, 40];
-        if (shieldKey.includes(key)) return;
-        scheduleKeywordReminder(140);
-    });
-
-    // 点击远程搜索建议或本地书签
-    $("#keywords").on("click", ".keyword", function () {
-        var kind = $(this).attr("data-kind");
-        var wd = $(this).attr("data-query") || $(this).text();
-        if (kind === "nav") {
-            var url = $(this).attr("data-url");
-            recordRecentNavItem({ name: wd, url: url, desc: $(this).find(".keyword-meta").text() });
-            openDirectNavigation(url);
-            return;
-        }
-        $(".wd").val(wd);
-        $(".search").submit();
-        //隐藏输入
-        $(".wd").val("");
-        hideKeywordPanel();
-    });
-
-    // 自动提示键盘方向键选择操作
-    $(".wd").keydown(function (event) { //上下键获取焦点
-        var key = event.keyCode;
-        var $chosen = $("#keywords .keyword.choose");
-        if (key === 13 && $chosen.length && $chosen.attr("data-kind") === "nav") {
-            event.preventDefault();
-            $chosen.trigger("click");
-            return;
-        }
-        if (key === 13 && (event.ctrlKey || event.metaKey)) {
-            var forcedUrl = getDirectNavigationUrl($(this).val(), true);
-            if (forcedUrl) {
-                event.preventDefault();
-                openDirectNavigation(forcedUrl);
-            }
-            return;
-        }
-        if (key !== 38 && key !== 40) return;
-
-        var id = $(".choose").attr("data-id");
-        if (id === undefined) id = 0;
-
-        if (key === 38) {
-            /*向上按钮*/
-            id--;
-        } else if (key === 40) {
-            /*向下按钮*/
-            id++;
-        } else {
-            return;
-        }
-        var length = $("#keywords").attr("data-length");
-        if (id > length) id = 1;
-        if (id < 1) id = length;
-
-        var $next = $(".keyword[data-id=" + id + "]");
-        $next.addClass("choose").siblings().removeClass("choose");
-        if ($next.attr("data-kind") !== "nav") {
-            $(".wd").val($next.attr("data-query") || $next.text());
-        }
-    });
-
-    $(".search").on("submit", function (event) {
-        var directUrl = getDirectNavigationUrl($(".wd").val(), false);
-        if (!directUrl) return;
-        event.preventDefault();
-        openDirectNavigation(directUrl);
-    });
-
     $(document).on("keydown", function (event) {
         if (event.defaultPrevented || event.isComposing || event.ctrlKey || event.metaKey) return;
         var target = event.target;
@@ -1507,10 +1375,11 @@ $(document).ready(function () {
             $(".power").hide();
             setSeInit();
         } else if (event.altKey && /^[1-4]$/.test(event.key)) {
-            var $engine = $(".search-engine-list .se-li").eq(parseInt(event.key, 10) - 1);
-            if ($engine.length) {
+            var engines = document.querySelectorAll(".search-engine-list .se-li");
+            var engine = engines[parseInt(event.key, 10) - 1];
+            if (engine) {
                 event.preventDefault();
-                $engine.trigger("click");
+                engine.click();
             }
         }
     });
