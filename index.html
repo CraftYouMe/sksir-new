@@ -253,7 +253,11 @@
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <script defer src="./js/jquery-3.6.0.min.js"></script>
     <script defer src="./js/main.js"></script>
+    <script defer src="./js/storage.js"></script>
     <script defer src="./js/set.js"></script>
+    <script defer src="./js/wallpaper.js"></script>
+    <script defer src="./js/quick-launch.js"></script>
+    <script defer src="./js/settings.js"></script>
     <!-- 书签数据、渲染和状态检测资源由 main.js 在首屏后按需加载 -->
     <!-- IE Out -->
 </head>
@@ -381,9 +385,10 @@
                 <!-- 设置页 -->
                 <div class="set" style="display: none;">
                     <div class="tabs">
-                        <div class="tab-items actives">搜索引擎</div>
-                        <div class="tab-items">背景图片</div>
-                        <div class="tab-items">性能模式</div>
+                        <div class="tab-items actives">搜索</div>
+                        <div class="tab-items">背景</div>
+                        <div class="tab-items">性能及数据</div>
+                        <div class="tab-items">快捷入口</div>
                     </div>
                     <div class="contents productss">
                         <!-- 搜索引擎设置 -->
@@ -635,6 +640,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="mainConts settings-quick-launch-panel">
+                            <div class="set_blocks performance-settings-block">
+                                <div class="set_tip">
+                                    <span class="set_text">首页快捷入口的数量、顺序和自定义内容只保存在本机</span>
+                                </div>
+                                <div class="set_blocks_content">
+                                    <div class="from_container">
+                                        <div class="froms" id="quick-launch-settings-host"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -644,7 +661,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.26.1">v2026.07.26.1</span>
+                <span id="app-version" class="app-version" data-version="2026.07.26.9">v2026.07.26.9</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>

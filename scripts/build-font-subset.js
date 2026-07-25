@@ -10,6 +10,11 @@ const sourceFiles = [
   "data/sites.json",
   "js/main.js",
   "js/set.js",
+  "js/storage.js",
+  "js/bookmarks.js",
+  "js/settings.js",
+  "js/wallpaper.js",
+  "js/quick-launch.js",
   "js/nav-render.js",
   "js/status-dot.js"
 ];

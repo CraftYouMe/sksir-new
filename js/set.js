@@ -367,23 +367,15 @@ var quickLaunchStorageKeys = [quickLaunchEnabledKey, quickLaunchClicksKey, quick
     quickLaunchCustomKey, quickLaunchDesktopLimitKey, quickLaunchMobileLimitKey];
 var quickLaunchCustomLimit = 24;
 var quickLaunchSuppressClickUntil = 0;
-var quickLaunchResizeFrame = 0;
 
 function readQuickLaunchStorage(key, fallback) {
-    try {
-        var value = localStorage.getItem(key);
-        return value === null ? fallback : JSON.parse(value);
-    } catch (error) {
-        return fallback;
-    }
+    return window.SksirStorage
+        ? window.SksirStorage.readJson(key, fallback)
+        : fallback;
 }
 
 function writeQuickLaunchStorage(key, value) {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-        // Storage can be unavailable in private browsing; keep the UI usable.
-    }
+    if (window.SksirStorage) window.SksirStorage.writeJson(key, value);
 }
 
 function isQuickLaunchEnabled() {
@@ -744,6 +736,28 @@ document.addEventListener("sksir-nav-sites-ready", function () {
     renderQuickLaunchLibraryTabs();
 });
 window.prepareQuickLaunchForBoot = initQuickLaunch;
+window.SksirQuickLaunch = {
+    storageKeys: quickLaunchStorageKeys.slice(),
+    enabledKey: quickLaunchEnabledKey,
+    orderKey: quickLaunchOrderKey,
+    customKey: quickLaunchCustomKey,
+    desktopLimitKey: quickLaunchDesktopLimitKey,
+    mobileLimitKey: quickLaunchMobileLimitKey,
+    customLimit: quickLaunchCustomLimit,
+    read: readQuickLaunchStorage,
+    write: writeQuickLaunchStorage,
+    normalizeWebUrl: normalizeQuickLaunchWebUrl,
+    clampLimit: clampQuickLaunchLimit,
+    getCustomItems: getQuickLaunchCustomItems,
+    recordClick: recordQuickLaunchClick,
+    refreshAutoOrder: refreshQuickLaunchAutoOrder,
+    render: renderQuickLaunch,
+    init: initQuickLaunch,
+    renderCustomList: renderQuickLaunchCustomList,
+    renderLibraryItems: renderQuickLaunchLibraryItems,
+    saveCustomItem: saveQuickLaunchCustomItem,
+    showMessage: showQuickLaunchMessage
+};
 
 function hideKeywordPanel() {
     if (keywordReminderTimer) {
@@ -765,12 +779,10 @@ function canShowKeywordPanel(keyword, requestSeq) {
 }
 
 function getRecentNavItems() {
-    try {
-        var items = JSON.parse(localStorage.getItem(recentNavStorageKey) || "[]");
-        return Array.isArray(items) ? items.slice(0, recentNavLimit) : [];
-    } catch (error) {
-        return [];
-    }
+    var items = window.SksirStorage
+        ? window.SksirStorage.readJson(recentNavStorageKey, [])
+        : [];
+    return Array.isArray(items) ? items.slice(0, recentNavLimit) : [];
 }
 
 function recordRecentNavItem(item) {
@@ -783,10 +795,8 @@ function recordRecentNavItem(item) {
         url: item.url,
         desc: String(item.desc || "")
     });
-    try {
-        localStorage.setItem(recentNavStorageKey, JSON.stringify(recentItems.slice(0, recentNavLimit)));
-    } catch (error) {
-        // Storage can be unavailable in private browsing; navigation still works.
+    if (window.SksirStorage) {
+        window.SksirStorage.writeJson(recentNavStorageKey, recentItems.slice(0, recentNavLimit));
     }
 }
 
@@ -1111,11 +1121,9 @@ function startBgImgInit() {
 startBgImgInit();
 
 function getPerformanceMode() {
-    try {
-        return normalizePerformanceMode(localStorage.getItem("sksir-performance-mode"));
-    } catch (e) {
-        return "auto";
-    }
+    return normalizePerformanceMode(window.SksirStorage
+        ? window.SksirStorage.read("sksir-performance-mode", "auto")
+        : "auto");
 }
 
 function normalizePerformanceMode(mode) {
@@ -1125,9 +1133,7 @@ function normalizePerformanceMode(mode) {
 
 function setPerformanceMode(mode) {
     mode = normalizePerformanceMode(mode);
-    try {
-        localStorage.setItem("sksir-performance-mode", mode);
-    } catch (e) {}
+    if (window.SksirStorage) window.SksirStorage.write("sksir-performance-mode", mode);
 
     if (typeof window.applySksirPerformanceMode === "function") {
         window.applySksirPerformanceMode();
@@ -1397,9 +1403,14 @@ function openBox() {
     var liteMode = document.documentElement.classList.contains("perf-lite");
     document.body.classList.add("bookmarks-surface-open");
     $("#content").addClass('box bookmarks-open').removeClass('setting-open');
-    $(".mark").addClass("is-visible is-loading");
+    $(".mark").removeClass("is-visible").addClass("is-loading");
     $(".mark").css({
         "display": "flex",
+    });
+    requestAnimationFrame(function () {
+        if ($("#content").hasClass("bookmarks-open")) {
+            $(".mark").addClass("is-visible");
+        }
     });
     setBackgroundFocusEffect(true);
 
@@ -1419,7 +1430,6 @@ function openBox() {
             return;
         }
 
-        $(".mark").removeClass("is-loading");
         bookmarkOpenTimer = setTimeout(function () {
             bookmarkOpenTimer = null;
             if (requestId !== bookmarkOpenRequestId) return;
@@ -1430,6 +1440,10 @@ function openBox() {
             if (typeof refreshCategoryIndicators === "function") {
                 refreshCategoryIndicators();
             }
+            if (typeof window.scheduleBookmarkCenterFilter === "function") {
+                window.scheduleBookmarkCenterFilter();
+            }
+            $(".mark").removeClass("is-loading");
 
             if (!mobileNav) {
                 loadVisibleNavIcons();
@@ -1745,108 +1759,6 @@ $(document).ready(function () {
         openDirectNavigation(directUrl);
     });
 
-    $(document).on("click", ".products .quicks, .products .quickjl", function () {
-        var link = this.querySelector("a[href]");
-        if (!link) return;
-        var panel = this.closest(".mainCont[data-nav-tab-index]");
-        var tabIndex = panel ? parseInt(panel.dataset.navTabIndex || "-1", 10) : -1;
-        var tab = window.NAV_SITES && window.NAV_SITES.tabs && window.NAV_SITES.tabs[tabIndex];
-        if (tab && tab.lock) return;
-        recordRecentNavItem({
-            name: $.trim(link.textContent),
-            url: link.href,
-            desc: $(this).find(".quick-desc").text()
-        });
-        recordQuickLaunchClick(link.href);
-        refreshQuickLaunchAutoOrder();
-    });
-
-    $(document).on("change", ".set-quick-launch", function () {
-        writeQuickLaunchStorage(quickLaunchEnabledKey, this.checked);
-        initQuickLaunch();
-    });
-
-    $(document).on("click", "#quick-launch-auto", function () {
-        try {
-            localStorage.removeItem(quickLaunchOrderKey);
-        } catch (error) {}
-        initQuickLaunch();
-        iziToast.show({
-            timeout: 1600,
-            class: "setting-toast",
-            title: "快捷入口",
-            message: "已恢复按点击次数自动调整"
-        });
-    });
-
-    $(document).on("change", ".quick-launch-limit", function () {
-        var mobile = this.id === "quick-launch-mobile-limit";
-        var value = clampQuickLaunchLimit(this.value, mobile ? 6 : 8, mobile ? 8 : 12);
-        writeQuickLaunchStorage(mobile ? quickLaunchMobileLimitKey : quickLaunchDesktopLimitKey, value);
-        renderQuickLaunch();
-    });
-
-    $(document).on("change", "#quick-launch-library-tab", renderQuickLaunchLibraryItems);
-
-    $(document).on("click", "#quick-launch-library-add", function () {
-        var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
-        var tabIndex = parseInt($("#quick-launch-library-tab").val(), 10);
-        var itemIndex = parseInt($("#quick-launch-library-item").val(), 10);
-        var tab = Array.isArray(tabs) && Number.isFinite(tabIndex) ? tabs[tabIndex] : null;
-        var item = tab && !tab.lock && Array.isArray(tab.items) && Number.isFinite(itemIndex) ? tab.items[itemIndex] : null;
-        var url = item && normalizeQuickLaunchWebUrl(item.url);
-        if (!item || !url) return showQuickLaunchMessage("请选择收藏网站", true);
-        var result = saveQuickLaunchCustomItem({
-            name: String(item.name || item.url).trim().slice(0, 30),
-            url: url,
-            icon: normalizeQuickLaunchWebUrl(item.icon) || new URL("/favicon.ico", url).href,
-            desc: String(item.desc || "").slice(0, 80)
-        });
-        if (result.full) return showQuickLaunchMessage("只能添加 " + quickLaunchCustomLimit + " 个自定义入口", true);
-        showQuickLaunchMessage(result.updated ? "已更新快捷入口" : "已添加到快捷入口");
-    });
-
-    $(document).on("submit", "#quick-launch-custom-form", function (event) {
-        event.preventDefault();
-        var name = $.trim($("#quick-launch-custom-name").val()).slice(0, 30);
-        var url = normalizeQuickLaunchWebUrl($("#quick-launch-custom-url").val());
-        var rawIcon = $.trim($("#quick-launch-custom-icon").val());
-        var icon = rawIcon ? normalizeQuickLaunchWebUrl(rawIcon) : "";
-        if (!name) return showQuickLaunchMessage("请填写入口名称", true);
-        if (!url) return showQuickLaunchMessage("网址请使用 http:// 或 https:// 开头", true);
-        if (rawIcon && !icon) return showQuickLaunchMessage("图标网址请使用 http:// 或 https:// 开头", true);
-
-        var saved = { name: name, url: url, icon: icon || new URL("/favicon.ico", url).href };
-        var result = saveQuickLaunchCustomItem(saved);
-        if (result.full) return showQuickLaunchMessage("只能添加 " + quickLaunchCustomLimit + " 个自定义入口", true);
-        this.reset();
-        showQuickLaunchMessage(result.updated ? "已更新自定义入口" : "已添加自定义入口");
-    });
-
-    $(document).on("click", ".quick-launch-custom-remove", function () {
-        var url = $(this).attr("data-url");
-        var items = getQuickLaunchCustomItems().filter(function (item) { return item.url !== url; });
-        writeQuickLaunchStorage(quickLaunchCustomKey, items.map(function (item) {
-            return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
-        }));
-        renderQuickLaunchCustomList();
-        renderQuickLaunch();
-        showQuickLaunchMessage("已删除自定义入口");
-    });
-
-    $(window).on("storage", function (event) {
-        if (quickLaunchStorageKeys.indexOf(event.originalEvent && event.originalEvent.key) === -1) return;
-        initQuickLaunch();
-    });
-
-    $(window).on("resize", function () {
-        if (quickLaunchResizeFrame) cancelAnimationFrame(quickLaunchResizeFrame);
-        quickLaunchResizeFrame = requestAnimationFrame(function () {
-            quickLaunchResizeFrame = 0;
-            renderQuickLaunch();
-        });
-    });
-
     $(document).on("keydown", function (event) {
         if (event.defaultPrevented || event.isComposing || event.ctrlKey || event.metaKey) return;
         var target = event.target;
@@ -2075,61 +1987,6 @@ $(document).ready(function () {
                 }]
             ]
         });
-    });
-
-    // 壁纸设置
-    $("#wallpaper").on("click", ".set-wallpaper", function () {
-        var type = $(this).val();
-        var bg_img = getBgImg();
-        bg_img["type"] = type;
-
-        if (type === "1") {
-            $('#wallpaper_text').html("随机显示一张预设壁纸，刷新页面以生效");
-            setBgImg(bg_img);
-            iziToast.show({
-                message: '壁纸设置成功，刷新生效',
-            });
-        }
-
-        if (type === "2") {
-            $('#wallpaper_text').html("显示必应每日一图，每天更新，刷新页面以生效 | API @ 缙哥哥");
-            setBgImg(bg_img);
-            iziToast.show({
-                message: '壁纸设置成功，刷新生效',
-            });
-        }
-
-        if (type === "5") {
-            $('#wallpaper_text').html("自定义壁纸地址，请输入正确地址，点击保存且刷新页面以生效");
-            $("#wallpaper_url").fadeIn(100);
-            $("#wallpaper-button").fadeIn(100);
-            $("#wallpaper-url").val(bg_img["path"]);
-        } else {
-            $("#wallpaper_url").fadeOut(300);
-            $("#wallpaper-button").fadeOut(300);
-        }
-        if (type === "4") {
-            $('#wallpaper_text').html("暂未实现该功能");
-        }
-    });
-
-    // 自定义壁纸设置保存
-    $(".wallpaper_save").click(function () {
-        var url = $("#wallpaper-url").val();
-        var reg = /^https?:\/\/\S+\.(?:jpe?g|png|gif|webp|avif)(?:[?#]\S*)?$/i;
-        if (!reg.test(url)) {
-            iziToast.show({
-                message: '请输入正确的链接',
-            });
-        } else {
-            var bg_img = getBgImg();
-            bg_img["type"] = "5";
-            bg_img["path"] = url;
-            setBgImg(bg_img);
-            iziToast.show({
-                message: '自定义壁纸设置成功，刷新生效',
-            });
-        }
     });
 
     // 性能模式设置

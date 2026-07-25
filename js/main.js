@@ -393,6 +393,11 @@ function ensureNavSitesLoaded() {
                 : loadDeferredScript("nav-sites-renderer", "./js/nav-render.js");
         })
         .then(function () {
+            return window.scheduleBookmarkCenterFilter
+                ? Promise.resolve()
+                : loadDeferredScript("nav-bookmarks-controller", "./js/bookmarks.js");
+        })
+        .then(function () {
             if (!document.querySelector(".mark .mainCont") && typeof window.renderNavSites === "function") {
                 window.renderNavSites();
             }
@@ -747,49 +752,11 @@ $(function () {
             loadVisibleNavIcons();
         }
         scheduleCategoryIndicatorRefresh();
-        scheduleBookmarkCenterFilter();
+        if (typeof window.scheduleBookmarkCenterFilter === "function") {
+            window.scheduleBookmarkCenterFilter();
+        }
     })
 })
-
-var bookmarkFilterFrame = 0;
-
-function applyBookmarkCenterFilter() {
-    bookmarkFilterFrame = 0;
-    var input = document.getElementById("bookmark-search-input");
-    var panel = document.querySelector(".products .mainCont.selected");
-    var empty = document.getElementById("bookmark-empty");
-    if (!panel) return;
-
-    var query = String(input && input.value || "").trim().toLowerCase();
-    var activeCategory = panel.querySelector(".category-item.active");
-    var category = activeCategory ? activeCategory.textContent.trim() : "全部";
-    var visibleCount = 0;
-
-    panel.querySelectorAll(".quicks, .quick").forEach(function (card) {
-        var categoryMatch = category === "全部" || card.dataset.category === category;
-        var searchText = card.dataset.bookmarkSearch || card.textContent.toLowerCase();
-        var searchMatch = !query || searchText.indexOf(query) >= 0;
-        var visible = categoryMatch && searchMatch;
-        card.style.display = visible ? "" : "none";
-        if (visible) visibleCount += 1;
-    });
-
-    if (empty) empty.hidden = visibleCount > 0 || !!panel.querySelector(".passcode");
-}
-
-function scheduleBookmarkCenterFilter() {
-    if (bookmarkFilterFrame) cancelAnimationFrame(bookmarkFilterFrame);
-    bookmarkFilterFrame = requestAnimationFrame(applyBookmarkCenterFilter);
-}
-
-$(function () {
-    $(document).on("input", "#bookmark-search-input", scheduleBookmarkCenterFilter);
-    $(document).on("click", "#bookmark-close", function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        if (typeof closeBox === "function") closeBox();
-    });
-});
 
 //设置
 $(function () {
@@ -906,7 +873,9 @@ $(function () {
 
         var category = $(this).text().trim();
         var $mainCont = $row.closest('.mainCont');
-        scheduleBookmarkCenterFilter();
+        if (typeof window.scheduleBookmarkCenterFilter === "function") {
+            window.scheduleBookmarkCenterFilter();
+        }
     });
 
     $(window).on('resize', function () {

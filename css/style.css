@@ -885,6 +885,13 @@ body:not(.onsearch) .all-search:hover {
     max-width: 1080px;
     max-height: 680px;
     margin-top: 0;
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.985);
+    transform-origin: center center;
+    transition:
+        opacity 0.28s ease,
+        transform 0.38s var(--motion-ease);
+    will-change: opacity, transform;
 }
 
 .mark::before {
@@ -894,9 +901,9 @@ body:not(.onsearch) .all-search:hover {
     z-index: 0;
     border-radius: inherit;
     background: var(--main-background-color);
-    opacity: 0;
-    transform: scale(0.985);
-    transition: opacity 0.24s ease, transform 0.24s ease;
+    opacity: 1;
+    transform: none;
+    transition: none;
     pointer-events: none;
 }
 
@@ -906,12 +913,14 @@ body:not(.onsearch) .all-search:hover {
 }
 
 .mark.is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
     pointer-events: auto;
 }
 
 .mark.is-visible::before {
     opacity: 1;
-    transform: scale(1);
+    transform: none;
 }
 
 .mark.is-visible .products .mainCont.selected .quick-all,
@@ -1039,9 +1048,16 @@ body:not(.onsearch) .all-search:hover {
     transform: translateY(0);
 }
 
-.mark.is-loading .tab,
-.mark.is-loading .products {
+.mark.is-loading [data-nav-items],
+.mark.is-loading .passcode {
     opacity: 0;
+    transition: opacity 0.16s ease;
+}
+
+.mark:not(.is-loading) [data-nav-items],
+.mark:not(.is-loading) .passcode {
+    opacity: 1;
+    transition: opacity 0.22s ease;
 }
 
 @keyframes navContentIn {
@@ -2121,6 +2137,34 @@ body.onsearch .close_sou {
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.045);
     box-sizing: border-box;
+}
+
+.settings-data-tools {
+    margin-top: 10px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.settings-data-summary {
+    margin-bottom: 12px;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.settings-data-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.settings-data-actions button {
+    width: auto;
+    min-width: 104px;
+    height: 34px;
+    margin: 0;
+    padding: 0 14px;
 }
 
 .performance-mode-card {
@@ -3237,6 +3281,25 @@ html.ios-standalone #menu {
     .performance-mode-card,
     .quick-launch-settings {
         padding: 12px;
+    }
+
+    .set .tabs {
+        justify-content: flex-start;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .set .tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .set .tabs .tab-items {
+        flex: 0 0 auto;
+        min-width: 82px;
+        width: auto;
+        padding: 0 10px;
     }
 
     body.onsearch #keywords {

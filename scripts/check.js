@@ -66,6 +66,26 @@ const checks = [
     args: ["--check", projectPath("tools", "bookmark-editor", "editor.js")]
   },
   {
+    name: "Syntax check storage.js",
+    args: ["--check", projectPath("js", "storage.js")]
+  },
+  {
+    name: "Syntax check bookmarks.js",
+    args: ["--check", projectPath("js", "bookmarks.js")]
+  },
+  {
+    name: "Syntax check settings.js",
+    args: ["--check", projectPath("js", "settings.js")]
+  },
+  {
+    name: "Syntax check wallpaper.js",
+    args: ["--check", projectPath("js", "wallpaper.js")]
+  },
+  {
+    name: "Syntax check quick-launch.js",
+    args: ["--check", projectPath("js", "quick-launch.js")]
+  },
+  {
     name: "Syntax check build-font-subset.js",
     args: ["--check", projectPath("scripts", "build-font-subset.js")]
   }
