@@ -15,6 +15,7 @@ const sourceFiles = [
   "js/settings.js",
   "js/wallpaper.js",
   "js/quick-launch.js",
+  "js/search-ui.js",
   "js/nav-render.js",
   "js/status-dot.js"
 ];

@@ -1,5 +1,6 @@
 (function () {
     var resizeFrame = 0;
+    var suppressClickUntil = 0;
 
     function api() {
         return window.SksirQuickLaunch;
@@ -9,6 +10,107 @@
         var element = document.getElementById(id);
         return element ? element.value : "";
     }
+
+    function saveOrder(service) {
+        var order = Array.from(document.querySelectorAll("#quick-launch .quick-launch-item")).map(function (item) {
+            return item.getAttribute("data-url");
+        });
+        service.write(service.orderKey, order);
+    }
+
+    function bindDrag(item, service) {
+        var startX = 0;
+        var startY = 0;
+        var dragging = false;
+
+        item.addEventListener("pointerdown", function (event) {
+            if (event.button !== undefined && event.button !== 0) return;
+            startX = event.clientX;
+            startY = event.clientY;
+            dragging = false;
+            item.setPointerCapture(event.pointerId);
+        });
+
+        item.addEventListener("pointermove", function (event) {
+            if (!item.hasPointerCapture(event.pointerId)) return;
+            if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 7) return;
+            dragging = true;
+            item.classList.add("is-dragging");
+            var target = document.elementFromPoint(event.clientX, event.clientY);
+            var targetItem = target && target.closest && target.closest(".quick-launch-item");
+            if (!targetItem || targetItem === item || targetItem.parentNode !== item.parentNode) return;
+            var targetRect = targetItem.getBoundingClientRect();
+            var insertAfter = event.clientX > targetRect.left + targetRect.width / 2;
+            targetItem.parentNode.insertBefore(item, insertAfter ? targetItem.nextSibling : targetItem);
+        });
+
+        function finishDrag(event) {
+            if (item.hasPointerCapture(event.pointerId)) item.releasePointerCapture(event.pointerId);
+            item.classList.remove("is-dragging");
+            if (!dragging) return;
+            suppressClickUntil = Date.now() + 400;
+            saveOrder(service);
+            event.preventDefault();
+            dragging = false;
+        }
+
+        item.addEventListener("pointerup", finishDrag);
+        item.addEventListener("pointercancel", finishDrag);
+        item.addEventListener("dragstart", function (event) {
+            event.preventDefault();
+        });
+    }
+
+    function render() {
+        var service = api();
+        var panel = document.getElementById("quick-launch");
+        if (!service || !panel) return Promise.resolve();
+        if (!service.isEnabled()) {
+            panel.hidden = true;
+            panel.replaceChildren();
+            return Promise.resolve();
+        }
+
+        var items = service.sortItems(service.getItems()).slice(0, service.getLimit());
+        panel.replaceChildren();
+        items.forEach(function (entry) {
+            var link = document.createElement("a");
+            link.className = "quick-launch-item";
+            link.href = entry.url;
+            link.target = entry.target;
+            link.rel = entry.rel;
+            link.title = entry.name;
+            link.setAttribute("aria-label", entry.name);
+            link.setAttribute("data-url", entry.url);
+
+            var icon = document.createElement("img");
+            icon.src = entry.icon;
+            icon.alt = "";
+            icon.loading = "lazy";
+            icon.decoding = "async";
+            icon.onerror = function () {
+                this.onerror = null;
+                this.src = "./img/icon/fangdiu.png";
+            };
+            link.appendChild(icon);
+            link.addEventListener("click", function (event) {
+                event.stopPropagation();
+                if (Date.now() < suppressClickUntil) {
+                    event.preventDefault();
+                    return;
+                }
+                service.recordClick(entry.url);
+                recordRecentNavItem(entry);
+                service.refreshAutoOrder();
+            });
+            bindDrag(link, service);
+            panel.appendChild(link);
+        });
+        panel.hidden = items.length === 0;
+        return Promise.resolve();
+    }
+
+    window.SksirQuickLaunchRenderer = render;
 
     function addLibraryItem(service) {
         var tabs = window.NAV_SITES && window.NAV_SITES.tabs;

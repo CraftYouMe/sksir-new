@@ -86,6 +86,10 @@ const checks = [
     args: ["--check", projectPath("js", "quick-launch.js")]
   },
   {
+    name: "Syntax check search-ui.js",
+    args: ["--check", projectPath("js", "search-ui.js")]
+  },
+  {
     name: "Syntax check build-font-subset.js",
     args: ["--check", projectPath("scripts", "build-font-subset.js")]
   }

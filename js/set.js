@@ -349,12 +349,6 @@ function setDefaultSearchEngine(rawValue) {
     return true;
 }
 
-var keywordRequestSeq = 0;
-var keywordReminderTimer = null;
-var keywordPanelReadyAt = 0;
-var keywordLocalResults = [];
-var keywordRemoteSuggestions = [];
-var keywordRemoteState = "idle";
 var recentNavStorageKey = "sksir-recent-nav-items";
 var recentNavLimit = 6;
 var quickLaunchEnabledKey = "sksir-quick-launch-enabled";
@@ -366,7 +360,6 @@ var quickLaunchMobileLimitKey = "sksir-quick-launch-mobile-limit";
 var quickLaunchStorageKeys = [quickLaunchEnabledKey, quickLaunchClicksKey, quickLaunchOrderKey,
     quickLaunchCustomKey, quickLaunchDesktopLimitKey, quickLaunchMobileLimitKey];
 var quickLaunchCustomLimit = 24;
-var quickLaunchSuppressClickUntil = 0;
 
 function readQuickLaunchStorage(key, fallback) {
     return window.SksirStorage
@@ -529,102 +522,10 @@ function refreshQuickLaunchAutoOrder() {
     }
 }
 
-function saveQuickLaunchOrder() {
-    var order = $("#quick-launch .quick-launch-item").map(function () {
-        return $(this).attr("data-url");
-    }).get();
-    writeQuickLaunchStorage(quickLaunchOrderKey, order);
-}
-
-function bindQuickLaunchDrag(item) {
-    var startX = 0;
-    var startY = 0;
-    var dragging = false;
-
-    item.addEventListener("pointerdown", function (event) {
-        if (event.button !== undefined && event.button !== 0) return;
-        startX = event.clientX;
-        startY = event.clientY;
-        dragging = false;
-        item.setPointerCapture(event.pointerId);
-    });
-
-    item.addEventListener("pointermove", function (event) {
-        if (!item.hasPointerCapture(event.pointerId)) return;
-        if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 7) return;
-        dragging = true;
-        item.classList.add("is-dragging");
-        var target = document.elementFromPoint(event.clientX, event.clientY);
-        var targetItem = target && target.closest && target.closest(".quick-launch-item");
-        if (!targetItem || targetItem === item || targetItem.parentNode !== item.parentNode) return;
-        var targetRect = targetItem.getBoundingClientRect();
-        var insertAfter = event.clientX > targetRect.left + targetRect.width / 2;
-        targetItem.parentNode.insertBefore(item, insertAfter ? targetItem.nextSibling : targetItem);
-    });
-
-    function finishDrag(event) {
-        if (item.hasPointerCapture(event.pointerId)) item.releasePointerCapture(event.pointerId);
-        item.classList.remove("is-dragging");
-        if (!dragging) return;
-        quickLaunchSuppressClickUntil = Date.now() + 400;
-        saveQuickLaunchOrder();
-        event.preventDefault();
-        dragging = false;
-    }
-
-    item.addEventListener("pointerup", finishDrag);
-    item.addEventListener("pointercancel", finishDrag);
-    item.addEventListener("dragstart", function (event) {
-        event.preventDefault();
-    });
-}
-
 function renderQuickLaunch() {
-    var panel = document.getElementById("quick-launch");
-    if (!panel) return Promise.resolve();
-    if (!isQuickLaunchEnabled()) {
-        panel.hidden = true;
-        panel.replaceChildren();
-        return Promise.resolve();
-    }
-
-    var items = sortQuickLaunchItems(getQuickLaunchItems()).slice(0, getQuickLaunchLimit());
-    panel.replaceChildren();
-    items.forEach(function (entry) {
-        var link = document.createElement("a");
-        link.className = "quick-launch-item";
-        link.href = entry.url;
-        link.target = entry.target;
-        link.rel = entry.rel;
-        link.title = entry.name;
-        link.setAttribute("aria-label", entry.name);
-        link.setAttribute("data-url", entry.url);
-
-        var icon = document.createElement("img");
-        icon.src = entry.icon;
-        icon.alt = "";
-        icon.loading = "lazy";
-        icon.decoding = "async";
-        icon.onerror = function () {
-            this.onerror = null;
-            this.src = "./img/icon/fangdiu.png";
-        };
-        link.appendChild(icon);
-        link.addEventListener("click", function (event) {
-            event.stopPropagation();
-            if (Date.now() < quickLaunchSuppressClickUntil) {
-                event.preventDefault();
-                return;
-            }
-            recordQuickLaunchClick(entry.url);
-            recordRecentNavItem(entry);
-            refreshQuickLaunchAutoOrder();
-        });
-        bindQuickLaunchDrag(link);
-        panel.appendChild(link);
-    });
-    panel.hidden = items.length === 0;
-    return Promise.resolve();
+    return window.SksirQuickLaunchRenderer
+        ? window.SksirQuickLaunchRenderer()
+        : Promise.resolve();
 }
 
 function initQuickLaunch() {
@@ -749,6 +650,10 @@ window.SksirQuickLaunch = {
     normalizeWebUrl: normalizeQuickLaunchWebUrl,
     clampLimit: clampQuickLaunchLimit,
     getCustomItems: getQuickLaunchCustomItems,
+    isEnabled: isQuickLaunchEnabled,
+    getLimit: getQuickLaunchLimit,
+    getItems: getQuickLaunchItems,
+    sortItems: sortQuickLaunchItems,
     recordClick: recordQuickLaunchClick,
     refreshAutoOrder: refreshQuickLaunchAutoOrder,
     render: renderQuickLaunch,
@@ -760,22 +665,7 @@ window.SksirQuickLaunch = {
 };
 
 function hideKeywordPanel() {
-    if (keywordReminderTimer) {
-        clearTimeout(keywordReminderTimer);
-        keywordReminderTimer = null;
-    }
-    keywordRequestSeq++;
-    keywordLocalResults = [];
-    keywordRemoteSuggestions = [];
-    keywordRemoteState = "idle";
-    $("#keywords").empty().removeAttr("data-length").hide();
-}
-
-function canShowKeywordPanel(keyword, requestSeq) {
-    return requestSeq === keywordRequestSeq &&
-        $("body").hasClass("onsearch") &&
-        $(".search-engine").is(":hidden") &&
-        $.trim($(".wd").val()) === keyword;
+    if (window.SksirSearchUI) window.SksirSearchUI.hide();
 }
 
 function getRecentNavItems() {
@@ -801,124 +691,10 @@ function recordRecentNavItem(item) {
 }
 
 window.recordRecentNavItem = recordRecentNavItem;
-
-function getSearchableNavItems() {
-    var data = window.NAV_SITES || {};
-    var seenUrls = {};
-    var results = [];
-    (data.tabs || []).forEach(function (tab) {
-        if (tab.lock) return;
-        (tab.items || []).forEach(function (item) {
-            if (!item.url || seenUrls[item.url]) return;
-            seenUrls[item.url] = true;
-            results.push({
-                name: item.name || item.url,
-                url: item.url,
-                desc: item.desc || "",
-                searchText: [item.name, item.desc, item.category, item.searchKey, tab.title, item.url]
-                    .filter(Boolean).join(" ").toLowerCase()
-            });
-        });
-    });
-    return results;
-}
-
-function searchLocalNavItems(keyword) {
-    var query = String(keyword || "").trim().toLowerCase();
-    if (!query) return [];
-    return getSearchableNavItems().map(function (item) {
-        var name = item.name.toLowerCase();
-        var score = name === query ? 0 : name.indexOf(query) === 0 ? 1 : item.searchText.indexOf(query) >= 0 ? 2 : 9;
-        return { item: item, score: score };
-    }).filter(function (result) {
-        return result.score < 9;
-    }).sort(function (left, right) {
-        return left.score - right.score || left.item.name.length - right.item.name.length;
-    }).slice(0, 4).map(function (result) {
-        return result.item;
-    });
-}
-
-function renderKeywordPanel(keyword, requestSeq) {
-    if (!canShowKeywordPanel(keyword, requestSeq)) return;
-    var entries = keywordLocalResults.map(function (item) {
-        return { kind: "nav", name: item.name, desc: item.desc, url: item.url };
-    });
-    keywordRemoteSuggestions.forEach(function (suggestion) {
-        if (!entries.some(function (entry) { return entry.name.toLowerCase() === suggestion.toLowerCase(); })) {
-            entries.push({ kind: "search", name: suggestion });
-        }
-    });
-    entries = entries.slice(0, 8);
-
-    var $panel = $("#keywords").empty();
-    var statusMessages = {
-        loading: "正在获取网络建议...",
-        offline: "当前离线，只显示本地结果",
-        error: "网络建议暂不可用"
-    };
-    var statusMessage = statusMessages[keywordRemoteState] || "";
-    if (!entries.length && !statusMessage) {
-        $panel.removeAttr("data-length").hide();
-        return;
-    }
-    updateKeywordPanel();
-    entries.forEach(function (entry, index) {
-        var $item = $("<div></div>", {
-            class: "keyword" + (entry.kind === "nav" ? " keyword-nav" : ""),
-            "data-id": index + 1,
-            "data-kind": entry.kind,
-            "data-query": entry.name,
-            role: "option"
-        });
-        if (entry.url) $item.attr("data-url", entry.url);
-        $("<i></i>", {
-            class: entry.kind === "nav" ? "iconfont icon-home" : "iconfont icon-sousuo"
-        }).appendTo($item);
-        $("<span></span>", { class: "keyword-label", text: entry.name }).appendTo($item);
-        if (entry.kind === "nav") {
-            $("<span></span>", { class: "keyword-meta", text: entry.desc || "打开书签" }).appendTo($item);
-        }
-        $panel.append($item);
-    });
-    if (statusMessage) {
-        $("<div></div>", {
-            class: "keyword-status",
-            text: statusMessage,
-            role: "status"
-        }).appendTo($panel);
-    }
-    $panel.attr("data-length", entries.length).show();
-}
-
-function loadLocalKeywordResults(keyword, requestSeq) {
-    if (!keyword) {
-        keywordLocalResults = getRecentNavItems();
-        renderKeywordPanel(keyword, requestSeq);
-        return;
-    }
-    var loadTask = typeof window.ensureNavSitesLoaded === "function"
-        ? window.ensureNavSitesLoaded()
-        : Promise.resolve();
-    loadTask.then(function () {
-        if (!canShowKeywordPanel(keyword, requestSeq)) return;
-        keywordLocalResults = keyword ? searchLocalNavItems(keyword) : getRecentNavItems();
-        renderKeywordPanel(keyword, requestSeq);
-    }).catch(function () {
-        // Remote suggestions remain available if bookmark data cannot be loaded.
-    });
-}
+window.getRecentNavItems = getRecentNavItems;
 
 function scheduleKeywordReminder(delay) {
-    if (keywordReminderTimer) {
-        clearTimeout(keywordReminderTimer);
-    }
-    var requestedDelay = typeof delay === "number" ? delay : 120;
-    var openingDelay = Math.max(0, keywordPanelReadyAt - Date.now());
-    keywordReminderTimer = setTimeout(function () {
-        keywordReminderTimer = null;
-        keywordReminder();
-    }, Math.max(requestedDelay, openingDelay));
+    if (window.SksirSearchUI) window.SksirSearchUI.scheduleReminder(delay);
 }
 
 document.addEventListener("click", function (event) {
@@ -1164,17 +940,21 @@ function setPerformanceInit() {
 function focusWd() {
     if (!$('body').hasClass('onsearch')) {
         var isMobileSearch = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
-        keywordPanelReadyAt = isMobileSearch ? 0 : Date.now() + 320;
+        if (window.SksirSearchUI) {
+            window.SksirSearchUI.setPanelReadyAt(isMobileSearch ? 0 : Date.now() + 320);
+        }
     }
     $("body").addClass("onsearch");
-    scheduleKeywordPanelUpdate();
-    setTimeout(scheduleKeywordPanelUpdate, 180);
-    setTimeout(scheduleKeywordPanelUpdate, 320);
+    if (typeof window.scheduleKeywordPanelUpdate === "function") {
+        window.scheduleKeywordPanelUpdate();
+        setTimeout(window.scheduleKeywordPanelUpdate, 180);
+        setTimeout(window.scheduleKeywordPanelUpdate, 320);
+    }
 }
 
 // 搜索框取消高亮
 function blurWd() {
-    keywordPanelReadyAt = 0;
+    if (window.SksirSearchUI) window.SksirSearchUI.setPanelReadyAt(0);
     $("body").removeClass("onsearch");
     //隐藏输入
     $(".wd").val("");
@@ -1185,33 +965,7 @@ function blurWd() {
 
 // 搜索建议提示
 function keywordReminder() {
-    var keyword = $.trim($(".wd").val());
-    var requestSeq = ++keywordRequestSeq;
-    keywordLocalResults = [];
-    keywordRemoteSuggestions = [];
-    keywordRemoteState = keyword ? (navigator.onLine ? "loading" : "offline") : "idle";
-    renderKeywordPanel(keyword, requestSeq);
-    loadLocalKeywordResults(keyword, requestSeq);
-
-    if (keyword != "" && navigator.onLine) {
-        $.ajax({
-            url: 'https://suggestion.baidu.com/su?wd=' + encodeURIComponent(keyword),
-            dataType: 'jsonp',
-            jsonp: 'cb', //回调函数的参数名(键值)key
-            timeout: 3500,
-            success: function (data) {
-                if (!canShowKeywordPanel(keyword, requestSeq)) return;
-                keywordRemoteSuggestions = data.s || [];
-                keywordRemoteState = "ready";
-                renderKeywordPanel(keyword, requestSeq);
-            },
-            error: function () {
-                if (requestSeq !== keywordRequestSeq) return;
-                keywordRemoteState = "error";
-                renderKeywordPanel(keyword, requestSeq);
-            }
-        })
-    }
+    if (window.SksirSearchUI) window.SksirSearchUI.remind();
 }
 
 function getDirectNavigationUrl(value, force) {
@@ -1241,34 +995,6 @@ function getDirectNavigationUrl(value, force) {
 function openDirectNavigation(url) {
     hideKeywordPanel();
     window.open(url, "_blank", "noopener,noreferrer");
-}
-
-function updateKeywordPanel() {
-    var searchBox = $(".all-search")[0];
-    var searchWrap = $(".sou")[0];
-    if (!searchBox || !searchWrap) return;
-
-    var searchRect = searchBox.getBoundingClientRect();
-    var wrapRect = searchWrap.getBoundingClientRect();
-    var inset = Math.min(18, Math.max(10, Math.round(searchRect.height * 0.32)));
-    var panelWidth = Math.max(180, Math.round(searchRect.width - inset * 2));
-
-    $("#keywords").css({
-        width: panelWidth,
-        left: Math.round(searchRect.left - wrapRect.left + inset),
-        top: Math.round(searchRect.bottom - wrapRect.top - 1)
-    });
-}
-
-var keywordPanelUpdateFrame = 0;
-
-function scheduleKeywordPanelUpdate() {
-    if (keywordPanelUpdateFrame) return;
-
-    keywordPanelUpdateFrame = requestAnimationFrame(function () {
-        keywordPanelUpdateFrame = 0;
-        updateKeywordPanel();
-    });
 }
 
 // 搜索框数据加载
@@ -2000,15 +1726,5 @@ $(document).ready(function () {
             title: "性能模式",
             message: "已切换为" + $(this).next("label").text().trim()
         });
-    });
-});
-
-$(function () {
-    $(document).on("focus click keyup", ".wd", function () {
-        scheduleKeywordPanelUpdate();
-    });
-
-    $(window).on("resize", function () {
-        if ($("#keywords").is(":visible")) scheduleKeywordPanelUpdate();
     });
 });
