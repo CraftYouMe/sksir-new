@@ -696,6 +696,13 @@ body:not(.onsearch) .all-search:hover {
     opacity: 0;
 }
 
+/* Keep the standards-based selector separate: an unsupported legacy
+   placeholder pseudo-element can invalidate a comma-separated selector list. */
+.onsearch .all-search input::placeholder {
+    color: transparent;
+    opacity: 0;
+}
+
 /*切换搜索引擎*/
 .search-engine {
     position: absolute;

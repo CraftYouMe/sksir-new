@@ -70,6 +70,18 @@ const checks = [
     args: ["--check", projectPath("js", "storage.js")]
   },
   {
+    name: "Syntax check search-engines.js",
+    args: ["--check", projectPath("js", "search-engines.js")]
+  },
+  {
+    name: "Syntax check quick-launch-data.js",
+    args: ["--check", projectPath("js", "quick-launch-data.js")]
+  },
+  {
+    name: "Syntax check bootstrap.js",
+    args: ["--check", projectPath("js", "bootstrap.js")]
+  },
+  {
     name: "Syntax check bookmarks.js",
     args: ["--check", projectPath("js", "bookmarks.js")]
   },
@@ -92,6 +104,14 @@ const checks = [
   {
     name: "Syntax check build-font-subset.js",
     args: ["--check", projectPath("scripts", "build-font-subset.js")]
+  },
+  {
+    name: "Test frontend data modules",
+    args: [projectPath("scripts", "test-frontend-modules.js")]
+  },
+  {
+    name: "Validate runtime boundaries",
+    args: [projectPath("scripts", "validate-runtime-boundaries.js")]
   }
 ];
 

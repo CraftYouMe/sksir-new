@@ -1,0 +1,189 @@
+(function () {
+    "use strict";
+
+    var enabledKey = "sksir-quick-launch-enabled";
+    var clicksKey = "sksir-quick-launch-clicks";
+    var orderKey = "sksir-quick-launch-order";
+    var customKey = "sksir-quick-launch-custom";
+    var desktopLimitKey = "sksir-quick-launch-desktop-limit";
+    var mobileLimitKey = "sksir-quick-launch-mobile-limit";
+    var storageKeys = [enabledKey, clicksKey, orderKey, customKey, desktopLimitKey, mobileLimitKey];
+    var customLimit = 24;
+
+    function read(key, fallback) {
+        return window.SksirStorage ? window.SksirStorage.readJson(key, fallback) : fallback;
+    }
+
+    function write(key, value) {
+        if (window.SksirStorage) window.SksirStorage.writeJson(key, value);
+    }
+
+    function isEnabled() {
+        return read(enabledKey, true) !== false;
+    }
+
+    function normalizeUrl(url) {
+        try {
+            return new URL(url, window.location.href).href;
+        } catch (error) {
+            return url;
+        }
+    }
+
+    function normalizeWebUrl(url) {
+        try {
+            var parsed = new URL(String(url || "").trim());
+            return /^(https?:)$/.test(parsed.protocol) ? parsed.href : "";
+        } catch (error) {
+            return "";
+        }
+    }
+
+    function clampLimit(value, fallback, maximum) {
+        value = parseInt(value, 10);
+        return Number.isFinite(value) ? Math.max(4, Math.min(maximum, value)) : fallback;
+    }
+
+    function getLimit() {
+        var mobile = window.matchMedia && window.matchMedia("(max-width: 720px)").matches;
+        var key = mobile ? mobileLimitKey : desktopLimitKey;
+        return clampLimit(read(key, mobile ? 6 : 8), mobile ? 6 : 8, mobile ? 8 : 12);
+    }
+
+    function getCustomItems() {
+        var stored = read(customKey, []);
+        if (!Array.isArray(stored)) return [];
+        var seen = {};
+        return stored.slice(0, customLimit).reduce(function (items, item) {
+            if (!item || typeof item !== "object") return items;
+            var url = normalizeWebUrl(item.url);
+            if (!url || seen[url]) return items;
+            seen[url] = true;
+            var icon = normalizeWebUrl(item.icon);
+            items.push({
+                name: String(item.name || new URL(url).hostname).trim().slice(0, 30),
+                url: url,
+                icon: icon || new URL("/favicon.ico", url).href,
+                desc: String(item.desc || "自定义快捷入口").slice(0, 80),
+                target: "_blank",
+                rel: "noopener noreferrer",
+                custom: true,
+                sourceIndex: items.length
+            });
+            return items;
+        }, []);
+    }
+
+    function repairStorage() {
+        var custom = getCustomItems();
+        write(customKey, custom.map(function (item) {
+            return { name: item.name, url: item.url, icon: item.icon, desc: item.desc };
+        }));
+
+        var clicks = read(clicksKey, {});
+        var cleanClicks = {};
+        if (clicks && typeof clicks === "object" && !Array.isArray(clicks)) {
+            Object.keys(clicks).slice(0, 500).forEach(function (url) {
+                var normalized = normalizeWebUrl(url);
+                var count = Math.floor(Number(clicks[url]));
+                if (normalized && Number.isFinite(count) && count > 0) {
+                    cleanClicks[normalized] = Math.min(count, 1000000);
+                }
+            });
+        }
+        write(clicksKey, cleanClicks);
+
+        var order = read(orderKey, []);
+        var seenOrder = {};
+        order = Array.isArray(order) ? order.reduce(function (clean, url) {
+            var normalized = normalizeWebUrl(url);
+            if (normalized && !seenOrder[normalized]) {
+                seenOrder[normalized] = true;
+                clean.push(normalized);
+            }
+            return clean;
+        }, []).slice(0, 24) : [];
+        write(orderKey, order);
+    }
+
+    function getItems() {
+        var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
+        var items = getCustomItems();
+        var seenUrls = {};
+        items.forEach(function (item) {
+            seenUrls[item.url] = true;
+        });
+        if (!Array.isArray(tabs)) return items;
+        tabs.forEach(function (tab) {
+            if (tab.lock || !Array.isArray(tab.items)) return;
+            tab.items.forEach(function (item) {
+                if (!item || !item.url || !item.icon) return;
+                var normalizedUrl = normalizeUrl(item.url);
+                if (seenUrls[normalizedUrl]) return;
+                seenUrls[normalizedUrl] = true;
+                items.push({
+                    name: item.name || item.url,
+                    url: normalizedUrl,
+                    icon: item.icon,
+                    desc: item.desc || "",
+                    target: item.target || "_blank",
+                    rel: item.rel || "noopener noreferrer",
+                    sourceIndex: items.length
+                });
+            });
+        });
+        return items;
+    }
+
+    function sortItems(items) {
+        var clicks = read(clicksKey, {});
+        var manualOrder = read(orderKey, []);
+        var orderMap = {};
+        if (Array.isArray(manualOrder) && manualOrder.length) {
+            manualOrder.forEach(function (url, index) {
+                orderMap[url] = index;
+            });
+        }
+        return items.sort(function (left, right) {
+            if (manualOrder.length) {
+                var leftOrder = Object.prototype.hasOwnProperty.call(orderMap, left.url) ? orderMap[left.url] : 9999;
+                var rightOrder = Object.prototype.hasOwnProperty.call(orderMap, right.url) ? orderMap[right.url] : 9999;
+                if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+            }
+            var countDiff = (clicks[right.url] || 0) - (clicks[left.url] || 0);
+            if (!countDiff && left.custom !== right.custom) return left.custom ? -1 : 1;
+            return countDiff || left.sourceIndex - right.sourceIndex;
+        });
+    }
+
+    function recordClick(url) {
+        if (!url) return;
+        url = normalizeUrl(url);
+        var clicks = read(clicksKey, {});
+        clicks[url] = (clicks[url] || 0) + 1;
+        write(clicksKey, clicks);
+    }
+
+    var service = {
+        storageKeys: storageKeys.slice(),
+        enabledKey: enabledKey,
+        orderKey: orderKey,
+        customKey: customKey,
+        desktopLimitKey: desktopLimitKey,
+        mobileLimitKey: mobileLimitKey,
+        customLimit: customLimit,
+        read: read,
+        write: write,
+        normalizeWebUrl: normalizeWebUrl,
+        clampLimit: clampLimit,
+        getCustomItems: getCustomItems,
+        isEnabled: isEnabled,
+        getLimit: getLimit,
+        getItems: getItems,
+        sortItems: sortItems,
+        recordClick: recordClick,
+        repairStorage: repairStorage
+    };
+
+    window.SksirQuickLaunchData = service;
+}());

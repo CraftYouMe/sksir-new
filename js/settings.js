@@ -50,9 +50,142 @@
     window.location.reload();
   }
 
+  function engineField(name) {
+    return document.querySelector(".se_add_content input[name='" + name + "']");
+  }
+
+  function showEngineEditor(show) {
+    document.querySelector(".se_list").style.display = show ? "none" : "";
+    document.querySelector(".se_add_preinstall").style.display = show ? "none" : "";
+    document.querySelector(".se_add_content").style.display = show ? "" : "none";
+  }
+
+  function confirmToast(message, action) {
+    iziToast.show({
+      timeout: 8000,
+      message: message,
+      buttons: [
+        ["<button>确认</button>", function (instance, toast) {
+          action();
+          instance.hide({ transitionOut: "flipOutX" }, toast, "buttonName");
+        }, true],
+        ["<button>取消</button>", function (instance, toast) {
+          instance.hide({ transitionOut: "flipOutX" }, toast, "buttonName");
+        }]
+      ]
+    });
+  }
+
+  function refreshEngines() {
+    setSeInit();
+    seList();
+  }
+
+  function writeEngine(key, originalKey, engine) {
+    var engines = getSeList();
+    if (originalKey && originalKey !== key) delete engines[originalKey];
+    engines[key] = engine;
+    setSeList(engines);
+    refreshEngines();
+    showEngineEditor(false);
+  }
+
+  function saveEngine() {
+    var originalKey = engineField("key_inhere").value;
+    var key = engineField("key").value;
+    var engine = {
+      title: engineField("title").value,
+      url: engineField("url").value,
+      name: engineField("name").value,
+      icon: "iconfont icon-wangluo"
+    };
+    if (!/^\+?[1-9][0-9]*$/.test(key)) {
+      iziToast.show({ timeout: 2000, message: "序号 " + key + " 不是正整数" });
+      return;
+    }
+    if (getSeList()[key] && key !== originalKey) {
+      confirmToast("搜索引擎 " + key + " 已有数据，是否覆盖？", function () {
+        writeEngine(key, originalKey, engine);
+        iziToast.show({ message: "覆盖成功" });
+      });
+      return;
+    }
+    writeEngine(key, originalKey, engine);
+    iziToast.show({ timeout: 2000, message: "添加成功" });
+  }
+
+  function editEngine(key) {
+    var engine = getSeList()[key];
+    if (!engine) return;
+    engineField("key_inhere").value = key;
+    engineField("key").value = key;
+    engineField("title").value = engine.title;
+    engineField("url").value = engine.url;
+    engineField("name").value = engine.name;
+    showEngineEditor(true);
+  }
+
+  window.SksirSettingsOwnsSearchEngines = true;
+
   document.addEventListener("click", function (event) {
     if (event.target.closest("#settings-data-export")) exportData();
     if (event.target.closest("#settings-data-reset")) resetData();
+    var defaultButton = event.target.closest(".set_se_default");
+    if (defaultButton) {
+      event.preventDefault();
+      if (setDefaultSearchEngine(defaultButton.value)) {
+        iziToast.show({
+          timeout: 1800,
+          class: "setting-toast",
+          title: "搜索设置",
+          message: "\u5df2\u7acb\u5373\u5207\u6362\u9ed8\u8ba4\u641c\u7d22\u5f15\u64ce"
+        });
+      }
+      return;
+    }
+    if (event.target.closest(".set_se_list_add")) {
+      document.querySelectorAll(".se_add_content input").forEach(function (input) { input.value = ""; });
+      showEngineEditor(true);
+      return;
+    }
+    if (event.target.closest(".se_add_save")) {
+      saveEngine();
+      return;
+    }
+    if (event.target.closest(".se_add_cancel")) {
+      showEngineEditor(false);
+      return;
+    }
+    var editButton = event.target.closest(".edit_se");
+    if (editButton) {
+      editEngine(editButton.value);
+      return;
+    }
+    var deleteButton = event.target.closest(".delete_se");
+    if (deleteButton) {
+      var key = deleteButton.value;
+      if (key === getSeDefault()) {
+        iziToast.show({ message: "默认搜索引擎不可删除" });
+      } else {
+        confirmToast("搜索引擎 " + key + " 是否删除？", function () {
+          var engines = getSeList();
+          delete engines[key];
+          setSeList(engines);
+          refreshEngines();
+          iziToast.show({ message: "删除成功" });
+        });
+      }
+      return;
+    }
+    if (event.target.closest(".set_se_list_preinstall")) {
+      confirmToast("现有搜索引擎数据将被清空", function () {
+        setSeList(se_list_preinstall);
+        Cookies.set("se_default", 1, { expires: 36500 });
+        setSeInit();
+        iziToast.show({ message: "重置成功" });
+        setTimeout(function () { window.location.reload(); }, 1000);
+      });
+    }
   });
 
   if (document.readyState === "loading") {

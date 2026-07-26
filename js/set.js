@@ -179,341 +179,27 @@ github：https://github.com/CraftYouMe/sksir-new
 日期：2022-03-10
 */
 
-// 默认搜索引擎列表
-var se_list_preinstall = {
-    '1': {
-        id: 1,
-        title: "百度",
-        url: "https://www.baidu.com/s",
-        name: "wd",
-        icon: "iconfont icon-baidu",
-    },
-    '2': {
-        id: 2,
-        title: "必应",
-        url: "https://cn.bing.com/search?q=%s&go=&form=QBLH&qs=n&sk=",
-        name: "q",
-        icon: "iconfont icon-bing",
-    },
-    '3': {
-        id: 3,
-        title: "谷歌",
-        url: "https://www.google.com/search",
-        name: "q",
-        icon: "iconfont icon-google",
-    },
-    '4': {
-        id: 4,
-        title: "搜狗",
-        url: "https://www.sogou.com/web",
-        name: "query",
-        icon: "iconfont icon-sougousousuo",
-    },
-    '5': {
-        id: 5,
-        title: "360",
-        url: "https://www.so.com/s",
-        name: "q",
-        icon: "iconfont icon-360sousuo",
-    },
-    '6': {
-        id: 6,
-        title: "微博",
-        url: "https://s.weibo.com/weibo",
-        name: "q",
-        icon: "iconfont icon-xinlangweibo",
-    },
-    '7': {
-        id: 7,
-        title: "知乎",
-        url: "https://www.zhihu.com/search",
-        name: "q",
-        icon: "iconfont icon-zhihu",
-    },
-    '8': {
-        id: 8,
-        title: "Github",
-        url: "https://github.com/search",
-        name: "q",
-        icon: "iconfont icon-github",
-    },
-    '9': {
-        id: 9,
-        title: "BiliBili",
-        url: "https://search.bilibili.com/all",
-        name: "keyword",
-        icon: "iconfont icon-bilibilidonghua",
-    },
-    '10': {
-        id: 10,
-        title: "淘宝",
-        url: "https://s.taobao.com/search",
-        name: "q",
-        icon: "iconfont icon-taobao",
-    },
-    '11': {
-        id: 11,
-        title: "京东",
-        url: "https://search.jd.com/Search",
-        name: "keyword",
-        icon: "iconfont icon-jingdong",
-    }
-};
-
-
-// 获取搜索引擎列表
-function getSeList() {
-    var se_list_local = Cookies.get('se_list');
-    if (se_list_local !== "{}" && se_list_local) {
-        return JSON.parse(se_list_local);
-    } else {
-        setSeList(se_list_preinstall);
-        return se_list_preinstall;
-    }
-}
-
-// 设置搜索引擎列表
-function setSeList(se_list) {
-    if (se_list) {
-        Cookies.set('se_list', se_list, {
-            expires: 36500
-        });
-        return true;
-    }
-    return false;
-}
-
-// 获得默认搜索引擎
-function getSeDefault() {
-    var se_default = Cookies.get('se_default');
-    var normalized = normalizeSeDefault(se_default ? se_default : "2");
-    if (se_default && se_default !== normalized) {
-        Cookies.set('se_default', normalized, {
-            expires: 36500
-        });
-    }
-    return normalized;
-}
-
-function normalizeSeDefault(se_default) {
-    var aliases = {
-        baidu: "1",
-        bing: "2",
-        google: "3",
-        sogou: "4",
-        so: "5",
-        "360": "5",
-        weibo: "6",
-        zhihu: "7",
-        github: "8",
-        bilibili: "9",
-        taobao: "10",
-        jd: "11"
-    };
-
-    return aliases[se_default] || se_default || "2";
-}
-
-function getValidSeDefault(se_list) {
-    var se_default = getSeDefault();
-    if (se_list[se_default]) return se_default;
-
-    var fallback = se_list["2"] ? "2" : Object.keys(se_list)[0];
-    if (fallback) {
-        Cookies.set('se_default', fallback, {
-            expires: 36500
-        });
-    }
-    return fallback;
-}
-
-function setDefaultSearchEngine(rawValue) {
-    var key = normalizeSeDefault(rawValue);
-    var se_list = getSeList();
-    if (!se_list[key]) {
-        iziToast.show({
-            timeout: 2200,
-            class: "setting-toast",
-            title: "\u641c\u7d22\u8bbe\u7f6e",
-            message: "\u672a\u627e\u5230\u8fd9\u4e2a\u641c\u7d22\u5f15\u64ce"
-        });
-        return false;
-    }
-
-    Cookies.set('se_default', key, {
-        expires: 36500
-    });
-    setSeInit();
-    searchData();
-    seList();
-    return true;
-}
-
 var recentNavStorageKey = "sksir-recent-nav-items";
 var recentNavLimit = 6;
-var quickLaunchEnabledKey = "sksir-quick-launch-enabled";
-var quickLaunchClicksKey = "sksir-quick-launch-clicks";
-var quickLaunchOrderKey = "sksir-quick-launch-order";
-var quickLaunchCustomKey = "sksir-quick-launch-custom";
-var quickLaunchDesktopLimitKey = "sksir-quick-launch-desktop-limit";
-var quickLaunchMobileLimitKey = "sksir-quick-launch-mobile-limit";
-var quickLaunchStorageKeys = [quickLaunchEnabledKey, quickLaunchClicksKey, quickLaunchOrderKey,
-    quickLaunchCustomKey, quickLaunchDesktopLimitKey, quickLaunchMobileLimitKey];
-var quickLaunchCustomLimit = 24;
-
-function readQuickLaunchStorage(key, fallback) {
-    return window.SksirStorage
-        ? window.SksirStorage.readJson(key, fallback)
-        : fallback;
-}
-
-function writeQuickLaunchStorage(key, value) {
-    if (window.SksirStorage) window.SksirStorage.writeJson(key, value);
-}
-
-function isQuickLaunchEnabled() {
-    return readQuickLaunchStorage(quickLaunchEnabledKey, true) !== false;
-}
-
-function normalizeQuickLaunchUrl(url) {
-    try {
-        return new URL(url, window.location.href).href;
-    } catch (error) {
-        return url;
-    }
-}
-
-function normalizeQuickLaunchWebUrl(url) {
-    try {
-        var parsed = new URL(String(url || "").trim());
-        return /^(https?:)$/.test(parsed.protocol) ? parsed.href : "";
-    } catch (error) {
-        return "";
-    }
-}
-
-function clampQuickLaunchLimit(value, fallback, maximum) {
-    value = parseInt(value, 10);
-    return Number.isFinite(value) ? Math.max(4, Math.min(maximum, value)) : fallback;
-}
-
-function getQuickLaunchLimit() {
-    var mobile = window.matchMedia && window.matchMedia("(max-width: 720px)").matches;
-    var key = mobile ? quickLaunchMobileLimitKey : quickLaunchDesktopLimitKey;
-    return clampQuickLaunchLimit(readQuickLaunchStorage(key, mobile ? 6 : 8), mobile ? 6 : 8, mobile ? 8 : 12);
-}
-
-function getQuickLaunchCustomItems() {
-    var stored = readQuickLaunchStorage(quickLaunchCustomKey, []);
-    if (!Array.isArray(stored)) return [];
-    var seen = {};
-    return stored.slice(0, quickLaunchCustomLimit).reduce(function (items, item) {
-        if (!item || typeof item !== "object") return items;
-        var url = normalizeQuickLaunchWebUrl(item.url);
-        if (!url || seen[url]) return items;
-        seen[url] = true;
-        var icon = normalizeQuickLaunchWebUrl(item.icon);
-        items.push({
-            name: String(item.name || new URL(url).hostname).trim().slice(0, 30),
-            url: url,
-            icon: icon || new URL("/favicon.ico", url).href,
-            desc: String(item.desc || "自定义快捷入口").slice(0, 80),
-            target: "_blank",
-            rel: "noopener noreferrer",
-            custom: true,
-            sourceIndex: items.length
-        });
-        return items;
-    }, []);
-}
-
-function repairQuickLaunchStorage() {
-    var custom = getQuickLaunchCustomItems();
-    writeQuickLaunchStorage(quickLaunchCustomKey, custom.map(function (item) {
-        return { name: item.name, url: item.url, icon: item.icon, desc: item.desc };
-    }));
-
-    var clicks = readQuickLaunchStorage(quickLaunchClicksKey, {});
-    var cleanClicks = {};
-    if (clicks && typeof clicks === "object" && !Array.isArray(clicks)) {
-        Object.keys(clicks).slice(0, 500).forEach(function (url) {
-            var normalized = normalizeQuickLaunchWebUrl(url);
-            var count = Math.floor(Number(clicks[url]));
-            if (normalized && Number.isFinite(count) && count > 0) cleanClicks[normalized] = Math.min(count, 1000000);
-        });
-    }
-    writeQuickLaunchStorage(quickLaunchClicksKey, cleanClicks);
-
-    var order = readQuickLaunchStorage(quickLaunchOrderKey, []);
-    var seenOrder = {};
-    order = Array.isArray(order) ? order.reduce(function (clean, url) {
-        var normalized = normalizeQuickLaunchWebUrl(url);
-        if (normalized && !seenOrder[normalized]) {
-            seenOrder[normalized] = true;
-            clean.push(normalized);
-        }
-        return clean;
-    }, []).slice(0, 24) : [];
-    writeQuickLaunchStorage(quickLaunchOrderKey, order);
-}
-
-function getQuickLaunchItems() {
-    var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
-    var items = getQuickLaunchCustomItems();
-    var seenUrls = {};
-    items.forEach(function (item) {
-        seenUrls[item.url] = true;
-    });
-    if (!Array.isArray(tabs)) return items;
-    tabs.forEach(function (tab) {
-        if (tab.lock || !Array.isArray(tab.items)) return;
-        tab.items.forEach(function (item) {
-            if (!item || !item.url || !item.icon) return;
-            var normalizedUrl = normalizeQuickLaunchUrl(item.url);
-            if (seenUrls[normalizedUrl]) return;
-            seenUrls[normalizedUrl] = true;
-            items.push({
-                name: item.name || item.url,
-                url: normalizedUrl,
-                icon: item.icon,
-                desc: item.desc || "",
-                target: item.target || "_blank",
-                rel: item.rel || "noopener noreferrer",
-                sourceIndex: items.length
-            });
-        });
-    });
-    return items;
-}
-
-function sortQuickLaunchItems(items) {
-    var clicks = readQuickLaunchStorage(quickLaunchClicksKey, {});
-    var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
-    var orderMap = {};
-    if (Array.isArray(manualOrder) && manualOrder.length) {
-        manualOrder.forEach(function (url, index) {
-            orderMap[url] = index;
-        });
-    }
-    return items.sort(function (a, b) {
-        if (manualOrder.length) {
-            var aOrder = Object.prototype.hasOwnProperty.call(orderMap, a.url) ? orderMap[a.url] : 9999;
-            var bOrder = Object.prototype.hasOwnProperty.call(orderMap, b.url) ? orderMap[b.url] : 9999;
-            if (aOrder !== bOrder) return aOrder - bOrder;
-        }
-        var countDiff = (clicks[b.url] || 0) - (clicks[a.url] || 0);
-        if (!countDiff && a.custom !== b.custom) return a.custom ? -1 : 1;
-        return countDiff || a.sourceIndex - b.sourceIndex;
-    });
-}
-
-function recordQuickLaunchClick(url) {
-    if (!url) return;
-    url = normalizeQuickLaunchUrl(url);
-    var clicks = readQuickLaunchStorage(quickLaunchClicksKey, {});
-    clicks[url] = (clicks[url] || 0) + 1;
-    writeQuickLaunchStorage(quickLaunchClicksKey, clicks);
-}
+var quickLaunchData = window.SksirQuickLaunchData;
+var quickLaunchEnabledKey = quickLaunchData.enabledKey;
+var quickLaunchOrderKey = quickLaunchData.orderKey;
+var quickLaunchCustomKey = quickLaunchData.customKey;
+var quickLaunchDesktopLimitKey = quickLaunchData.desktopLimitKey;
+var quickLaunchMobileLimitKey = quickLaunchData.mobileLimitKey;
+var quickLaunchStorageKeys = quickLaunchData.storageKeys;
+var quickLaunchCustomLimit = quickLaunchData.customLimit;
+var readQuickLaunchStorage = quickLaunchData.read;
+var writeQuickLaunchStorage = quickLaunchData.write;
+var isQuickLaunchEnabled = quickLaunchData.isEnabled;
+var normalizeQuickLaunchWebUrl = quickLaunchData.normalizeWebUrl;
+var clampQuickLaunchLimit = quickLaunchData.clampLimit;
+var getQuickLaunchLimit = quickLaunchData.getLimit;
+var getQuickLaunchCustomItems = quickLaunchData.getCustomItems;
+var repairQuickLaunchStorage = quickLaunchData.repairStorage;
+var getQuickLaunchItems = quickLaunchData.getItems;
+var sortQuickLaunchItems = quickLaunchData.sortItems;
+var recordQuickLaunchClick = quickLaunchData.recordClick;
 
 function refreshQuickLaunchAutoOrder() {
     var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
@@ -696,24 +382,6 @@ window.getRecentNavItems = getRecentNavItems;
 function scheduleKeywordReminder(delay) {
     if (window.SksirSearchUI) window.SksirSearchUI.scheduleReminder(delay);
 }
-
-document.addEventListener("click", function (event) {
-    var button = event.target.closest && event.target.closest(".set_se_default");
-    if (!button) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-
-    if (setDefaultSearchEngine(button.value)) {
-        iziToast.show({
-            timeout: 1800,
-            class: "setting-toast",
-            title: "\u641c\u7d22\u8bbe\u7f6e",
-            message: "\u5df2\u7acb\u5373\u5207\u6362\u9ed8\u8ba4\u641c\u7d22\u5f15\u64ce"
-        });
-    }
-}, true);
 
 /**
  * 背景图片配置
@@ -1005,42 +673,6 @@ function searchData() {
     //     $(".wd").focus();
     //     focusWd();
     // }
-}
-
-// 搜索引擎列表加载
-function seList() {
-    var html = "";
-    var se_list = getSeList();
-    for (var i in se_list) {
-        html += `<div class='se-li' data-url='${se_list[i]["url"]}' data-name='${se_list[i]["name"]}' data-icon='${se_list[i]["icon"]}'>
-        <a class='se-li-text'><i id='icon-sou-list' class='${se_list[i]["icon"]}'></i><span>${se_list[i]["title"]}</span></a></div>`;
-    }
-    $(".search-engine-list").html(html);
-}
-
-// 设置-搜索引擎列表加载
-function setSeInit() {
-    var se_list = getSeList();
-    var se_default = getValidSeDefault(se_list);
-    var html = "";
-    for (var i in se_list) {
-        var tr = `<div class='se_list_div'><div class='se_list_num'>${i}</div>`;
-        if (i === se_default) {
-            tr = `<div class='se_list_div'><div class='se_list_num'>
-            <i class='iconfont icon-home'></i></div>`;
-        }
-        tr += `<div class='se_list_name'>${se_list[i]["title"]}</div>
-        <div class='se_list_button'>
-        <button class='set_se_default' value='${i}' style='border-radius: 8px 0px 0px 8px;'>
-        <i class='iconfont icon-home'></i></button>
-        <button class='edit_se' value='${i}'>
-        <i class='iconfont icon-xiugai'></i></button>
-        <button class='delete_se' value='${i}' style='border-radius: 0px 8px 8px 0px;'>
-        <i class='iconfont icon-delete'></i></button></div>
-        </div>`;
-        html += tr;
-    }
-    $(".se_list_table").html(html);
 }
 
 // 打开设置
@@ -1396,7 +1028,7 @@ $(document).ready(function () {
         }
     });
 
-    // 修改默认搜索引擎
+    if (!window.SksirSettingsOwnsSearchEngines) {
     $(".se_list_table").on("click", ".set_se_default", function () {
         if (setDefaultSearchEngine($(this).val())) {
             iziToast.show({
@@ -1583,6 +1215,8 @@ $(document).ready(function () {
             ]
         });
     });
+
+    }
 
     // 性能模式设置
     $("#performance").on("click", ".set-performance", function () {
