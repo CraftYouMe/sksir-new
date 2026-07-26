@@ -22,10 +22,39 @@
     weibo: "6", zhihu: "7", github: "8", bilibili: "9", taobao: "10", jd: "11"
   };
 
+  function normalizeHttpUrl(value) {
+    var raw = String(value || "").trim();
+    if (!raw) return "";
+    try {
+      var parsed = new URL(raw);
+      return parsed.protocol === "http:" || parsed.protocol === "https:" ? raw : "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function sanitizeList(engines) {
+    var safe = {};
+    if (!engines || typeof engines !== "object") return safe;
+    Object.keys(engines).forEach(function (key) {
+      var engine = engines[key];
+      var url = engine && normalizeHttpUrl(engine.url);
+      if (!url) return;
+      safe[key] = {
+        id: engine.id,
+        title: String(engine.title || url),
+        url: url,
+        name: String(engine.name || "q"),
+        icon: String(engine.icon || "iconfont icon-wangluo")
+      };
+    });
+    return safe;
+  }
+
   // 设置搜索引擎列表
   function setList(engines) {
     if (!engines) return false;
-    Cookies.set("se_list", engines, cookieOptions);
+    Cookies.set("se_list", sanitizeList(engines), cookieOptions);
     return true;
   }
 
@@ -35,7 +64,11 @@
     if (stored && stored !== "{}") {
       try {
         var parsed = JSON.parse(stored);
-        if (parsed && typeof parsed === "object" && Object.keys(parsed).length) return parsed;
+        var sanitized = sanitizeList(parsed);
+        if (Object.keys(sanitized).length) {
+          if (JSON.stringify(parsed) !== JSON.stringify(sanitized)) setList(sanitized);
+          return sanitized;
+        }
       } catch (error) {
         // Invalid legacy data falls back to the built-in list below.
       }
@@ -161,6 +194,7 @@
     getDefault: getDefault,
     getValidDefault: getValidDefault,
     setDefault: setDefaultEngine,
+    normalizeHttpUrl: normalizeHttpUrl,
     renderPicker: renderPicker,
     renderSettings: renderSettings
   };

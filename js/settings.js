@@ -93,14 +93,25 @@
   function saveEngine() {
     var originalKey = engineField("key_inhere").value;
     var key = engineField("key").value;
+    var title = engineField("title").value.trim();
+    var url = window.SksirSearchEngines.normalizeHttpUrl(engineField("url").value);
+    var name = engineField("name").value.trim();
     var engine = {
-      title: engineField("title").value,
-      url: engineField("url").value,
-      name: engineField("name").value,
+      title: title,
+      url: url,
+      name: name,
       icon: "iconfont icon-wangluo"
     };
     if (!/^\+?[1-9][0-9]*$/.test(key)) {
       iziToast.show({ timeout: 2000, message: "序号 " + key + " 不是正整数" });
+      return;
+    }
+    if (!title || !name) {
+      iziToast.show({ timeout: 2000, message: "名称和字段名不能为空" });
+      return;
+    }
+    if (!url) {
+      iziToast.show({ timeout: 2000, message: "网址请用 http 或 https" });
       return;
     }
     if (getSeList()[key] && key !== originalKey) {

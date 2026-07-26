@@ -58,11 +58,15 @@ function testSearchEngines() {
   assert.doesNotThrow(() => JSON.parse(fixture.cookies.se_list));
 
   service.setList({
-    "7": { title: "Test", url: "https://example.com/", name: "q", icon: "test" }
+    "7": { title: "Test", url: "https://example.com/", name: "q", icon: "test" },
+    "8": { title: "Unsafe", url: "javascript:alert(1)", name: "q", icon: "test" }
   });
   fixture.cookies.se_default = "missing";
   assert.strictEqual(service.getValidDefault(service.getList()), "7");
   assert.strictEqual(fixture.cookies.se_default, "7");
+  assert.strictEqual(Object.keys(service.getList()).length, 1);
+  assert.strictEqual(service.normalizeHttpUrl("javascript:alert(1)"), "");
+  assert.strictEqual(service.normalizeHttpUrl("https://example.com/search"), "https://example.com/search");
 }
 
 function createQuickLaunchContext(initialStorage) {
