@@ -3780,3 +3780,662 @@ html.ios-standalone #menu {
         display: none;
     }
 }
+
+/* ==========================================================================
+   Settings center
+   Desktop application layout. Keep this block after legacy/mobile rules so
+   the settings surface has one clear source of truth.
+   ========================================================================== */
+
+.set {
+    width: min(1100px, calc(100vw - 48px));
+    max-width: 1100px;
+    height: 82vh;
+    max-height: 82vh;
+    min-height: 520px;
+    margin-top: 0;
+    align-items: stretch;
+    overflow: hidden;
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 22px;
+    background: rgba(17, 23, 31, 0.78);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    -webkit-backdrop-filter: blur(24px) saturate(1.08);
+    backdrop-filter: blur(24px) saturate(1.08);
+    animation: none;
+}
+
+.settings-head {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 84px;
+    padding: 18px 22px 16px 26px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(8, 12, 18, 0.24);
+}
+
+.settings-head h2,
+.settings-panel-head h3 {
+    margin: 0;
+    color: #fff;
+    line-height: 1.25;
+}
+
+.settings-head h2 {
+    font-size: 1.34rem;
+    font-weight: 720;
+}
+
+.settings-head p,
+.settings-panel-head p {
+    margin: 5px 0 0;
+    color: rgba(232, 239, 247, 0.62);
+    line-height: 1.45;
+}
+
+.settings-head p {
+    font-size: 0.78rem;
+}
+
+.settings-close {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 0 2px;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 1.45rem;
+    line-height: 1;
+}
+
+.settings-shell {
+    display: grid;
+    grid-template-columns: 214px minmax(0, 1fr);
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.set .tabs {
+    display: flex;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    margin: 0 !important;
+    padding: 18px 12px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 6px;
+    overflow: hidden auto;
+    border-right: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0;
+    background: rgba(8, 12, 18, 0.22);
+    box-shadow: none;
+}
+
+.set .tabs .tab-items {
+    display: flex;
+    flex: 0 0 44px;
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    padding: 0 13px;
+    justify-content: flex-start;
+    gap: 11px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: rgba(232, 239, 247, 0.70);
+    font-size: 0.9rem;
+    font-weight: 560;
+    transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+}
+
+.set .tabs .tab-items i {
+    width: 20px;
+    color: rgba(232, 239, 247, 0.58);
+    font-size: 1rem;
+    text-align: center;
+}
+
+.set .tabs .tab-items::after {
+    display: none;
+}
+
+.set .tabs .tab-items:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.set .tabs .tab-items.actives {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 3px 0 0 rgba(155, 231, 215, 0.92);
+}
+
+.set .tabs .tab-items.actives i {
+    color: #9be7d7;
+}
+
+.set .productss {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.set .productss .mainConts {
+    height: 100%;
+    min-height: 0;
+    padding: 28px clamp(22px, 3vw, 38px) 36px;
+    align-content: flex-start;
+    box-sizing: border-box;
+    overflow: hidden auto;
+    animation: none;
+}
+
+.settings-panel-head {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.settings-panel-head h3 {
+    font-size: 1.45rem;
+    font-weight: 680;
+}
+
+.settings-panel-head p {
+    font-size: 0.84rem;
+}
+
+.set .set_blocks,
+.set .performance-settings-block {
+    display: flex;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    gap: 14px;
+    justify-content: flex-start;
+}
+
+.set .set_blocks_content {
+    display: flex;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 18px;
+    gap: 16px;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    overflow: visible;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.065);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 28px rgba(0, 0, 0, 0.10);
+}
+
+.set .set_tip,
+.set .performance-settings-block .set_tip {
+    display: flex;
+    margin: 0;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(232, 239, 247, 0.72);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.set .se_list {
+    height: min(290px, 34vh);
+    padding: 4px;
+}
+
+.set .se_list_table {
+    margin: 0;
+    gap: 8px;
+}
+
+.set .se_list_div {
+    height: 48px;
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.055);
+    transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.set .se_list_div:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.set .se_list_num {
+    height: 46px;
+    background: transparent;
+}
+
+.set .se_list_button {
+    height: 34px;
+    margin-right: 7px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.set .set_blocks_content .se_list_button button {
+    width: 36px;
+    padding: 0;
+    border: 0;
+    color: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.set .set_blocks_content .se_list_button .delete_se {
+    color: #ffb5b5;
+    background: rgba(255, 91, 91, 0.08);
+}
+
+.set .se_add_preinstall,
+.set .from_items.button {
+    gap: 10px;
+}
+
+.set .set_se_list_add,
+.set .set_se_list_preinstall,
+.set .se_add_save,
+.set .se_add_cancel,
+.set .wallpaper_save {
+    width: auto;
+    min-width: 104px;
+    height: 38px;
+    margin: 0;
+    padding: 0 18px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.set .primary,
+.set button.primary {
+    border-color: rgba(155, 231, 215, 0.34);
+    background: rgba(123, 221, 204, 0.88);
+    color: #10231f;
+    font-weight: 680;
+}
+
+.set .secondary,
+.set button.secondary {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.09);
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.set .danger,
+.set button.danger,
+.set #settings-data-reset,
+.set .quick-launch-custom-remove {
+    border-color: rgba(255, 112, 112, 0.24);
+    background: rgba(255, 91, 91, 0.12);
+    color: #ffc1c1;
+}
+
+.set .primary:hover,
+.set button.primary:hover {
+    background: rgba(151, 235, 220, 0.96);
+}
+
+.set .secondary:hover,
+.set button.secondary:hover {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.set .danger:hover,
+.set button.danger:hover,
+.set #settings-data-reset:hover,
+.set .quick-launch-custom-remove:hover {
+    background: rgba(255, 91, 91, 0.20);
+}
+
+.set .add_content {
+    height: auto;
+    min-height: 0;
+    gap: 16px;
+    animation: none;
+}
+
+.set .froms {
+    height: auto;
+    gap: 14px;
+    justify-content: flex-start;
+}
+
+.set .froms .from_items {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.set .from_text {
+    display: block;
+    width: auto;
+    margin: 0;
+    color: rgba(232, 239, 247, 0.72);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.set .add_content input,
+.set #wallpaper_url input,
+.set select,
+.set .quick-launch-custom-fields input {
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    outline: 0;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 9px;
+    background: rgba(8, 12, 18, 0.34);
+    color: #fff;
+    font-size: 16px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
+    transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.set .add_content input:focus,
+.set #wallpaper_url input:focus,
+.set select:focus,
+.set .quick-launch-custom-fields input:focus {
+    border-color: rgba(155, 231, 215, 0.68);
+    box-shadow: 0 0 0 3px rgba(155, 231, 215, 0.11);
+}
+
+.set .from_container,
+.set .from_row_content {
+    width: 100%;
+}
+
+.set .performance-mode-card,
+.set .quick-launch-settings,
+.set .settings-data-tools {
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.set .performance-settings-block .set_blocks_content {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.set #wallpaper,
+.set #performance {
+    gap: 8px;
+}
+
+.set .form-radio {
+    margin: 0;
+}
+
+.set input[type="radio"] + label {
+    display: inline-flex;
+    min-height: 38px;
+    padding: 0 14px;
+    align-items: center;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.set input[type="radio"]:checked + label {
+    border-color: rgba(155, 231, 215, 0.52);
+    background: rgba(155, 231, 215, 0.16);
+}
+
+.set .quick-launch-count-settings {
+    align-items: end;
+}
+
+.set .quick-launch-count-settings label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: rgba(232, 239, 247, 0.72);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.set .settings-data-actions button,
+.set #quick-launch-library-add,
+.set .quick-launch-custom-add,
+.set .quick-launch-auto {
+    min-height: 36px;
+    border-radius: 9px;
+}
+
+.set .wallpaper-preview {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 7;
+    min-height: 210px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 15px;
+    background: rgba(8, 12, 18, 0.42);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+}
+
+.set .wallpaper-preview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.set .wallpaper-preview-overlay {
+    position: absolute;
+    inset: auto 0 0;
+    display: flex;
+    padding: 32px 18px 15px;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(transparent, rgba(6, 9, 14, 0.78));
+    pointer-events: none;
+}
+
+.set .wallpaper-preview-label {
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 0.75rem;
+}
+
+.set #wallpaper-preview-name {
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 650;
+}
+
+.set .wallpaper-library {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.set .wallpaper-library-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.set .wallpaper-library-head strong {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.86rem;
+}
+
+.set .wallpaper-library-head span {
+    color: rgba(232, 239, 247, 0.56);
+    font-size: 0.74rem;
+}
+
+.set .wallpaper-library-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.set .set_blocks_content .wallpaper-option {
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    min-width: 0;
+    padding: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.05);
+    box-sizing: border-box;
+    transition: border-color 0.14s ease, background-color 0.14s ease;
+}
+
+.set .set_blocks_content .wallpaper-option:hover {
+    border-color: rgba(255, 255, 255, 0.30);
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.set .set_blocks_content .wallpaper-option.is-selected {
+    border-color: rgba(155, 231, 215, 0.88);
+    background: rgba(155, 231, 215, 0.16);
+    box-shadow: 0 0 0 2px rgba(155, 231, 215, 0.13);
+}
+
+.set .wallpaper-option img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 7px;
+    pointer-events: none;
+}
+
+.set .wallpaper-option span {
+    position: absolute;
+    right: 8px;
+    bottom: 7px;
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    background: rgba(6, 9, 14, 0.66);
+    color: #fff;
+    font-size: 0.7rem;
+    pointer-events: none;
+}
+
+@media (max-width: 720px) {
+    .set {
+        width: calc(100vw - 24px);
+        height: min(82vh, calc(var(--app-height, 100vh) - 24px));
+        max-height: min(82vh, calc(var(--app-height, 100vh) - 24px));
+        min-height: 430px;
+        border-radius: 18px;
+    }
+
+    .settings-head {
+        min-height: 72px;
+        padding: 14px 14px 12px 18px;
+    }
+
+    .settings-head h2 {
+        font-size: 1.18rem;
+    }
+
+    .settings-shell {
+        grid-template-columns: 92px minmax(0, 1fr);
+    }
+
+    .set .tabs {
+        padding: 12px 7px;
+        overflow: hidden auto;
+    }
+
+    .set .tabs .tab-items {
+        min-width: 0;
+        height: 54px;
+        padding: 7px 4px;
+        flex-basis: 54px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+        font-size: 0.72rem;
+        text-align: center;
+    }
+
+    .set .productss .mainConts {
+        padding: 20px 14px 28px;
+    }
+
+    .settings-panel-head {
+        margin-bottom: 15px;
+    }
+
+    .settings-panel-head h3 {
+        font-size: 1.18rem;
+    }
+
+    .set .set_blocks_content,
+    .set .performance-mode-card,
+    .set .quick-launch-settings,
+    .set .settings-data-tools {
+        padding: 13px;
+    }
+
+    .set .se_list {
+        height: min(250px, 31vh);
+    }
+
+    .set .se_list_button {
+        flex: 0 0 auto;
+    }
+
+    .set .set_blocks_content .se_list_button button {
+        width: 32px;
+    }
+
+    .set .settings-panel-head p,
+    .set .set_tip {
+        font-size: 0.76rem;
+    }
+
+    .set .wallpaper-preview {
+        min-height: 150px;
+        aspect-ratio: 16 / 9;
+    }
+
+    .set .wallpaper-library-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .set .wallpaper-library-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+    }
+}

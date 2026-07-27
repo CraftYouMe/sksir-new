@@ -387,16 +387,28 @@
                     <i id="icon-menu" class="iconfont icon-shezhi"></i>
                 </div>
                 <!-- 设置页 -->
-                <div class="set" style="display: none;">
-                    <div class="tabs">
-                        <div class="tab-items actives">搜索</div>
-                        <div class="tab-items">背景</div>
-                        <div class="tab-items">性能及数据</div>
-                        <div class="tab-items">快捷入口</div>
-                    </div>
+                <div class="set" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+                    <header class="settings-head">
+                        <div>
+                            <h2 id="settings-title">设置</h2>
+                            <p>管理搜索、页面和本机设置</p>
+                        </div>
+                        <button type="button" class="settings-close secondary" aria-label="关闭设置" onclick="closeSet()">&times;</button>
+                    </header>
+                    <div class="settings-shell">
+                    <nav class="tabs" aria-label="设置分类">
+                        <div class="tab-items actives"><i class="iconfont icon-sousuo"></i><span>搜索</span></div>
+                        <div class="tab-items"><i class="iconfont icon-wangluo"></i><span>背景</span></div>
+                        <div class="tab-items"><i class="iconfont icon-shezhi"></i><span>性能及数据</span></div>
+                        <div class="tab-items"><i class="iconfont icon-home"></i><span>快捷入口</span></div>
+                    </nav>
                     <div class="contents productss">
                         <!-- 搜索引擎设置 -->
                         <div class="mainConts selected">
+                            <div class="settings-panel-head">
+                                <h3>搜索引擎</h3>
+                                <p>选择默认搜索服务，或管理自定义搜索引擎。</p>
+                            </div>
                             <div class="set_blocks">
                                 <div class="set_blocks_content">
                                     <div class="se_list">
@@ -435,33 +447,33 @@
                                         </div>
                                     </div>
                                     <div class="se_add_preinstall">
-                                        <div class="set_se_list_add">
+                                        <div class="set_se_list_add primary">
                                             <span class="set_quick_text">新增</span>
                                         </div>
-                                        <div class="set_se_list_preinstall">
+                                        <div class="set_se_list_preinstall secondary">
                                             <span class="set_quick_text">重置</span>
                                         </div>
                                     </div>
                                     <div class="add_content se_add_content" style="display:none;">
                                         <div class="froms">
                                             <div class="from_items">
-                                                <div class="from_text">顺序</div>
+                                                <label class="from_text">顺序</label>
                                                 <input type="hidden" name="key_inhere">
                                                 <input type="number" name="key" placeholder="请填入小于 20 的正整数"
                                                     autocomplete="off"
                                                     oninput="if(value>20)value=20;if(value<0)value=0">
                                             </div>
                                             <div class="from_items">
-                                                <div class="from_text">名称</div>
+                                                <label class="from_text">名称</label>
                                                 <input type="text" name="title" placeholder="搜索引擎名称" autocomplete="off">
                                             </div>
                                             <div class="from_items">
-                                                <div class="from_text">网址</div>
+                                                <label class="from_text">网址</label>
                                                 <input type="url" name="url" placeholder="以 https 或 http 开头的 URL"
                                                     autocomplete="off">
                                             </div>
                                             <div class="from_items">
-                                                <div class="from_text">字段名</div>
+                                                <label class="from_text">字段名</label>
                                                 <input type="text" name="name" placeholder="URL 中 ? 后面的字段"
                                                     autocomplete="off">
                                             </div>
@@ -471,8 +483,8 @@
                                             </div>
                                         </div>
                                         <div class="from_items button">
-                                            <div class="se_add_save">保存</div>
-                                            <div class="se_add_cancel">取消</div>
+                                            <div class="se_add_save primary">保存</div>
+                                            <div class="se_add_cancel secondary">取消</div>
                                         </div>
                                     </div>
                                 </div>
@@ -480,6 +492,10 @@
                         </div>
                         <!-- 背景图片设置 -->
                         <div class="mainConts">
+                            <div class="settings-panel-head">
+                                <h3>背景</h3>
+                                <p>选择首页壁纸来源并配置自定义图片。</p>
+                            </div>
                             <div class="set_blocks">
                                 <div class="set_tip">
                                     <span class="set_text mobile">点击下方选项以切换壁纸，远程壁纸会在加载完成后淡入显示</span>
@@ -487,8 +503,23 @@
                                     <span class="set_text" id="wallpaper_text">请点击选项以查看各项说明，高亮项为选中，选中后刷新页面以生效</span>
                                 </div>
                                 <div class="set_blocks_content">
+                                    <div class="wallpaper-preview" id="wallpaper-preview">
+                                        <img id="wallpaper-preview-image" alt="壁纸预看">
+                                        <div class="wallpaper-preview-overlay">
+                                            <span class="wallpaper-preview-label">当前预看</span>
+                                            <strong id="wallpaper-preview-name">可选壁纸</strong>
+                                        </div>
+                                    </div>
                                     <div class="from_container">
                                         <div class="froms">
+                                            <div class="wallpaper-library">
+                                                <div class="wallpaper-library-head">
+                                                    <strong>选择壁纸</strong>
+                                                    <span>6 张壁纸可选，不会随机切换</span>
+                                                </div>
+                                                <div id="wallpaper-library-grid" class="wallpaper-library-grid"
+                                                    aria-label="可选壁纸"></div>
+                                            </div>
                                             <div class="from_row">
                                                 <div class="from_row_content">
                                                     <div id="wallpaper">
@@ -496,7 +527,7 @@
                                                             <input type="radio" id="radio1" class="set-wallpaper"
                                                                 name="wallpaper-type" value="1" style="display: none;">
                                                             <label class="form-radio-label" for="radio1">
-                                                                随机壁纸
+                                                                可选壁纸
                                                             </label>
                                                         </div>
                                                         <div class="form-radio">
@@ -537,13 +568,17 @@
                                         </div>
                                     </div>
                                     <div class="from_items button" id="wallpaper-button" style="display: none;">
-                                        <div class="wallpaper_save">保存</div>
+                                        <div class="wallpaper_save primary">保存</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- 性能模式设置 -->
                         <div class="mainConts">
+                            <div class="settings-panel-head">
+                                <h3>性能及数据</h3>
+                                <p>调整动效质量、快捷入口行为和本机数据。</p>
+                            </div>
                             <div class="set_blocks performance-settings-block">
                                 <div class="set_tip">
                                     <span class="set_text" id="performance_text">自动模式会在系统减少动态效果、省流量或明显低配设备上启用轻量动效</span>
@@ -584,7 +619,7 @@
                                                 <div class="from_row_content">
                                                     <div class="quick-launch-setting-head">
                                                         <div class="quick-launch-setting-title">快捷入口</div>
-                                                        <button type="button" id="quick-launch-auto" class="quick-launch-auto">恢复自动顺序</button>
+                                                        <button type="button" id="quick-launch-auto" class="quick-launch-auto secondary">恢复自动顺序</button>
                                                     </div>
                                                     <div id="quick-launch-setting">
                                                         <label class="quick-launch-toggle" for="quick-launch-enabled">
@@ -622,7 +657,7 @@
                                                             <select id="quick-launch-library-item" aria-label="选择收藏网站" disabled>
                                                                 <option value="">选择网站</option>
                                                             </select>
-                                                            <button type="button" id="quick-launch-library-add">添加选中</button>
+                                                            <button type="button" id="quick-launch-library-add" class="secondary">添加选中</button>
                                                         </div>
                                                         <div class="quick-launch-custom-divider"><span>手动添加</span></div>
                                                         <div class="quick-launch-custom-fields">
@@ -632,7 +667,7 @@
                                                                 placeholder="https://example.com" aria-label="快捷入口网址" autocomplete="off" required>
                                                             <input type="url" id="quick-launch-custom-icon" maxlength="500"
                                                                 placeholder="图标 URL 可以不填" aria-label="快捷入口图标网址" autocomplete="off">
-                                                            <button type="submit" class="quick-launch-custom-add">添加</button>
+                                                            <button type="submit" class="quick-launch-custom-add primary">添加</button>
                                                         </div>
                                                     </form>
                                                     <div id="quick-launch-custom-list" class="quick-launch-custom-list" aria-live="polite"></div>
@@ -645,6 +680,10 @@
                             </div>
                         </div>
                         <div class="mainConts settings-quick-launch-panel">
+                            <div class="settings-panel-head">
+                                <h3>快捷入口</h3>
+                                <p>管理首页常用入口及显示顺序。</p>
+                            </div>
                             <div class="set_blocks performance-settings-block">
                                 <div class="set_tip">
                                     <span class="set_text">首页快捷入口的数量、顺序和自定义内容只保存在本机</span>
@@ -657,6 +696,7 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -665,7 +705,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.26.27">v2026.07.26.27</span>
+                <span id="app-version" class="app-version" data-version="2026.07.28.2">v2026.07.28.2</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>

@@ -385,12 +385,12 @@ function scheduleKeywordReminder(delay) {
 
 /**
  * 背景图片配置
- * type: "1" 随机壁纸, "2" 必应每日一图, "5" 自定义壁纸
- * path: 自定义图片地址
+ * type: "1" 可选壁纸, "2" 必应每日一图, "5" 自定义壁纸
+ * path: 可选或自定义图片地址
  */
 var bg_img_preinstall = {
     "type": "1",
-    "path": "",
+    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background1.webp",
 };
 
 var bg_img_pictures = [
@@ -426,18 +426,10 @@ function setBgImg(bg_img) {
     return false;
 }
 
-function getRandomBgPicture() {
+function getSelectedBgPicture(bg_img) {
     if (!bg_img_pictures.length) return "";
-
-    var lastSrc = localStorage.getItem('bg_img_last_src');
-    var availablePictures = bg_img_pictures.filter(function (src) {
-        return src !== lastSrc;
-    });
-    var pool = availablePictures.length ? availablePictures : bg_img_pictures;
-    var src = pool[Math.floor(Math.random() * pool.length)];
-
-    localStorage.setItem('bg_img_last_src', src);
-    return src;
+    if (bg_img && bg_img_pictures.indexOf(bg_img.path) !== -1) return bg_img.path;
+    return bg_img_pictures[0];
 }
 
 function resolveBgImgSrc(bg_img) {
@@ -448,7 +440,7 @@ function resolveBgImgSrc(bg_img) {
             return bg_img["path"] || "";
         case "1":
         default:
-            return getRandomBgPicture();
+            return getSelectedBgPicture(bg_img);
     }
 }
 
@@ -720,6 +712,9 @@ function openSet() {
     $(".set").css({
         "display": "flex",
     });
+    if (typeof window.initWallpaperPicker === "function") {
+        window.initWallpaperPicker();
+    }
     setBackgroundFocusEffect(true);
 }
 
