@@ -364,7 +364,7 @@
         var service = api();
         if (!service) return;
         if (event.target.matches(".set-quick-launch")) {
-            service.write(service.enabledKey, event.target.checked);
+            service.write(service.enabledKey, event.target.value === "0");
             service.init();
         }
         if (event.target.matches(".quick-launch-limit")) {
@@ -373,17 +373,34 @@
             service.write(mobile ? service.mobileLimitKey : service.desktopLimitKey, value);
             service.render();
         }
-        if (event.target.matches("input[name='quick-launch-sort-mode']")) {
-            service.write(service.sortModeKey, event.target.value === "manual" ? "manual" : "auto");
-            if (event.target.value === "manual") {
+        if (event.target.matches(".quick-launch-sort-mode")) {
+            var sortMode = event.target.value === "1" ? "manual" : "auto";
+            service.write(service.sortModeKey, sortMode);
+            if (sortMode === "manual") {
                 service.write(service.orderKey, service.sortItems(service.getItems()).map(function (item) {
                     return item.url;
                 }).slice(0, 24));
             }
+            service.syncSettingsControls();
             service.render();
-            service.showMessage(event.target.value === "manual" ? "已切换为手动排序，可拖动首页图标" : "已切换为自动排序");
+            service.showMessage(sortMode === "manual" ? "已切换为手动排序，可拖动首页图标" : "已切换为自动排序");
         }
         if (event.target.matches("#quick-launch-library-tab")) service.renderLibraryItems();
+    });
+
+    document.addEventListener("input", function (event) {
+        if (event.target.matches(".set-quick-launch")) {
+            var enabledControl = document.getElementById("quick-launch-enabled-control");
+            var enabled = event.target.value === "0";
+            if (enabledControl) enabledControl.setAttribute("data-slider-value", enabled ? "enabled" : "disabled");
+            event.target.setAttribute("aria-valuetext", enabled ? "开启" : "关闭");
+        }
+        if (event.target.matches(".quick-launch-sort-mode")) {
+            var sortControl = document.getElementById("quick-launch-sort-control");
+            var sortMode = event.target.value === "1" ? "manual" : "auto";
+            if (sortControl) sortControl.setAttribute("data-slider-value", sortMode);
+            event.target.setAttribute("aria-valuetext", sortMode === "manual" ? "手动排序" : "自动排序");
+        }
     });
 
     document.addEventListener("submit", function (event) {

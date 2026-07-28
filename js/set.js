@@ -216,15 +216,34 @@ function renderQuickLaunch() {
 }
 
 function initQuickLaunch() {
-    $("#quick-launch-enabled").prop("checked", isQuickLaunchEnabled());
+    syncQuickLaunchSettingsControls();
     $("#quick-launch-desktop-limit").val(String(clampQuickLaunchLimit(readQuickLaunchStorage(quickLaunchDesktopLimitKey, 8), 8, 12)));
     $("#quick-launch-mobile-limit").val(String(clampQuickLaunchLimit(readQuickLaunchStorage(quickLaunchMobileLimitKey, 6), 6, 8)));
-    $("input[name='quick-launch-sort-mode'][value='" + getQuickLaunchSortMode() + "']").prop("checked", true);
     renderQuickLaunchCustomList();
     renderQuickLaunchLibraryTabs();
     if (!isQuickLaunchEnabled()) return renderQuickLaunch();
     renderQuickLaunch();
     return Promise.resolve();
+}
+
+function syncQuickLaunchSettingsControls() {
+    var enabled = isQuickLaunchEnabled();
+    var enabledRange = document.getElementById("quick-launch-enabled");
+    var enabledControl = document.getElementById("quick-launch-enabled-control");
+    var sortMode = getQuickLaunchSortMode();
+    var sortRange = document.getElementById("quick-launch-sort-mode");
+    var sortControl = document.getElementById("quick-launch-sort-control");
+
+    if (enabledRange) {
+        enabledRange.value = enabled ? "0" : "1";
+        enabledRange.setAttribute("aria-valuetext", enabled ? "开启" : "关闭");
+    }
+    if (enabledControl) enabledControl.setAttribute("data-slider-value", enabled ? "enabled" : "disabled");
+    if (sortRange) {
+        sortRange.value = sortMode === "manual" ? "1" : "0";
+        sortRange.setAttribute("aria-valuetext", sortMode === "manual" ? "手动排序" : "自动排序");
+    }
+    if (sortControl) sortControl.setAttribute("data-slider-value", sortMode);
 }
 
 function renderQuickLaunchCustomList() {
@@ -376,6 +395,7 @@ window.SksirQuickLaunch = {
     refreshAutoOrder: refreshQuickLaunchAutoOrder,
     render: renderQuickLaunch,
     init: initQuickLaunch,
+    syncSettingsControls: syncQuickLaunchSettingsControls,
     renderCustomList: renderQuickLaunchCustomList,
     renderLibraryItems: renderQuickLaunchLibraryItems,
     saveCustomItem: saveQuickLaunchCustomItem,
@@ -621,10 +641,30 @@ function getPerformanceModeText(mode) {
     return "自动模式会在系统减少动态效果、省流量或明显低配设备上启用轻量动效";
 }
 
+function getPerformanceModeIndex(mode) {
+    return ["auto", "full", "lite"].indexOf(normalizePerformanceMode(mode));
+}
+
+function getPerformanceModeFromIndex(index) {
+    return ["auto", "full", "lite"][Number(index)] || "auto";
+}
+
+function updatePerformanceControl(mode) {
+    var normalizedMode = normalizePerformanceMode(mode);
+    var range = document.getElementById("performance-range");
+    var control = document.getElementById("performance");
+    var labels = { auto: "自动", full: "完整", lite: "轻量" };
+    if (range) {
+        range.value = String(getPerformanceModeIndex(normalizedMode));
+        range.setAttribute("aria-valuetext", labels[normalizedMode]);
+    }
+    if (control) control.setAttribute("data-performance-mode", normalizedMode);
+    $("#performance_text").text(getPerformanceModeText(normalizedMode));
+}
+
 function setPerformanceInit() {
     var mode = getPerformanceMode();
-    $("input[name='performance-mode'][value='" + mode + "']").prop("checked", true);
-    $("#performance_text").html(getPerformanceModeText(mode));
+    updatePerformanceControl(mode);
     if (typeof window.applySksirPerformanceMode === "function") {
         window.applySksirPerformanceMode();
     }
@@ -1250,15 +1290,18 @@ $(document).ready(function () {
     }
 
     // 性能模式设置
-    $("#performance").on("click", ".set-performance", function () {
-        var mode = $(this).val();
+    $("#performance").on("input", ".set-performance", function () {
+        var mode = getPerformanceModeFromIndex(this.value);
         setPerformanceMode(mode);
-        $("#performance_text").html(getPerformanceModeText(mode));
+        updatePerformanceControl(mode);
+    }).on("change", ".set-performance", function () {
+        var mode = getPerformanceModeFromIndex(this.value);
+        var labels = { auto: "自动", full: "完整", lite: "轻量" };
         iziToast.show({
             timeout: 1800,
             class: "setting-toast",
             title: "性能模式",
-            message: "已切换为" + $(this).next("label").text().trim()
+            message: "已切换为" + labels[mode]
         });
     });
 });

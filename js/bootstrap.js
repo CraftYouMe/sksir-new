@@ -123,7 +123,6 @@
             : Promise.resolve();
         markFirstScreenVisible(quickLaunchReady);
         scheduleNavSitesLoad();
-        scheduleVisitorBadge();
         scheduleWelcomeToast();
         scheduleUpdateCheck();
         retireLegacyPwa();

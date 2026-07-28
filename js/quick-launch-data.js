@@ -25,7 +25,7 @@
     }
 
     function getSortMode() {
-        return read(sortModeKey, "auto") === "manual" ? "manual" : "auto";
+        return read(sortModeKey, "manual") === "auto" ? "auto" : "manual";
     }
 
     function normalizeUrl(url) {

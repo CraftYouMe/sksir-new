@@ -98,6 +98,10 @@ function createQuickLaunchContext(initialStorage) {
 }
 
 function testQuickLaunchData() {
+  const defaultFixture = createQuickLaunchContext({});
+  runModule("js/quick-launch-data.js", defaultFixture.context);
+  assert.strictEqual(defaultFixture.context.SksirQuickLaunchData.getSortMode(), "manual");
+
   const fixture = createQuickLaunchContext({
     "sksir-quick-launch-custom": [
       { name: "Safe", url: "https://example.com", icon: "javascript:alert(1)" },

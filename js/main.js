@@ -349,29 +349,6 @@ function setDailyQuote() {
     quoteElement.textContent = quotes[seed % quotes.length];
 }
 
-function scheduleVisitorBadge() {
-    runAfterLoadIdle(function () {
-        if (document.getElementById("visitor-badge")) return;
-
-        var link = document.createElement("a");
-        link.id = "visitor-badge";
-        link.href = "https://visitor-badge.laobi.icu";
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.style.cssText = "position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:14px;z-index:9999;";
-
-        var img = document.createElement("img");
-        img.src = "https://visitor-badge.laobi.icu/badge?page_id=sksir-new";
-        img.alt = "visitor badge";
-        img.loading = "lazy";
-        img.decoding = "async";
-        img.setAttribute("fetchpriority", "low");
-
-        link.appendChild(img);
-        document.body.appendChild(link);
-    }, 3600);
-}
-
 function retireLegacyPwa() {
     runAfterLoadIdle(function () {
         if ("serviceWorker" in navigator) {

@@ -1,9 +1,5 @@
 (function () {
   function organize() {
-    var host = document.getElementById("quick-launch-settings-host");
-    var quickSettings = document.querySelector(".quick-launch-settings");
-    if (host && quickSettings && quickSettings.parentNode !== host) host.appendChild(quickSettings);
-
     var dataHost = document.getElementById("settings-data-host");
     if (!dataHost || document.getElementById("settings-data-tools")) return;
     var card = document.createElement("div");
