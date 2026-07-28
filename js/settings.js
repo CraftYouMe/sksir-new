@@ -6,13 +6,15 @@
     var version = document.getElementById("app-version");
     card.id = "settings-data-tools";
     card.className = "from_row settings-data-tools";
-    card.innerHTML = '<div class="from_row_content"><div class="performance-setting-title">本机数据</div>' +
-      '<div class="settings-data-summary">当前版本 ' + (version ? version.textContent : "") + '</div>' +
-      '<div class="settings-data-actions"><button type="button" id="settings-data-export">导出数据</button>' +
-      '<button type="button" id="settings-data-import">导入数据</button>' +
+    card.innerHTML = '<div class="from_row_content">' +
+      '<div class="settings-data-summary">数据只在当前浏览器，支持导入和导出。</div>' +
+      '<div class="settings-data-actions"><button type="button" id="settings-data-export" class="secondary">导出数据</button>' +
+      '<button type="button" id="settings-data-import" class="secondary">导入数据</button>' +
       '<input type="file" id="settings-data-import-file" accept="application/json,.json" hidden>' +
       '<button type="button" id="settings-data-reset">重置本机数据</button></div></div>';
     dataHost.appendChild(card);
+    var aboutVersion = document.getElementById("settings-about-version");
+    if (aboutVersion) aboutVersion.textContent = version ? version.textContent : "";
   }
 
   var settingsGroups = {
@@ -34,12 +36,132 @@
         { page: "quick-launch", label: "快捷入口" }
       ]
     },
-    data: {
+    about: {
       tabs: [
-        { page: "data", label: "数据管理" }
+        { page: "about", label: "关于本站" },
+        { page: "changelog", label: "更新日志" }
       ]
     }
   };
+
+  var changelogLoadPromise = null;
+  var changelogTagLabels = {
+    fix: "修复",
+    new: "新增",
+    improve: "改进",
+    optimize: "优化"
+  };
+
+  function createTextElement(tagName, className, text) {
+    var element = document.createElement(tagName);
+    if (className) element.className = className;
+    element.textContent = text;
+    return element;
+  }
+
+  function renderChangelog() {
+    var host = document.getElementById("settings-changelog");
+    var data = window.SKSIR_CHANGELOG;
+    if (!host || !data || !Array.isArray(data.entries)) return;
+
+    var grouped = {};
+    data.entries.forEach(function (entry) {
+      if (!entry || !entry.date) return;
+      if (!grouped[entry.date]) grouped[entry.date] = [];
+      grouped[entry.date].push(entry);
+    });
+
+    var timeline = document.createDocumentFragment();
+    Object.keys(grouped).forEach(function (date, dateIndex) {
+      var group = document.createElement("section");
+      group.className = "changelog-day";
+      var dateHead = document.createElement("header");
+      dateHead.className = "changelog-date";
+      var dateValue = new Date(date + "T00:00:00");
+      var formatted = Number.isNaN(dateValue.getTime())
+        ? date
+        : new Intl.DateTimeFormat("zh-CN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          weekday: "short"
+        }).format(dateValue);
+      dateHead.appendChild(createTextElement("time", "", formatted));
+      dateHead.appendChild(createTextElement("span", "", grouped[date].length + " 项更新"));
+      group.appendChild(dateHead);
+
+      grouped[date].forEach(function (entry) {
+        var item = document.createElement("article");
+        item.className = "changelog-entry";
+        var marker = document.createElement("span");
+        marker.className = "changelog-marker";
+        marker.setAttribute("aria-hidden", "true");
+        item.appendChild(marker);
+
+        var card = document.createElement("div");
+        card.className = "changelog-card";
+        var heading = document.createElement("div");
+        heading.className = "changelog-entry-head";
+        heading.appendChild(createTextElement("h4", "", entry.summary || "使用体验更新"));
+        var tags = document.createElement("div");
+        tags.className = "changelog-tags";
+        (entry.tags || ["improve"]).forEach(function (tag) {
+          if (!changelogTagLabels[tag]) return;
+          tags.appendChild(createTextElement("span", "changelog-tag is-" + tag, changelogTagLabels[tag]));
+        });
+        heading.appendChild(tags);
+        card.appendChild(heading);
+
+        if (Array.isArray(entry.details) && entry.details.length) {
+          var detailList = document.createElement("ul");
+          entry.details.forEach(function (detail) {
+            detailList.appendChild(createTextElement("li", "", detail));
+          });
+          card.appendChild(detailList);
+        }
+        card.appendChild(createTextElement("span", "changelog-commit", entry.hash || ""));
+        item.appendChild(card);
+        group.appendChild(item);
+      });
+      if (dateIndex === 0) group.classList.add("is-latest");
+      timeline.appendChild(group);
+    });
+    host.replaceChildren(timeline);
+  }
+
+  function showChangelogError() {
+    var host = document.getElementById("settings-changelog");
+    if (!host) return;
+    var error = createTextElement("div", "changelog-error", "更新日志暂时无法加载，请稍后再试。");
+    host.replaceChildren(error);
+  }
+
+  function loadChangelog() {
+    if (window.SKSIR_CHANGELOG) {
+      renderChangelog();
+      return Promise.resolve();
+    }
+    if (changelogLoadPromise) return changelogLoadPromise;
+    changelogLoadPromise = new Promise(function (resolve, reject) {
+      var script = document.createElement("script");
+      script.src = "./data/changelog.js";
+      script.async = true;
+      script.onload = function () {
+        if (!window.SKSIR_CHANGELOG) {
+          reject(new Error("Changelog data is unavailable"));
+          return;
+        }
+        renderChangelog();
+        resolve();
+      };
+      script.onerror = reject;
+      document.head.appendChild(script);
+    }).catch(function () {
+      changelogLoadPromise = null;
+      showChangelogError();
+    });
+    return changelogLoadPromise;
+  }
 
   function showSettingsPage(page) {
     document.querySelectorAll("[data-settings-panel]").forEach(function (panel) {
@@ -49,6 +171,7 @@
     });
     var content = document.querySelector(".set .productss");
     if (content) content.scrollTop = 0;
+    if (page === "changelog") loadChangelog();
   }
 
   function renderSettingsTabs(config) {

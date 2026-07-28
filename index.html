@@ -369,8 +369,8 @@
                         <div class="bookmark-head-actions">
                             <label class="bookmark-search">
                                 <i class="iconfont icon-sousuo" aria-hidden="true"></i>
-                                <input id="bookmark-search-input" type="search" placeholder="搜索收藏"
-                                    autocomplete="off" aria-label="搜索当前收藏分类">
+                                <input id="bookmark-search-input" type="search" placeholder="搜索全部收藏"
+                                    autocomplete="off" aria-label="搜索全部收藏">
                             </label>
                             <button type="button" id="menu" class="bookmark-settings" title="点击或按 , 打开设置"
                                 aria-label="打开设置" style="display: none;">
@@ -393,7 +393,7 @@
                     <header class="settings-head">
                         <div>
                             <h2 id="settings-title">设置</h2>
-                            <p>管理搜索、页面和本机设置</p>
+                            <p>管理搜索、页面、本机数据与更新记录</p>
                         </div>
                         <button type="button" class="settings-close secondary" aria-label="关闭设置" onclick="closeSet()">&times;</button>
                     </header>
@@ -403,7 +403,14 @@
                             <button type="button" class="settings-primary-item is-active" data-settings-group="search"><i class="iconfont icon-sousuo"></i><span>搜索</span></button>
                             <button type="button" class="settings-primary-item" data-settings-group="appearance"><i class="iconfont icon-wangluo"></i><span>外观</span></button>
                             <button type="button" class="settings-primary-item" data-settings-group="navigation"><i class="iconfont icon-home"></i><span>导航</span></button>
-                            <button type="button" class="settings-primary-item" data-settings-group="data"><i class="iconfont icon-shezhi"></i><span>数据</span></button>
+                            <button type="button" class="settings-primary-item" data-settings-group="about">
+                                <svg class="settings-primary-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="8.5"></circle>
+                                    <path d="M12 10.8v5.4"></path>
+                                    <path d="M12 7.4h.01"></path>
+                                </svg>
+                                <span>关于</span>
+                            </button>
                         </div>
                     </nav>
                     <div class="contents productss">
@@ -670,14 +677,77 @@
                             </div>
                             <p class="quick-launch-page-note">设置仅保存在当前设备；新增快捷入口请使用首页末尾的“+”按钮。</p>
                         </div>
-                        <div class="mainConts settings-data-panel" data-settings-panel="data">
-                            <div class="settings-panel-head">
-                                <h3>导入导出</h3>
-                                <p>导出本机配置，或重置保存在当前设备上的数据。</p>
+                        <div class="mainConts settings-data-panel settings-about-panel" data-settings-panel="about">
+                            <section class="settings-about-hero" aria-labelledby="settings-about-name">
+                                <div class="settings-about-orbit" aria-hidden="true"></div>
+                                <div class="settings-about-identity">
+                                    <div class="settings-about-mark" aria-hidden="true">
+                                        <span>Sk</span>
+                                        <i></i>
+                                    </div>
+                                    <div class="settings-about-copy">
+                                        <span class="settings-about-kicker">PERSONAL START PAGE</span>
+                                        <h3 id="settings-about-name">导航酱</h3>
+                                        <p>每天打开，一个快速好看的开始页面。</p>
+                                    </div>
+                                </div>
+                                <div class="settings-about-live"><span aria-hidden="true"></span>正在使用</div>
+                            </section>
+                            <div class="settings-about-layout">
+                                <section class="settings-about-manifesto">
+                                    <span class="settings-about-label">本站想法</span>
+                                    <blockquote>少一点等待，多一点打开。<br>工具放在这里，壁纸也是风景。</blockquote>
+                                    <div class="settings-about-tags" aria-label="站点信息">
+                                        <span>快速</span>
+                                        <span>好看</span>
+                                        <span>沉浸</span>
+                                    </div>
+                                </section>
+                                <div class="settings-about-stats" aria-label="站点信息">
+                                    <div class="settings-about-stat">
+                                        <strong>0</strong>
+                                        <span>FRAMEWORK</span>
+                                    </div>
+                                    <div class="settings-about-stat">
+                                        <strong>≈ 0.5s</strong>
+                                        <span>FIRST PAINT</span>
+                                    </div>
+                                    <div class="settings-about-stat">
+                                        <strong>VANILLA</strong>
+                                        <span>HTML · CSS · JS</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="settings-section">
+                            <div class="settings-about-meta">
+                                <span>当前版本 <strong id="settings-about-version"></strong></span>
+                                <span>桌面和移动端</span>
+                            </div>
+                            <div class="settings-section settings-data-section">
                                 <h4>本机数据</h4>
+                                <p class="settings-inline-note">导出当前设备的配置，或导入之前保存的数据。</p>
                                 <div id="settings-data-host"></div>
+                            </div>
+                        </div>
+                        <div class="mainConts settings-changelog-panel" data-settings-panel="changelog">
+                            <div class="settings-panel-head changelog-panel-head">
+                                <div>
+                                    <h3>更新日志</h3>
+                                    <p>根据 Git 提交内容与描述自动整理，按时间记录每一次变化。</p>
+                                </div>
+                                <div class="changelog-legend" aria-label="更新类型">
+                                    <span class="changelog-tag is-fix">修复</span>
+                                    <span class="changelog-tag is-new">新增</span>
+                                    <span class="changelog-tag is-improve">改进</span>
+                                    <span class="changelog-tag is-optimize">优化</span>
+                                </div>
+                            </div>
+                            <div id="settings-changelog" class="changelog-timeline" aria-live="polite">
+                                <div class="changelog-loading" role="status">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    <p>正在整理更新记录…</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -718,7 +788,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.28.41">v2026.07.28.41</span>
+                <span id="app-version" class="app-version" data-version="2026.07.29.3">v2026.07.29.3</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>

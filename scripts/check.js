@@ -46,6 +46,18 @@ const checks = [
     args: ["--check", projectPath("scripts", "update-version.js")]
   },
   {
+    name: "Syntax check generate-changelog.js",
+    args: ["--check", projectPath("scripts", "generate-changelog.js")]
+  },
+  {
+    name: "Validate generated changelog",
+    args: [projectPath("scripts", "generate-changelog.js"), "--check"]
+  },
+  {
+    name: "Syntax check changelog data",
+    args: ["--check", projectPath("data", "changelog.js")]
+  },
+  {
     name: "Syntax check validate-sites.js",
     args: ["--check", projectPath("scripts", "validate-sites.js")]
   },

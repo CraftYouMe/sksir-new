@@ -281,6 +281,52 @@ node scripts\update-version.js YYYY.MM.DD.N
 
 ---
 
+# 更新日志维护
+
+用户入口：
+
+```
+设置 → 关于 → 更新日志
+```
+
+更新日志来源：
+
+- `scripts/generate-changelog.js` 读取已经提交的 Git 历史。
+- `data/changelog.js` 是生成结果，不得手工维护。
+- 页面只在打开“更新日志”分栏时加载数据，不得加入首屏脚本链。
+
+功能提交完成后、发布前运行：
+
+```powershell
+node scripts\generate-changelog.js
+```
+
+生成规则必须保持：
+
+- 不直接展示 Commit Message 或原始英文正文。
+- 从主题和正文中提取具体功能、动作与用户影响。
+- 自动识别“修复”“新增”“改进”“优化”四类标签。
+- 过滤版本号、文档、测试、文件名和内部构建噪声。
+- 信息不足的提交不展示，不使用“改进整体体验”一类通用模板补写。
+- 同一天内容完全相同的记录合并。
+
+提交信息必须尽量写清：
+
+- 修改对象；
+- 具体动作；
+- 对用户的结果。
+
+避免只写：
+
+- update
+- fix
+- 优化功能
+- 更新代码
+
+修改生成规则后必须抽查近期和早期记录，确认内容有实际差异，再运行统一检查。
+
+---
+
 # 关键文件
 
 - index.html
@@ -299,9 +345,17 @@ node scripts\update-version.js YYYY.MM.DD.N
 
 Cookies、搜索、搜索建议、壁纸、设置。
 
+- js/settings.js
+
+设置中心分组、“关于”页面、更新日志延迟加载与渲染。
+
 - data/sites.js
 
 收藏与分类唯一数据源。
+
+- data/changelog.js
+
+从 Git 历史生成的更新日志运行时数据，不手工编辑。
 
 - js/nav-render.js
 
@@ -318,6 +372,10 @@ Cookies、搜索、搜索建议、壁纸、设置。
 - scripts/check.js
 
 统一检查入口。
+
+- scripts/generate-changelog.js
+
+提取 Git 提交事实、转换用户可读说明、分类并生成更新日志。
 
 ---
 
@@ -344,6 +402,7 @@ Cookies、搜索、搜索建议、壁纸、设置。
 - 访客信息
 - 状态检测
 - 更新检查
+- 更新日志数据
 
 ---
 
