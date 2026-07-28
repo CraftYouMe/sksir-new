@@ -184,6 +184,7 @@ var recentNavLimit = 6;
 var quickLaunchData = window.SksirQuickLaunchData;
 var quickLaunchEnabledKey = quickLaunchData.enabledKey;
 var quickLaunchOrderKey = quickLaunchData.orderKey;
+var quickLaunchSortModeKey = quickLaunchData.sortModeKey;
 var quickLaunchCustomKey = quickLaunchData.customKey;
 var quickLaunchDesktopLimitKey = quickLaunchData.desktopLimitKey;
 var quickLaunchMobileLimitKey = quickLaunchData.mobileLimitKey;
@@ -192,6 +193,7 @@ var quickLaunchCustomLimit = quickLaunchData.customLimit;
 var readQuickLaunchStorage = quickLaunchData.read;
 var writeQuickLaunchStorage = quickLaunchData.write;
 var isQuickLaunchEnabled = quickLaunchData.isEnabled;
+var getQuickLaunchSortMode = quickLaunchData.getSortMode;
 var normalizeQuickLaunchWebUrl = quickLaunchData.normalizeWebUrl;
 var clampQuickLaunchLimit = quickLaunchData.clampLimit;
 var getQuickLaunchLimit = quickLaunchData.getLimit;
@@ -202,8 +204,7 @@ var sortQuickLaunchItems = quickLaunchData.sortItems;
 var recordQuickLaunchClick = quickLaunchData.recordClick;
 
 function refreshQuickLaunchAutoOrder() {
-    var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
-    if (!Array.isArray(manualOrder) || !manualOrder.length) {
+    if (getQuickLaunchSortMode() === "auto") {
         setTimeout(renderQuickLaunch, 0);
     }
 }
@@ -218,6 +219,7 @@ function initQuickLaunch() {
     $("#quick-launch-enabled").prop("checked", isQuickLaunchEnabled());
     $("#quick-launch-desktop-limit").val(String(clampQuickLaunchLimit(readQuickLaunchStorage(quickLaunchDesktopLimitKey, 8), 8, 12)));
     $("#quick-launch-mobile-limit").val(String(clampQuickLaunchLimit(readQuickLaunchStorage(quickLaunchMobileLimitKey, 6), 6, 8)));
+    $("input[name='quick-launch-sort-mode'][value='" + getQuickLaunchSortMode() + "']").prop("checked", true);
     renderQuickLaunchCustomList();
     renderQuickLaunchLibraryTabs();
     if (!isQuickLaunchEnabled()) return renderQuickLaunch();
@@ -313,20 +315,22 @@ function saveQuickLaunchCustomItem(entry) {
     writeQuickLaunchStorage(quickLaunchCustomKey, items.map(function (item) {
         return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
     }));
-    var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
-    if (Array.isArray(manualOrder) && manualOrder.length) {
-        manualOrder = manualOrder.filter(function (url) { return url !== entry.url; });
-    } else {
-        manualOrder = sortQuickLaunchItems(getQuickLaunchItems()).filter(function (item) {
-            return item.url !== entry.url;
-        }).map(function (item) {
-            return item.url;
-        });
+    if (getQuickLaunchSortMode() === "manual") {
+        var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
+        if (Array.isArray(manualOrder) && manualOrder.length) {
+            manualOrder = manualOrder.filter(function (url) { return url !== entry.url; });
+        } else {
+            manualOrder = sortQuickLaunchItems(getQuickLaunchItems()).filter(function (item) {
+                return item.url !== entry.url;
+            }).map(function (item) {
+                return item.url;
+            });
+        }
+        var visibleLimit = getQuickLaunchLimit();
+        var insertIndex = Math.min(manualOrder.length, Math.max(0, visibleLimit - 1));
+        manualOrder.splice(insertIndex, 0, entry.url);
+        writeQuickLaunchStorage(quickLaunchOrderKey, manualOrder.slice(0, 24));
     }
-    var visibleLimit = getQuickLaunchLimit();
-    var insertIndex = Math.min(manualOrder.length, Math.max(0, visibleLimit - 1));
-    manualOrder.splice(insertIndex, 0, entry.url);
-    writeQuickLaunchStorage(quickLaunchOrderKey, manualOrder.slice(0, 24));
     writeQuickLaunchStorage(quickLaunchEnabledKey, true);
     $("#quick-launch-enabled").prop("checked", true);
     renderQuickLaunchCustomList();
@@ -353,6 +357,7 @@ window.SksirQuickLaunch = {
     storageKeys: quickLaunchStorageKeys.slice(),
     enabledKey: quickLaunchEnabledKey,
     orderKey: quickLaunchOrderKey,
+    sortModeKey: quickLaunchSortModeKey,
     customKey: quickLaunchCustomKey,
     desktopLimitKey: quickLaunchDesktopLimitKey,
     mobileLimitKey: quickLaunchMobileLimitKey,
@@ -363,6 +368,7 @@ window.SksirQuickLaunch = {
     clampLimit: clampQuickLaunchLimit,
     getCustomItems: getQuickLaunchCustomItems,
     isEnabled: isQuickLaunchEnabled,
+    getSortMode: getQuickLaunchSortMode,
     getLimit: getQuickLaunchLimit,
     getItems: getQuickLaunchItems,
     sortItems: sortQuickLaunchItems,
@@ -461,7 +467,9 @@ function getSelectedBgPicture(bg_img) {
 function resolveBgImgSrc(bg_img) {
     switch (bg_img["type"]) {
         case "2":
-            return 'https://api.dujin.org/bing/1920.php';
+            return bg_img["path"] && bg_img_pictures.indexOf(bg_img["path"]) === -1
+                ? bg_img["path"]
+                : 'https://api.dujin.org/bing/1920.php';
         case "5":
             return bg_img["path"] || "";
         case "1":

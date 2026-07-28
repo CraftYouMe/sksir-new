@@ -4,11 +4,13 @@
     var enabledKey = "sksir-quick-launch-enabled";
     var clicksKey = "sksir-quick-launch-clicks";
     var orderKey = "sksir-quick-launch-order";
+    var sortModeKey = "sksir-quick-launch-sort-mode";
     var customKey = "sksir-quick-launch-custom";
     var desktopLimitKey = "sksir-quick-launch-desktop-limit";
     var mobileLimitKey = "sksir-quick-launch-mobile-limit";
-    var storageKeys = [enabledKey, clicksKey, orderKey, customKey, desktopLimitKey, mobileLimitKey];
+    var storageKeys = [enabledKey, clicksKey, orderKey, sortModeKey, customKey, desktopLimitKey, mobileLimitKey];
     var customLimit = 24;
+    var defaultHosts = ["bilibili.com", "deepseek.com", "github.com", "iloveimg.com"];
 
     function read(key, fallback) {
         return window.SksirStorage ? window.SksirStorage.readJson(key, fallback) : fallback;
@@ -20,6 +22,10 @@
 
     function isEnabled() {
         return read(enabledKey, true) !== false;
+    }
+
+    function getSortMode() {
+        return read(sortModeKey, "auto") === "manual" ? "manual" : "auto";
     }
 
     function normalizeUrl(url) {
@@ -141,18 +147,27 @@
         var clicks = read(clicksKey, {});
         var manualOrder = read(orderKey, []);
         var orderMap = {};
-        if (Array.isArray(manualOrder) && manualOrder.length) {
+        if (getSortMode() === "manual" && Array.isArray(manualOrder) && manualOrder.length) {
             manualOrder.forEach(function (url, index) {
                 orderMap[url] = index;
             });
         }
         return items.sort(function (left, right) {
-            if (manualOrder.length) {
+            if (getSortMode() === "manual" && manualOrder.length) {
                 var leftOrder = Object.prototype.hasOwnProperty.call(orderMap, left.url) ? orderMap[left.url] : 9999;
                 var rightOrder = Object.prototype.hasOwnProperty.call(orderMap, right.url) ? orderMap[right.url] : 9999;
                 if (leftOrder !== rightOrder) return leftOrder - rightOrder;
             }
             var countDiff = (clicks[right.url] || 0) - (clicks[left.url] || 0);
+            if (!countDiff && getSortMode() === "auto") {
+                var leftHost = new URL(left.url).hostname.replace(/^www\./, "").toLowerCase();
+                var rightHost = new URL(right.url).hostname.replace(/^www\./, "").toLowerCase();
+                var leftDefault = defaultHosts.indexOf(leftHost);
+                var rightDefault = defaultHosts.indexOf(rightHost);
+                leftDefault = leftDefault === -1 ? 9999 : leftDefault;
+                rightDefault = rightDefault === -1 ? 9999 : rightDefault;
+                if (leftDefault !== rightDefault) return leftDefault - rightDefault;
+            }
             if (!countDiff && left.custom !== right.custom) return left.custom ? -1 : 1;
             return countDiff || left.sourceIndex - right.sourceIndex;
         });
@@ -170,6 +185,7 @@
         storageKeys: storageKeys.slice(),
         enabledKey: enabledKey,
         orderKey: orderKey,
+        sortModeKey: sortModeKey,
         customKey: customKey,
         desktopLimitKey: desktopLimitKey,
         mobileLimitKey: mobileLimitKey,
@@ -180,6 +196,7 @@
         clampLimit: clampLimit,
         getCustomItems: getCustomItems,
         isEnabled: isEnabled,
+        getSortMode: getSortMode,
         getLimit: getLimit,
         getItems: getItems,
         sortItems: sortItems,

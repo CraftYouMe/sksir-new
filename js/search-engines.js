@@ -3,6 +3,8 @@
   // Keep the UI subset's template-literal marker: `
 
   var cookieOptions = { expires: 36500 };
+  var orderStorageKey = "sksir-search-engine-order";
+  var hiddenStorageKey = "sksir-search-engine-hidden";
   // 默认搜索引擎列表
   var preset = {
     "1": { id: 1, title: "百度", url: "https://www.baidu.com/s", name: "wd", icon: "iconfont icon-baidu" },
@@ -36,7 +38,7 @@
   function sanitizeList(engines) {
     var safe = {};
     if (!engines || typeof engines !== "object") return safe;
-    Object.keys(engines).forEach(function (key) {
+    Object.keys(engines).forEach(function (key, index) {
       var engine = engines[key];
       var url = engine && normalizeHttpUrl(engine.url);
       if (!url) return;
@@ -103,13 +105,48 @@
     return icon;
   }
 
+  function readStoredKeys(storageKey) {
+    try {
+      var value = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      return Array.isArray(value) ? value.map(String) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function orderedKeys(engines) {
+    var keys = Object.keys(engines);
+    var stored = readStoredKeys(orderStorageKey);
+    return stored.filter(function (key) { return keys.indexOf(key) !== -1; })
+      .concat(keys.filter(function (key) { return stored.indexOf(key) === -1; }));
+  }
+
+  function writeOrder(keys) {
+    localStorage.setItem(orderStorageKey, JSON.stringify(keys));
+  }
+
+  function isHidden(key) {
+    return readStoredKeys(hiddenStorageKey).indexOf(String(key)) !== -1;
+  }
+
+  function toggleHidden(key) {
+    var hidden = readStoredKeys(hiddenStorageKey);
+    var index = hidden.indexOf(String(key));
+    if (index === -1) hidden.push(String(key));
+    else hidden.splice(index, 1);
+    localStorage.setItem(hiddenStorageKey, JSON.stringify(hidden));
+    renderSettings();
+    renderPicker();
+  }
+
   // 搜索引擎列表加载
   function renderPicker() {
     var container = document.querySelector(".search-engine-list");
     if (!container) return;
     var fragment = document.createDocumentFragment();
     var engines = getList();
-    Object.keys(engines).forEach(function (key) {
+    orderedKeys(engines).forEach(function (key) {
+      if (isHidden(key)) return;
       var engine = engines[key];
       var item = document.createElement("div");
       var label = document.createElement("a");
@@ -128,12 +165,18 @@
     container.replaceChildren(fragment);
   }
 
-  function createActionButton(className, value, iconName) {
+  function createActionButton(className, value, iconName, label) {
     var button = document.createElement("button");
     button.type = "button";
     button.className = className;
     button.value = value;
+    button.title = label;
+    button.setAttribute("aria-label", label);
     button.appendChild(createIcon("iconfont " + iconName));
+    var text = document.createElement("span");
+    text.className = "se-action-text";
+    text.textContent = label;
+    button.appendChild(text);
     return button;
   }
 
@@ -141,32 +184,124 @@
   function renderSettings() {
     var container = document.querySelector(".se_list_table");
     if (!container) return;
+    var list = container.closest(".se_list");
+    var savedScrollTop = list ? list.scrollTop : 0;
     var fragment = document.createDocumentFragment();
     var engines = getList();
     var selected = getValidDefault(engines);
-    Object.keys(engines).forEach(function (key) {
+    orderedKeys(engines).forEach(function (key) {
       var row = document.createElement("div");
-      var number = document.createElement("div");
-      var name = document.createElement("div");
-      var actions = document.createElement("div");
-      row.className = "se_list_div";
-      number.className = "se_list_num";
-      if (key === selected) number.appendChild(createIcon("iconfont icon-home"));
-      else number.textContent = key;
-      name.className = "se_list_name";
+      var icon = createIcon(engines[key].icon);
+      var details = document.createElement("div");
+      var name = document.createElement("strong");
+      var domain = document.createElement("span");
+      row.className = "se_list_div se-engine-card";
+      row.setAttribute("data-engine-key", key);
+      row.setAttribute("title", "点击设为默认，右键管理");
+      row.draggable = true;
+      row.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (suppressCardClick) return;
+        setDefaultEngine(key);
+      });
+      icon.classList.add("se-engine-card-icon");
+      details.className = "se-engine-card-details";
       name.textContent = engines[key].title;
-      actions.className = "se_list_button";
-      var defaultButton = createActionButton("set_se_default", key, "icon-home");
-      var deleteButton = createActionButton("delete_se", key, "icon-delete");
-      defaultButton.style.borderRadius = "8px 0 0 8px";
-      deleteButton.style.borderRadius = "0 8px 8px 0";
-      actions.appendChild(defaultButton);
-      actions.appendChild(createActionButton("edit_se", key, "icon-xiugai"));
-      actions.appendChild(deleteButton);
-      row.append(number, name, actions);
+      try {
+        domain.textContent = new URL(engines[key].url).hostname.replace(/^www\./, "");
+      } catch (error) {
+        domain.textContent = "";
+      }
+      if (key === selected) {
+        row.classList.add("is-default");
+        var defaultBadge = document.createElement("span");
+        defaultBadge.className = "se-default-badge";
+        defaultBadge.textContent = "默认";
+        row.appendChild(defaultBadge);
+      }
+      if (isHidden(key)) {
+        var hiddenBadge = document.createElement("span");
+        hiddenBadge.className = "se-hidden-badge";
+        hiddenBadge.textContent = "已隐藏";
+        row.appendChild(hiddenBadge);
+      }
+      details.append(name, domain);
+      row.append(icon, details);
       fragment.appendChild(row);
     });
+    var addCard = document.createElement("button");
+    addCard.type = "button";
+    addCard.className = "se-engine-card se-engine-add-card set_se_list_add";
+    addCard.innerHTML = '<span aria-hidden="true">+</span><strong>自定义搜索引擎</strong><small>添加新的搜索服务</small>';
+    fragment.appendChild(addCard);
     container.replaceChildren(fragment);
+    if (list) list.scrollTop = savedScrollTop;
+  }
+
+  function contextMenu() {
+    var menu = document.getElementById("se-engine-context-menu");
+    if (menu) return menu;
+    menu = document.createElement("div");
+    menu.id = "se-engine-context-menu";
+    menu.className = "se-engine-context-menu";
+    menu.hidden = true;
+    document.body.appendChild(menu);
+    return menu;
+  }
+
+  if (document.addEventListener) {
+  document.addEventListener("contextmenu", function (event) {
+    var card = event.target.closest(".se-engine-card[data-engine-key]");
+    if (!card) return;
+    event.preventDefault();
+    var key = card.getAttribute("data-engine-key");
+    var menu = contextMenu();
+    menu.innerHTML =
+      '<button type="button" class="edit_se" value="' + key + '">编辑</button>' +
+      '<button type="button" class="toggle_se_hidden" value="' + key + '">' + (isHidden(key) ? "取消隐藏" : "隐藏") + '</button>' +
+      '<button type="button" class="delete_se danger" value="' + key + '">删除</button>';
+    menu.style.left = Math.min(event.clientX, window.innerWidth - 170) + "px";
+    menu.style.top = Math.min(event.clientY, window.innerHeight - 180) + "px";
+    menu.hidden = false;
+  });
+
+  var suppressCardClick = false;
+  document.addEventListener("click", function (event) {
+    var hideButton = event.target.closest(".toggle_se_hidden");
+    if (hideButton) toggleHidden(hideButton.value);
+    var menu = document.getElementById("se-engine-context-menu");
+    if (menu) menu.hidden = true;
+  });
+
+  var draggedEngineKey = "";
+  document.addEventListener("dragstart", function (event) {
+    var card = event.target.closest(".se-engine-card[data-engine-key]");
+    if (!card) return;
+    draggedEngineKey = card.getAttribute("data-engine-key");
+    suppressCardClick = true;
+    card.classList.add("is-dragging");
+  });
+  document.addEventListener("dragend", function (event) {
+    var card = event.target.closest(".se-engine-card");
+    if (card) card.classList.remove("is-dragging");
+    draggedEngineKey = "";
+    setTimeout(function () { suppressCardClick = false; }, 0);
+  });
+  document.addEventListener("dragover", function (event) {
+    if (draggedEngineKey && event.target.closest(".se-engine-card[data-engine-key]")) event.preventDefault();
+  });
+  document.addEventListener("drop", function (event) {
+    var target = event.target.closest(".se-engine-card[data-engine-key]");
+    if (!target || !draggedEngineKey) return;
+    event.preventDefault();
+    var keys = orderedKeys(getList()).filter(function (key) { return key !== draggedEngineKey; });
+    var targetIndex = keys.indexOf(target.getAttribute("data-engine-key"));
+    keys.splice(Math.max(0, targetIndex), 0, draggedEngineKey);
+    writeOrder(keys);
+    renderSettings();
+    renderPicker();
+  });
   }
 
   function setDefaultEngine(value) {

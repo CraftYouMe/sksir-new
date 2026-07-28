@@ -1,6 +1,7 @@
 (function () {
     var resizeFrame = 0;
     var suppressClickUntil = 0;
+    var pendingAddedUrl = "";
 
     function api() {
         return window.SksirQuickLaunch;
@@ -204,6 +205,18 @@
                 this.onerror = null;
                 this.src = "./img/icon/fangdiu.png";
             };
+            if (entry.url === pendingAddedUrl) {
+                var slowTimer = setTimeout(function () {
+                    var currentService = api();
+                    if (currentService) currentService.showMessage("图标加载较慢，正在继续加载");
+                }, 1600);
+                var finishPendingIcon = function () {
+                    clearTimeout(slowTimer);
+                    if (pendingAddedUrl === entry.url) pendingAddedUrl = "";
+                };
+                icon.addEventListener("load", finishPendingIcon, { once: true });
+                icon.addEventListener("error", finishPendingIcon, { once: true });
+            }
             link.appendChild(icon);
             link.addEventListener("click", function (event) {
                 event.stopPropagation();
@@ -215,7 +228,7 @@
                 recordRecentNavItem(entry);
                 service.refreshAutoOrder();
             });
-            bindDrag(link, service);
+            if (service.getSortMode() === "manual") bindDrag(link, service);
             panel.appendChild(link);
         });
         var addButton = document.createElement("button");
@@ -253,12 +266,16 @@
         if (!name) return service.showMessage("请填写入口名称", true);
         if (!url) return service.showMessage("请输入正确的网址", true);
         if (rawIcon && !icon) return service.showMessage("请输入正确的图标网址", true);
+        pendingAddedUrl = url;
         var result = service.saveCustomItem({
             name: name,
             url: url,
             icon: icon || new URL("/favicon.ico", url).href
         });
-        if (result.full) return service.showMessage("只能添加 " + service.customLimit + " 个自定义入口", true);
+        if (result.full) {
+            pendingAddedUrl = "";
+            return service.showMessage("只能添加 " + service.customLimit + " 个自定义入口", true);
+        }
         if (form) form.reset();
         service.showMessage(result.updated ? "已更新快捷入口" : "已添加到首页");
         return true;
@@ -276,13 +293,17 @@
             : null;
         var url = item && service.normalizeWebUrl(item.url);
         if (!item || !url) return service.showMessage("请选择收藏网站", true);
+        pendingAddedUrl = url;
         var result = service.saveCustomItem({
             name: String(item.name || item.url).trim().slice(0, 30),
             url: url,
             icon: service.normalizeWebUrl(item.icon) || new URL("/favicon.ico", url).href,
             desc: String(item.desc || "").slice(0, 80)
         });
-        if (result.full) return service.showMessage("只能添加 " + service.customLimit + " 个自定义入口", true);
+        if (result.full) {
+            pendingAddedUrl = "";
+            return service.showMessage("只能添加 " + service.customLimit + " 个自定义入口", true);
+        }
         service.showMessage(result.updated ? "已更新快捷入口" : "已添加到快捷入口");
     }
 
@@ -327,16 +348,6 @@
             }
         }
 
-        if (event.target.closest("#quick-launch-auto")) {
-            if (window.SksirStorage) window.SksirStorage.remove(service.orderKey);
-            service.init();
-            iziToast.show({
-                timeout: 1600,
-                class: "setting-toast",
-                title: "快捷入口",
-                message: "已恢复按点击次数自动调整"
-            });
-        }
         if (event.target.closest("#quick-launch-library-add")) addLibraryItem(service);
         if (event.target.closest(".quick-launch-add")) {
             event.preventDefault();
@@ -361,6 +372,16 @@
             var value = service.clampLimit(event.target.value, mobile ? 6 : 8, mobile ? 8 : 12);
             service.write(mobile ? service.mobileLimitKey : service.desktopLimitKey, value);
             service.render();
+        }
+        if (event.target.matches("input[name='quick-launch-sort-mode']")) {
+            service.write(service.sortModeKey, event.target.value === "manual" ? "manual" : "auto");
+            if (event.target.value === "manual") {
+                service.write(service.orderKey, service.sortItems(service.getItems()).map(function (item) {
+                    return item.url;
+                }).slice(0, 24));
+            }
+            service.render();
+            service.showMessage(event.target.value === "manual" ? "已切换为手动排序，可拖动首页图标" : "已切换为自动排序");
         }
         if (event.target.matches("#quick-launch-library-tab")) service.renderLibraryItems();
     });
