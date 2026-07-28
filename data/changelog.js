@@ -1,7 +1,19 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-07-28T16:58:51.480Z",
+  "generatedAt": "2026-07-28T17:16:35.923Z",
   "source": "git",
   "entries": [
+    {
+      "hash": "055b10d",
+      "date": "2026-07-29",
+      "summary": "改进页面性能与项目维护的交互与显示细节",
+      "details": [],
+      "tags": [
+        "fix",
+        "new",
+        "improve",
+        "optimize"
+      ]
+    },
     {
       "hash": "727ae3c",
       "date": "2026-07-29",
