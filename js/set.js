@@ -313,6 +313,22 @@ function saveQuickLaunchCustomItem(entry) {
     writeQuickLaunchStorage(quickLaunchCustomKey, items.map(function (item) {
         return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
     }));
+    var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
+    if (Array.isArray(manualOrder) && manualOrder.length) {
+        manualOrder = manualOrder.filter(function (url) { return url !== entry.url; });
+    } else {
+        manualOrder = sortQuickLaunchItems(getQuickLaunchItems()).filter(function (item) {
+            return item.url !== entry.url;
+        }).map(function (item) {
+            return item.url;
+        });
+    }
+    var visibleLimit = getQuickLaunchLimit();
+    var insertIndex = Math.min(manualOrder.length, Math.max(0, visibleLimit - 1));
+    manualOrder.splice(insertIndex, 0, entry.url);
+    writeQuickLaunchStorage(quickLaunchOrderKey, manualOrder.slice(0, 24));
+    writeQuickLaunchStorage(quickLaunchEnabledKey, true);
+    $("#quick-launch-enabled").prop("checked", true);
     renderQuickLaunchCustomList();
     renderQuickLaunch();
     return { updated: !!existing };
