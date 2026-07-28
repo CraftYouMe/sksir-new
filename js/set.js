@@ -1013,7 +1013,7 @@ $(document).ready(function () {
 
     // 菜单点击
     $("#menu").click(function () {
-        if ($(this).attr("class") === "on") {
+        if ($(this).hasClass("on")) {
             closeSet();
         } else {
             openSet();

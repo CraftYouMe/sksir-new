@@ -1564,24 +1564,22 @@ body:not(.onsearch) .all-search:hover {
    ========================================================================== */
 
 #menu {
-    width: 44px;
-    height: 44px;
-    position: absolute;
-    right: calc(14px + env(safe-area-inset-right, 0px));
-    top: calc(14px + env(safe-area-inset-top, 0px));
-    z-index: 2000000;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    position: relative;
+    padding: 0;
+    flex: 0 0 38px;
     cursor: pointer;
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-control);
-    background: var(--glass-surface);
-    box-shadow: var(--glass-highlight), 0 10px 28px rgba(0, 0, 0, 0.16);
-    -webkit-backdrop-filter: blur(12px) saturate(1.08);
-    backdrop-filter: blur(12px) saturate(1.08);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    box-shadow: none;
     transition:
         transform var(--motion-fast) var(--motion-ease),
         background-color var(--motion-fast) ease,
         border-color var(--motion-fast) ease;
-    animation: fade 1s;
 }
 
 #menu:hover {
@@ -1595,13 +1593,21 @@ body:not(.onsearch) .all-search:hover {
     transform: scale(0.90);
 }
 
-#menu i {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    font-size: 1.75rem;
-    transition: 0.3s;
+#menu svg {
+    display: block;
+    width: 19px;
+    height: 19px;
+    margin: auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.25s var(--motion-ease);
+}
+
+#menu:hover svg {
+    transform: rotate(24deg);
 }
 
 #menu:focus-visible,
@@ -3277,11 +3283,6 @@ html.ios-standalone .bg-all {
     background-size: cover;
 }
 
-html.ios-standalone #menu {
-    top: calc(8px + env(safe-area-inset-top, 0px));
-    right: calc(8px + env(safe-area-inset-right, 0px));
-}
-
 /*小于1200px时*/
 @media (max-width: 1200px) {
 
@@ -3604,8 +3605,9 @@ html.ios-standalone #menu {
     }
 
     /*设置按钮*/
-    #menu i {
-        font-size: 1.45rem;
+    #menu svg {
+        width: 20px;
+        height: 20px;
     }
 
     /*书签*/
@@ -3676,7 +3678,6 @@ html.ios-standalone #menu {
 }
 
 @media (max-width: 720px) {
-    body.bookmarks-surface-open #menu,
     body.bookmarks-surface-open #visitor-badge {
         opacity: 0 !important;
         visibility: hidden !important;
@@ -3708,7 +3709,7 @@ html.ios-standalone #menu {
 
     .bookmark-search {
         width: min(220px, calc(100vw - 138px));
-        min-width: 116px;
+        min-width: 92px;
     }
 
     .bookmark-close {
@@ -4350,45 +4351,87 @@ html.ios-standalone #menu {
 
 @media (max-width: 720px) {
     .set {
-        width: calc(100vw - 24px);
-        height: min(82vh, calc(var(--app-height, 100vh) - 24px));
-        max-height: min(82vh, calc(var(--app-height, 100vh) - 24px));
-        min-height: 430px;
+        width: calc(100vw - 16px);
+        height: calc(var(--app-height, 100vh) - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        max-height: none;
+        min-height: 0;
+        margin-top: 0;
         border-radius: 18px;
     }
 
     .settings-head {
-        min-height: 72px;
-        padding: 14px 14px 12px 18px;
+        min-height: 64px;
+        padding: 10px 10px 9px 16px;
     }
 
     .settings-head h2 {
         font-size: 1.18rem;
     }
 
+    .settings-head p {
+        display: none;
+    }
+
+    .settings-close {
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+    }
+
     .settings-shell {
-        grid-template-columns: 92px minmax(0, 1fr);
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
     }
 
     .set .tabs {
-        padding: 12px 7px;
-        overflow: hidden auto;
+        width: 100%;
+        min-height: 58px;
+        padding: 7px 8px;
+        flex: 0 0 auto;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        box-sizing: border-box;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .set .tabs::-webkit-scrollbar {
+        display: none;
     }
 
     .set .tabs .tab-items {
-        min-width: 0;
-        height: 54px;
-        padding: 7px 4px;
-        flex-basis: 54px;
-        flex-direction: column;
+        min-width: 78px;
+        width: auto;
+        height: 42px;
+        padding: 0 10px;
+        flex: 1 0 78px;
+        flex-direction: row;
         justify-content: center;
-        gap: 3px;
-        font-size: 0.72rem;
+        gap: 6px;
+        font-size: 0.76rem;
         text-align: center;
+        white-space: nowrap;
+    }
+
+    .set .tabs .tab-items.actives {
+        box-shadow: inset 0 -3px 0 rgba(155, 231, 215, 0.92);
+    }
+
+    .set .productss {
+        flex: 1 1 auto;
+        min-height: 0;
+        overscroll-behavior: contain;
     }
 
     .set .productss .mainConts {
-        padding: 20px 14px 28px;
+        padding: 18px 12px calc(22px + env(safe-area-inset-bottom, 0px));
+        -webkit-overflow-scrolling: touch;
     }
 
     .settings-panel-head {
@@ -4403,7 +4446,17 @@ html.ios-standalone #menu {
     .set .performance-mode-card,
     .set .quick-launch-settings,
     .set .settings-data-tools {
-        padding: 13px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .set .set_blocks,
+    .set .performance-settings-block {
+        gap: 10px;
+    }
+
+    .set .set_blocks_content {
+        gap: 12px;
     }
 
     .set .se_list {
@@ -4437,5 +4490,54 @@ html.ios-standalone #menu {
         align-items: flex-start;
         flex-direction: column;
         gap: 3px;
+    }
+
+    .set .quick-launch-setting-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .set .quick-launch-auto {
+        width: 100%;
+    }
+
+    .set .quick-launch-count-settings {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch;
+    }
+
+    .set .quick-launch-count-settings label,
+    .set .quick-launch-count-settings select,
+    .set .settings-data-actions button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .set .quick-launch-library-picker,
+    .set .quick-launch-custom-fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .set #quick-launch-library-add,
+    .set .quick-launch-custom-add {
+        width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .set .tabs .tab-items {
+        min-width: 72px;
+        padding: 0 8px;
+        flex-basis: 72px;
+    }
+
+    .set .productss .mainConts {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .set .wallpaper-preview {
+        min-height: 128px;
     }
 }

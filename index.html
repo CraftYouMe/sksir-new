@@ -372,6 +372,13 @@
                                 <input id="bookmark-search-input" type="search" placeholder="搜索收藏"
                                     autocomplete="off" aria-label="搜索当前收藏分类">
                             </label>
+                            <button type="button" id="menu" class="bookmark-settings" title="点击或按 , 打开设置"
+                                aria-label="打开设置" style="display: none;">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M12 15.25a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z"></path>
+                                    <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.86 1.86-.06-.06A1.7 1.7 0 0 0 16 18.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V20h-5.2v-.1A1.7 1.7 0 0 0 8 18.4a1.7 1.7 0 0 0-1.88.34l-.06.06-1.86-1.86.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2.8V11h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06L6.06 5.2l.06.06A1.7 1.7 0 0 0 8 5.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3.8h5.2v.1A1.7 1.7 0 0 0 16 5.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 1.86 1.86-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1V13h-.1a1.7 1.7 0 0 0-1.7 2Z"></path>
+                                </svg>
+                            </button>
                             <button type="button" id="bookmark-close" class="bookmark-close" aria-label="关闭收藏中心">&times;</button>
                         </div>
                     </div>
@@ -381,11 +388,6 @@
                     <div id="bookmark-empty" class="bookmark-empty" hidden>当前分类暂无收藏</div>
                 </div>
 
-                  
-                <!-- 设置图标 -->
-                <div id="menu" title="点击或按 , 打开设置" style="display: none;">
-                    <i id="icon-menu" class="iconfont icon-shezhi"></i>
-                </div>
                 <!-- 设置页 -->
                 <div class="set" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="settings-title">
                     <header class="settings-head">
@@ -705,7 +707,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.28.2">v2026.07.28.2</span>
+                <span id="app-version" class="app-version" data-version="2026.07.28.4">v2026.07.28.4</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>
