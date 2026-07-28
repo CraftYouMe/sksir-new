@@ -6387,10 +6387,17 @@ html.ios-standalone .bg-all {
     }
 }
 
-/* Final wallpaper-center cascade isolation. */
+/* Wallpaper center: one continuous featured, daily and custom library. */
+.set .mainConts[data-settings-panel="background"] {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
 .set .wallpaper-center,
 .set .wallpaper-center .set_blocks_content,
-.set .wallpaper-center-toolbar,
+.set .wallpaper-sections,
+.set .wallpaper-section,
 .set .wallpaper-center .wallpaper-library-grid {
     width: 100%;
     min-width: 0;
@@ -6398,50 +6405,82 @@ html.ios-standalone .bg-all {
 }
 
 .set .wallpaper-center .set_blocks_content {
-    display: flex;
+    display: block;
     height: auto;
     padding: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
     overflow: visible;
     border: 0;
     background: transparent;
     box-shadow: none;
 }
 
-.set .wallpaper-center-toolbar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+.set .wallpaper-sections,
+.set .wallpaper-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.set .wallpaper-sections {
+    gap: 28px;
+}
+
+.set .wallpaper-section {
+    position: static;
+    inset: auto;
+    height: auto;
+    min-height: 0;
+    opacity: 1;
     gap: 12px;
 }
 
-.set .wallpaper-category-tabs {
+.set .wallpaper-section > header {
     display: flex;
-    width: 100%;
-    min-width: 0;
+    min-height: 36px;
     align-items: center;
-    gap: 6px;
-    overflow-x: auto;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-.set .wallpaper-category-tabs button {
-    width: auto;
-    min-width: max-content;
-    height: 38px;
+.set .wallpaper-section h4 {
     margin: 0;
-    padding: 0 14px;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.92rem;
+    font-weight: 650;
+}
+
+.set .wallpaper-section .wallpaper-add {
+    width: auto;
+    min-width: 0;
+    min-height: 34px;
+    margin: 0;
+    padding: 0 13px;
     flex: 0 0 auto;
+    border: 1px solid rgba(155, 231, 215, 0.24);
+    border-radius: 9px;
+    background: rgba(155, 231, 215, 0.08);
+    color: #9be7d7;
+    box-shadow: none;
 }
 
-.set .wallpaper-center-toolbar > .wallpaper-add {
-    position: static;
-    width: auto;
-    min-width: 108px;
-    height: 38px;
-    margin: 0;
-    padding: 0 16px;
+.set .wallpaper-section .wallpaper-add:hover,
+.set .wallpaper-section .wallpaper-add:focus-visible {
+    border-color: rgba(155, 231, 215, 0.46);
+    background: rgba(155, 231, 215, 0.16);
+    color: #c8fff5;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(155, 231, 215, 0.10);
+}
+
+.set .wallpaper-section .wallpaper-add:active {
+    background: rgba(123, 221, 204, 0.24);
+    color: #e4fffa;
+    transform: scale(0.98);
+}
+
+.set .wallpaper-section .wallpaper-add:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .set .wallpaper-center .wallpaper-library-grid {
@@ -6451,344 +6490,528 @@ html.ios-standalone .bg-all {
     gap: 12px;
 }
 
-.set .wallpaper-center .wallpaper-option {
+.set .wallpaper-center .wallpaper-option,
+.set .wallpaper-center .wallpaper-option.is-selected {
     position: relative;
     display: block;
     width: 100%;
     min-width: 0;
     height: auto;
+    min-height: 0;
     margin: 0;
     padding: 0;
     overflow: hidden;
     aspect-ratio: 16 / 9;
     box-sizing: border-box;
-    border: 2px solid transparent;
-    border-radius: 14px;
-}
-
-.set .wallpaper-center .wallpaper-option-select {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    min-height: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-}
-
-.set .wallpaper-center .wallpaper-option-select img {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-}
-
-.set .wallpaper-center .wallpaper-option > .wallpaper-option-name {
-    position: absolute;
-    right: auto;
-    bottom: 9px;
-    left: 11px;
-    z-index: 2;
-    display: block;
-    width: auto;
-    height: auto;
-    max-width: calc(100% - 50px);
-    padding: 0;
-    overflow: hidden;
-    background: transparent;
-    color: #fff;
-    line-height: 1.4;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.set .wallpaper-center .wallpaper-option-actions {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    display: flex;
-    width: 100%;
-    height: 100%;
-    padding: 12px;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-sizing: border-box;
-}
-
-.set .wallpaper-center .wallpaper-option-actions button {
-    position: static;
-    width: auto;
-    min-width: 64px;
-    height: 34px;
-    min-height: 34px;
-    margin: 0;
-    padding: 0 13px;
-    flex: 0 0 auto;
-    border-radius: 9px;
-    line-height: 1;
-}
-
-@media (max-width: 720px) {
-    .set .wallpaper-center-toolbar {
-        display: flex;
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .set .wallpaper-center-toolbar > .wallpaper-add {
-        align-self: flex-start;
-    }
-
-    .set .wallpaper-center .wallpaper-library-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 9px;
-    }
-
-    .set .wallpaper-center .wallpaper-option-actions {
-        display: none;
-    }
-}
-
-/* Final preview/apply and daily controls. */
-.set .wallpaper-daily-settings {
-    display: grid;
-    width: 100%;
-    min-width: 0;
-    grid-template-columns: auto minmax(120px, 160px) minmax(220px, 1fr) auto;
-    align-items: center;
-    gap: 10px;
-    box-sizing: border-box;
-}
-
-.set .wallpaper-daily-settings[hidden] {
-    display: none;
-}
-
-.set .wallpaper-daily-settings select,
-.set .wallpaper-daily-settings input,
-.set .wallpaper-daily-settings button {
-    width: 100%;
-    min-width: 0;
-    height: 40px;
-    margin: 0;
-    box-sizing: border-box;
-}
-
-.set .wallpaper-daily-settings button {
-    width: auto;
-    min-width: 124px;
-    padding: 0 14px;
-    white-space: nowrap;
-}
-
-.set .wallpaper-center .wallpaper-option > .wallpaper-option-name {
-    right: 42px;
-    bottom: 8px;
-    left: 10px;
-    display: -webkit-box;
-    width: auto;
-    max-width: none;
-    height: auto;
-    max-height: 2.8em;
-    overflow: hidden;
-    line-height: 1.4;
-    text-overflow: clip;
-    white-space: normal;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-}
-
-.set .wallpaper-center .wallpaper-option::before {
-    position: absolute;
-    inset: 45% 0 0;
-    z-index: 1;
-    background: linear-gradient(transparent, rgba(3, 7, 11, 0.72));
-    content: "";
-    pointer-events: none;
-}
-
-@media (max-width: 900px) {
-    .set .wallpaper-daily-settings {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-
-    .set .wallpaper-daily-settings label,
-    .set .wallpaper-daily-settings input {
-        grid-column: 1 / -1;
-    }
-
-    .set .wallpaper-daily-settings button {
-        width: 100%;
-    }
-}
-
-@media (max-width: 720px) {
-    .set .wallpaper-daily-settings {
-        display: flex;
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .set .wallpaper-center .wallpaper-option-actions {
-        inset: 7px 7px auto auto;
-        display: flex;
-        width: auto;
-        height: auto;
-        padding: 0;
-        opacity: 1;
-        background: transparent;
-    }
-
-    .set .wallpaper-center .wallpaper-option-actions button {
-        min-width: 52px;
-        height: 30px;
-        min-height: 30px;
-        padding: 0 10px;
-        background: rgba(10, 16, 23, 0.82);
-        font-size: 0.72rem;
-    }
-}
-
-/* Final wallpaper card structure. */
-.set .wallpaper-center .wallpaper-option {
-    display: grid;
-    height: auto;
-    padding: 0;
-    overflow: visible;
-    aspect-ratio: auto;
-    grid-template-rows: auto minmax(36px, auto);
-    border: 0;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.055);
-}
-
-.set .wallpaper-center .wallpaper-option::before {
-    display: none;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.045);
+    box-shadow: none;
+    transform: none;
 }
 
 .set .wallpaper-center .wallpaper-option.is-selected {
-    border: 0;
-    background: rgba(123, 221, 204, 0.11);
-    box-shadow: 0 0 0 2px #7bddcc;
+    border: 2px solid #7bddcc;
+    box-shadow: 0 0 0 1px rgba(123, 221, 204, 0.18);
+}
+
+.set .wallpaper-center .wallpaper-option::before,
+.set .wallpaper-center .wallpaper-option > .wallpaper-option-name,
+.set .wallpaper-center .wallpaper-option-actions,
+.set .wallpaper-center .wallpaper-option-menu {
+    display: none;
 }
 
 .set .wallpaper-center .wallpaper-option.is-selected::after {
-    top: 8px;
-    right: 8px;
-    bottom: auto;
+    position: absolute;
+    right: 7px;
+    bottom: 7px;
+    z-index: 3;
+    display: grid;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    border-radius: 50%;
+    background: #7bddcc;
+    color: #10231f;
+    content: "✓";
+    font-size: 0.7rem;
+    font-weight: 700;
+    pointer-events: none;
 }
 
 .set .wallpaper-center .wallpaper-option-select {
-    position: relative;
-    inset: auto;
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
-    height: auto;
+    min-width: 0;
+    height: 100%;
     min-height: 0;
+    margin: 0;
+    padding: 0;
     overflow: hidden;
-    aspect-ratio: 16 / 9;
-    border-radius: 12px 12px 0 0;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    box-shadow: none;
 }
 
 .set .wallpaper-center .wallpaper-option-select img {
     position: absolute;
     inset: 0;
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 0;
+    pointer-events: none;
+    transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.set .wallpaper-center .wallpaper-option > .wallpaper-option-name {
-    position: static;
-    display: block;
-    width: 100%;
-    max-width: none;
-    max-height: none;
-    padding: 9px 11px 10px;
-    overflow: visible;
-    box-sizing: border-box;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.76rem;
-    line-height: 1.45;
-    text-shadow: none;
-    text-overflow: unset;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    -webkit-line-clamp: unset;
-}
-
-.set .wallpaper-center .wallpaper-option-actions {
+.set .wallpaper-center .wallpaper-option-remove {
     position: absolute;
-    inset: 0 0 36px;
-    z-index: 5;
+    top: 7px;
+    right: 7px;
+    z-index: 4;
+    display: grid;
+    width: 42px;
+    min-width: 42px;
+    height: 28px;
+    min-height: 28px;
+    margin: 0;
+    padding: 0;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    background: rgba(10, 15, 21, 0.72);
+    color: #fff;
+    font-size: 0.7rem;
+    line-height: 1;
+    opacity: 0;
+    box-shadow: none;
+    transition: opacity 0.16s ease, background-color 0.16s ease;
+}
+
+.set .wallpaper-center .wallpaper-empty {
+    min-height: 88px;
+    grid-column: 1 / -1;
+}
+
+.set .wallpaper-daily-card {
+    position: relative;
     display: flex;
     width: 100%;
-    height: auto;
-    padding: 12px;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
+    min-width: 0;
+    padding: 8px;
+    flex-direction: column;
+    gap: 10px;
     box-sizing: border-box;
-    opacity: 0;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 18px;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035)),
+        rgba(8, 13, 19, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 40px rgba(0, 0, 0, 0.16);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+}
+
+.set .wallpaper-daily-card.is-selected {
+    border-color: rgba(155, 231, 215, 0.58);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 0 0 1px rgba(155, 231, 215, 0.12), 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.set .wallpaper-daily-cover {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    aspect-ratio: 21 / 8;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 13px;
+    background: rgba(8, 12, 18, 0.42);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    isolation: isolate;
+}
+
+.set .wallpaper-daily-cover img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.28s ease, filter 0.28s ease;
+}
+
+.set .wallpaper-daily-cover::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(5, 10, 15, 0.74) 0%, rgba(5, 10, 15, 0.34) 50%, rgba(5, 10, 15, 0.06) 76%);
+    content: "";
     pointer-events: none;
-    border-radius: 12px 12px 0 0;
-    background: rgba(5, 10, 15, 0.52);
 }
 
-.set .wallpaper-center .wallpaper-option-actions button {
-    position: static;
-    width: auto;
-    min-width: 68px;
-    height: 34px;
-    min-height: 34px;
-    margin: 0;
-    padding: 0 14px;
-    flex: 0 0 auto;
-    border-radius: 9px;
-}
-
-.set .wallpaper-center .wallpaper-option-preview {
-    border-color: rgba(255, 255, 255, 0.25);
-    background: rgba(20, 28, 36, 0.88);
+.set .wallpaper-daily-overlay {
+    position: absolute;
+    top: 50%;
+    left: clamp(18px, 4vw, 36px);
+    z-index: 2;
+    display: flex;
+    max-width: min(72%, 470px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
     color: #fff;
+    text-align: left;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
-.set .wallpaper-center .wallpaper-option-apply {
+.set .wallpaper-daily-kicker {
+    color: #9be7d7;
+    font-size: 0.64rem;
+    font-weight: 760;
+    letter-spacing: 0.16em;
+}
+
+.set .wallpaper-daily-overlay strong {
+    font-size: clamp(1rem, 2vw, 1.38rem);
+    font-weight: 720;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.36);
+}
+
+.set .wallpaper-daily-overlay > span:last-child {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.set .wallpaper-daily-state {
+    position: absolute;
+    right: 14px;
+    bottom: 13px;
+    z-index: 2;
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(7, 12, 18, 0.45);
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.68rem;
+    font-weight: 650;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+}
+
+.set .wallpaper-daily-card.is-selected .wallpaper-daily-state {
     border-color: rgba(155, 231, 215, 0.42);
-    background: rgba(123, 221, 204, 0.94);
-    color: #10231f;
-    font-weight: 680;
+    background: rgba(19, 58, 51, 0.76);
+    color: #c8fff5;
+}
+
+.set .wallpaper-daily-info {
+    min-width: 0;
+    padding: 0 4px 2px;
+}
+
+.set .wallpaper-daily-settings {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.set .wallpaper-daily-settings label {
+    flex: 0 0 auto;
+    color: rgba(232, 239, 247, 0.72);
+    font-size: 0.78rem;
+}
+
+.set .wallpaper-daily-settings select,
+.set .wallpaper-daily-settings input {
+    width: auto;
+    min-width: 0;
+    height: 38px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.set .wallpaper-daily-settings select {
+    flex: 0 0 132px;
+}
+
+.set .wallpaper-daily-settings input {
+    min-width: 180px;
+    flex: 1 1 220px;
+}
+
+.set .wallpaper-daily-hint {
+    margin-left: auto;
+    color: rgba(232, 239, 247, 0.48);
+    font-size: 0.72rem;
+}
+
+.set .wallpaper-add-dialog {
+    width: min(500px, calc(100vw - 32px));
+    max-width: 500px;
+    max-height: min(680px, calc(100dvh - 32px));
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    background: rgba(17, 24, 32, 0.84);
+    color: #fff;
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    -webkit-backdrop-filter: blur(28px) saturate(1.16);
+    backdrop-filter: blur(28px) saturate(1.16);
+}
+
+.set .wallpaper-add-dialog[open] {
+    animation: wallpaper-dialog-in 0.24s ease both;
+}
+
+.set .wallpaper-add-dialog::backdrop {
+    background: rgba(2, 6, 10, 0.55);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+    animation: wallpaper-backdrop-in 0.2s ease both;
+}
+
+.set .wallpaper-add-dialog form {
+    display: flex;
+    padding: 22px;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.set .wallpaper-add-dialog header,
+.set .wallpaper-add-dialog footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.set .wallpaper-add-dialog header > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.set .wallpaper-add-dialog header strong {
+    font-size: 1.08rem;
+    font-weight: 700;
+}
+
+.set .wallpaper-add-dialog header span,
+.set .wallpaper-add-dialog .wallpaper-add-pane small {
+    color: rgba(232, 239, 247, 0.56);
+    font-size: 0.75rem;
+}
+
+.set .wallpaper-add-dialog header > button {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0 2px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 1.3rem;
+}
+
+.set .wallpaper-add-dialog .wallpaper-add-tabs {
+    width: fit-content;
+    max-width: 100%;
+    padding: 3px;
+    overflow-x: auto;
+    border-radius: 10px;
+    background: rgba(7, 11, 16, 0.28);
+    scrollbar-width: none;
+}
+
+.set .wallpaper-add-dialog .wallpaper-add-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.set .wallpaper-add-dialog .wallpaper-add-tabs button {
+    width: auto;
+    min-width: max-content;
+    height: 38px;
+    min-height: 38px;
+    padding: 0 15px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.set .wallpaper-add-dialog .wallpaper-add-pane {
+    min-height: 116px;
+}
+
+.set .wallpaper-add-dialog .wallpaper-add-pane input[type="url"] {
+    width: 100%;
+    min-height: 46px;
+    font-size: 16px;
+}
+
+.set .wallpaper-add-dialog footer {
+    justify-content: flex-end;
+}
+
+.set .wallpaper-add-dialog footer button {
+    width: auto;
+    min-width: 92px;
+    min-height: 42px;
+    margin: 0;
+    padding: 0 18px;
+    border-radius: 11px;
+}
+
+@keyframes wallpaper-dialog-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes wallpaper-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @media (hover: hover) {
-    .set .wallpaper-center .wallpaper-option:hover .wallpaper-option-actions,
-    .set .wallpaper-center .wallpaper-option:focus-within .wallpaper-option-actions {
+    .set .wallpaper-center .wallpaper-option:hover .wallpaper-option-select img {
+        transform: scale(1.025);
+        filter: brightness(0.9);
+    }
+
+    .set .wallpaper-daily-cover:hover img {
+        transform: scale(1.025);
+        filter: brightness(0.92);
+    }
+
+    .set .wallpaper-center .wallpaper-option:hover .wallpaper-option-remove,
+    .set .wallpaper-center .wallpaper-option:focus-within .wallpaper-option-remove {
         opacity: 1;
-        pointer-events: auto;
+    }
+
+    .set .wallpaper-center .wallpaper-option-remove:hover {
+        background: rgba(176, 53, 62, 0.86);
     }
 }
 
-@media (max-width: 720px), (hover: none) {
-    .set .wallpaper-center .wallpaper-option-actions {
-        inset: 7px 7px auto auto;
-        width: auto;
-        height: auto;
-        padding: 0;
+@media (hover: none) {
+    .set .wallpaper-center .wallpaper-option-remove {
         opacity: 1;
-        pointer-events: auto;
-        background: transparent;
+    }
+}
+
+@media (max-width: 720px) {
+    .set .wallpaper-sections {
+        gap: 24px;
     }
 
-    .set .wallpaper-center .wallpaper-option-actions button {
-        min-width: 50px;
-        height: 30px;
-        min-height: 30px;
-        padding: 0 9px;
-        font-size: 0.7rem;
+    .set .wallpaper-center .wallpaper-library-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .set .wallpaper-daily-card {
+        padding: 6px;
+        border-radius: 16px;
+    }
+
+    .set .wallpaper-daily-cover {
+        aspect-ratio: 16 / 9;
+        border-radius: 11px;
+    }
+
+    .set .wallpaper-daily-overlay {
+        left: 16px;
+        max-width: 72%;
+    }
+
+    .set .wallpaper-daily-overlay > span:last-child {
+        display: none;
+    }
+
+    .set .wallpaper-daily-state {
+        right: 10px;
+        bottom: 10px;
+    }
+
+    .set .wallpaper-daily-settings label,
+    .set .wallpaper-daily-settings select,
+    .set .wallpaper-daily-settings input {
+        width: 100%;
+        min-width: 0;
+        flex: none;
+    }
+
+    .set .wallpaper-daily-settings label {
+        margin-top: 2px;
+    }
+
+    .set .wallpaper-daily-hint {
+        display: none;
+    }
+
+    .set .wallpaper-add-dialog {
+        width: 100%;
+        max-width: none;
+        max-height: min(82dvh, 720px);
+        margin: auto 0 0;
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 24px 24px 0 0;
+    }
+
+    .set .wallpaper-add-dialog form {
+        padding: 20px 18px calc(18px + env(safe-area-inset-bottom));
+    }
+
+    .set .wallpaper-add-dialog footer button {
+        min-width: 0;
+        flex: 1 1 0;
+    }
+
+    .set .wallpaper-add-dialog[open] {
+        animation-name: wallpaper-sheet-in;
+    }
+}
+
+@keyframes wallpaper-sheet-in {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .set .wallpaper-add-dialog[open],
+    .set .wallpaper-add-dialog::backdrop {
+        animation: none;
     }
 }

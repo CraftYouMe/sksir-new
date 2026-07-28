@@ -28,7 +28,7 @@
     },
     appearance: {
       tabs: [
-        { page: "background", label: "壁纸中心" },
+        { page: "background", label: "背景" },
         { page: "performance", label: "动画" },
         { page: "theme", label: "主题" }
       ]

@@ -480,59 +480,79 @@
                         <div class="mainConts" data-settings-panel="background">
                             <div class="settings-panel-head">
                                 <h3>壁纸中心</h3>
-                                <p>浏览、预览并管理首页壁纸。</p>
+                                <p>选择首页背景，设置仅保存在当前设备。</p>
                             </div>
                             <div class="set_blocks wallpaper-center">
                                 <div class="set_blocks_content">
-                                    <div class="wallpaper-preview" id="wallpaper-preview">
-                                        <img id="wallpaper-preview-image" alt="壁纸预看">
-                                        <div class="wallpaper-preview-overlay">
-                                            <span class="wallpaper-preview-label">当前壁纸</span>
-                                            <strong id="wallpaper-preview-name">可选壁纸</strong>
-                                        </div>
-                                    </div>
-                                    <div class="wallpaper-center-toolbar">
-                                        <div class="wallpaper-category-tabs" role="tablist" aria-label="壁纸分类">
-                                            <button type="button" class="is-active" data-wallpaper-category="featured">精选壁纸</button>
-                                            <button type="button" data-wallpaper-category="daily">每日壁纸</button>
-                                            <button type="button" data-wallpaper-category="dynamic">动态壁纸</button>
-                                            <button type="button" data-wallpaper-category="mine">我的壁纸</button>
-                                        </div>
-                                        <button type="button" class="wallpaper-add primary">+ 添加壁纸</button>
-                                    </div>
-                                    <div class="settings-inline-note" id="wallpaper_text">选择壁纸后会自动保存在本机。</div>
-                                    <div id="wallpaper-library-grid" class="wallpaper-library-grid" aria-live="polite"></div>
-                                    <div class="wallpaper-daily-settings" hidden>
-                                        <label for="wallpaper-daily-source">每日壁纸来源</label>
-                                        <select id="wallpaper-daily-source">
-                                            <option value="bing">必应</option>
-                                            <option value="custom">其他 API</option>
-                                        </select>
-                                        <input id="wallpaper-daily-api" type="url" inputmode="url" placeholder="输入图片 API 地址" hidden>
-                                        <button type="button" class="wallpaper-daily-apply primary">应用每日壁纸</button>
+                                    <div class="wallpaper-sections">
+                                        <section class="wallpaper-section">
+                                            <h4>精选壁纸</h4>
+                                            <div id="wallpaper-featured-grid" class="wallpaper-library-grid" aria-live="polite"></div>
+                                        </section>
+                                        <section class="wallpaper-section">
+                                            <h4>每日壁纸</h4>
+                                            <div class="wallpaper-daily-card">
+                                                <button type="button" class="wallpaper-daily-cover" aria-label="应用每日壁纸">
+                                                    <img id="wallpaper-daily-image" alt="">
+                                                    <span class="wallpaper-daily-overlay">
+                                                        <span class="wallpaper-daily-kicker">DAILY WALLPAPER</span>
+                                                        <strong id="wallpaper-daily-title">必应每日壁纸</strong>
+                                                        <span id="wallpaper-daily-description">每天一张精选图片，点击切换。</span>
+                                                    </span>
+                                                    <span class="wallpaper-daily-state" aria-hidden="true">点击切换</span>
+                                                </button>
+                                                <div class="wallpaper-daily-info">
+                                                    <div class="wallpaper-daily-settings">
+                                                        <label for="wallpaper-daily-source">图片来源</label>
+                                                        <select id="wallpaper-daily-source">
+                                                            <option value="bing">必应</option>
+                                                            <option value="custom">其他 API</option>
+                                                        </select>
+                                                        <input id="wallpaper-daily-api" type="url" inputmode="url" placeholder="输入图片 API 地址" hidden>
+                                                        <span class="wallpaper-daily-hint">点击图片切换</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                        <section class="wallpaper-section">
+                                            <header>
+                                                <h4>我的壁纸</h4>
+                                                <button type="button" class="wallpaper-add primary" aria-haspopup="dialog" aria-controls="wallpaper-add-dialog">+ 添加壁纸</button>
+                                            </header>
+                                            <div id="wallpaper-mine-grid" class="wallpaper-library-grid" aria-live="polite"></div>
+                                        </section>
                                     </div>
                                 </div>
                             </div>
-                            <dialog id="wallpaper-add-dialog" class="wallpaper-add-dialog">
+                            <dialog id="wallpaper-add-dialog" class="wallpaper-add-dialog" aria-labelledby="wallpaper-add-title">
                                 <form method="dialog">
-                                    <header><div><strong>添加壁纸</strong><span>选择一种图片来源</span></div><button value="cancel" aria-label="关闭">&times;</button></header>
-                                    <div class="wallpaper-add-tabs" role="tablist">
-                                        <button type="button" class="is-active" data-wallpaper-add-mode="local">本地上传</button>
-                                        <button type="button" data-wallpaper-add-mode="url">URL</button>
-                                        <button type="button" data-wallpaper-add-mode="oss">OSS</button>
+                                    <header>
+                                        <div>
+                                            <strong id="wallpaper-add-title">添加自定义壁纸</strong>
+                                            <span>选择一种来源，图片传入后仅保存在当前设备</span>
+                                        </div>
+                                        <button type="button" class="wallpaper-add-cancel" aria-label="关闭">&times;</button>
+                                    </header>
+                                    <div class="wallpaper-add-tabs" role="tablist" aria-label="壁纸来源">
+                                        <button type="button" class="is-active" data-wallpaper-add-mode="local">本地图片</button>
+                                        <button type="button" data-wallpaper-add-mode="url">图片网址</button>
+                                        <button type="button" data-wallpaper-add-mode="oss">对象存储</button>
                                     </div>
                                     <div class="wallpaper-add-pane is-active" data-wallpaper-add-pane="local">
                                         <label class="wallpaper-file-drop">选择本地图片<input id="wallpaper-local-file" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif"></label>
-                                        <small>图片仅保存在当前浏览器，建议不超过 4 MB。</small>
+                                        <small>支持 JPEG、PNG、WebP、AVIF 和 GIF，建议不超过 4 MB。</small>
                                     </div>
                                     <div class="wallpaper-add-pane" data-wallpaper-add-pane="url">
-                                        <label>图片 URL<input id="wallpaper-url" type="url" inputmode="url" placeholder="https://example.com/wallpaper.webp"></label>
+                                        <label>图片网址<input id="wallpaper-url" type="url" inputmode="url" placeholder="https://example.com/wallpaper.webp"></label>
                                     </div>
                                     <div class="wallpaper-add-pane" data-wallpaper-add-pane="oss">
-                                        <label>OSS 图片地址<input id="wallpaper-oss-url" type="url" inputmode="url" placeholder="https://bucket.oss-cn-.../wallpaper.webp"></label>
-                                        <small>支持阿里云 OSS 及其他可公开访问的对象存储地址。</small>
+                                        <label>对象存储地址<input id="wallpaper-oss-url" type="url" inputmode="url" placeholder="https://bucket.example.com/wallpaper.webp"></label>
+                                        <small>支持 OSS 及其他可公开访问的对象存储地址。</small>
                                     </div>
-                                    <footer><button value="cancel" class="secondary">取消</button><button type="button" class="wallpaper-add-confirm primary">添加并预览</button></footer>
+                                    <footer>
+                                        <button type="button" class="wallpaper-add-cancel secondary">取消</button>
+                                        <button type="button" class="wallpaper-add-confirm primary">添加壁纸</button>
+                                    </footer>
                                 </form>
                             </dialog>
                         </div>
@@ -701,7 +721,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.28.30">v2026.07.28.30</span>
+                <span id="app-version" class="app-version" data-version="2026.07.28.38">v2026.07.28.38</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>

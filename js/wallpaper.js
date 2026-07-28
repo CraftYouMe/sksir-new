@@ -3,8 +3,7 @@
   var dailySourceKey = "sksir-wallpaper-daily-source";
   var dailyApiKey = "sksir-wallpaper-daily-api";
   var bingUrl = "https://api.dujin.org/bing/1920.php";
-  var activeCategory = "featured";
-  var previewItem = null;
+  var activeWallpaper = null;
 
   function showMessage(message) {
     if (window.iziToast) iziToast.show({ timeout: 2200, message: message });
@@ -43,27 +42,29 @@
       : window.bg_img_pictures[0] || "";
   }
 
-  function updatePreview(src, name) {
-    var image = document.getElementById("wallpaper-preview-image");
-    var label = document.getElementById("wallpaper-preview-name");
-    if (image && src && image.getAttribute("src") !== src) image.src = src;
-    if (label) label.textContent = name || "当前壁纸";
+  function readActiveWallpaper() {
+    var config = window.getBgImg();
+    return {
+      src: getPreviewSource(config),
+      type: String(config.type || "1")
+    };
   }
 
-  function currentSource() {
-    return getPreviewSource(window.getBgImg());
+  function isActiveWallpaper(item) {
+    return !!activeWallpaper &&
+      activeWallpaper.src === item.src &&
+      activeWallpaper.type === String(item.type);
   }
 
   function applyWallpaper(src, type, name) {
     if (!src) return;
     var config = window.getBgImg();
-    config.type = type;
+    config.type = String(type);
     config.path = src;
     window.setBgImg(config);
     window.applyBgImg(src);
-    previewItem = { src: src, type: type, name: name };
-    updatePreview(src, name);
-    renderCategory();
+    activeWallpaper = readActiveWallpaper();
+    renderWallpapers();
     showMessage("壁纸已应用");
   }
 
@@ -71,12 +72,8 @@
     var card = document.createElement("article");
     var button = document.createElement("button");
     var image = document.createElement("img");
-    var actions = document.createElement("div");
-    var preview = document.createElement("button");
-    var apply = document.createElement("button");
     card.className = "wallpaper-option";
-    card.classList.toggle("is-selected", !!previewItem && previewItem.src === item.src);
-    card.classList.toggle("is-applied", currentSource() === item.src);
+    card.classList.toggle("is-selected", isActiveWallpaper(item));
     card.setAttribute("data-wallpaper-src", item.src);
     button.type = "button";
     button.className = "wallpaper-option-select";
@@ -86,78 +83,51 @@
     image.loading = "lazy";
     image.decoding = "async";
     button.appendChild(image);
-    actions.className = "wallpaper-option-actions";
-    preview.type = "button";
-    preview.className = "wallpaper-option-preview";
-    preview.textContent = "预览";
-    apply.type = "button";
-    apply.className = "wallpaper-option-apply";
-    apply.textContent = "应用";
-    actions.appendChild(preview);
-    actions.appendChild(apply);
+    card.appendChild(button);
     if (item.removable) {
       var remove = document.createElement("button");
       remove.type = "button";
       remove.className = "wallpaper-option-remove";
+      remove.setAttribute("aria-label", "删除" + item.name);
       remove.textContent = "删除";
-      actions.appendChild(remove);
+      card.appendChild(remove);
     }
-    var name = document.createElement("span");
-    name.className = "wallpaper-option-name";
-    name.textContent = item.name;
-    card.append(button, name, actions);
     card._wallpaperItem = item;
     return card;
   }
 
-  function categoryItems() {
-    if (activeCategory === "featured") {
-      return window.bg_img_pictures.map(function (src, index) {
-        return { src: src, name: "精选壁纸 " + (index + 1), type: "1" };
-      });
-    }
-    if (activeCategory === "daily") {
-      return [{ src: getDailySource(), name: "每日壁纸", type: "2" }];
-    }
-    if (activeCategory === "mine") return readCustomWallpapers();
-    return [];
-  }
-
-  function renderCategory() {
-    var grid = document.getElementById("wallpaper-library-grid");
-    var dailySettings = document.querySelector(".wallpaper-daily-settings");
+  function renderGrid(grid, items, emptyText) {
     if (!grid) return;
     grid.replaceChildren();
-    var items = categoryItems();
-    if (activeCategory === "dynamic") {
-      var empty = document.createElement("div");
-      empty.className = "wallpaper-empty";
-      empty.innerHTML = "<strong>动态壁纸即将推出</strong><span>已预留独立分类，后续可接入视频或实时渲染壁纸。</span>";
-      grid.appendChild(empty);
-    } else if (!items.length) {
+    if (!items.length) {
       var mineEmpty = document.createElement("div");
       mineEmpty.className = "wallpaper-empty";
-      mineEmpty.innerHTML = "<strong>还没有自己的壁纸</strong><span>点击“添加壁纸”，从本地、URL 或 OSS 添加。</span>";
+      mineEmpty.textContent = emptyText;
       grid.appendChild(mineEmpty);
     } else {
       items.forEach(function (item) { grid.appendChild(createWallpaperCard(item)); });
     }
-    if (dailySettings) dailySettings.hidden = activeCategory !== "daily";
   }
 
-  function switchCategory(category) {
-    activeCategory = category;
-    document.querySelectorAll("[data-wallpaper-category]").forEach(function (button) {
-      button.classList.toggle("is-active", button.getAttribute("data-wallpaper-category") === category);
-    });
-    renderCategory();
+  function renderWallpapers() {
+    activeWallpaper = readActiveWallpaper();
+    renderGrid(document.getElementById("wallpaper-featured-grid"), window.bg_img_pictures.map(function (src, index) {
+      return { src: src, name: "精选壁纸 " + (index + 1), type: "1" };
+    }), "暂无精选壁纸");
+    updateDailyCard();
+    renderGrid(document.getElementById("wallpaper-mine-grid"), readCustomWallpapers(),
+      "还没有自己的壁纸，点击“添加壁纸”进行添加。");
   }
 
-  function openAddDialog() {
+  function setAddDialogOpen(open) {
     var dialog = document.getElementById("wallpaper-add-dialog");
     if (!dialog) return;
-    if (typeof dialog.showModal === "function") dialog.showModal();
-    else dialog.setAttribute("open", "");
+    if (open && !dialog.open) {
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+      return;
+    }
+    if (!open && dialog.open) dialog.close();
   }
 
   function activeAddMode() {
@@ -181,17 +151,9 @@
       showMessage("图片过大，浏览器本机存储空间不足");
       return;
     }
-    var dialog = document.getElementById("wallpaper-add-dialog");
-    if (dialog) {
-      if (typeof dialog.close === "function") dialog.close();
-      else dialog.removeAttribute("open");
-    }
-    activeCategory = "mine";
-    switchCategory("mine");
-    previewItem = item;
-    updatePreview(item.src, item.name);
-    renderCategory();
-    showMessage("壁纸已添加，预览后可选择应用");
+    setAddDialogOpen(false);
+    renderWallpapers();
+    showMessage("壁纸已添加");
   }
 
   function addLocalWallpaper() {
@@ -219,11 +181,28 @@
     applyWallpaper(source === "custom" ? url : bingUrl, "2", source === "custom" ? "每日壁纸 · 其他 API" : "每日壁纸 · 必应");
   }
 
+  function updateDailyCard() {
+    var card = document.querySelector(".wallpaper-daily-card");
+    var image = document.getElementById("wallpaper-daily-image");
+    var title = document.getElementById("wallpaper-daily-title");
+    var description = document.getElementById("wallpaper-daily-description");
+    var select = document.getElementById("wallpaper-daily-source");
+    var input = document.getElementById("wallpaper-daily-api");
+    var source = select ? select.value : (localStorage.getItem(dailySourceKey) || "bing");
+    var customUrl = String(input && input.value || "").trim();
+    var src = source === "custom" && /^https?:\/\/\S+$/i.test(customUrl) ? customUrl : bingUrl;
+    if (image && image.getAttribute("src") !== src) image.src = src;
+    if (title) title.textContent = source === "custom" ? "自定义每日壁纸" : "必应每日壁纸";
+    if (description) description.textContent = source === "custom"
+      ? "使用你的图片接口，点击切换。"
+      : "每天一张精选图片，点击切换。";
+    if (card) card.classList.toggle("is-selected", isActiveWallpaper({ src: src, type: "2" }));
+    var state = document.querySelector(".wallpaper-daily-state");
+    if (state) state.textContent = card && card.classList.contains("is-selected") ? "当前壁纸" : "点击切换";
+  }
+
   function initWallpaperPicker() {
-    var config = window.getBgImg();
-    var name = config.type === "2" ? "每日壁纸" : config.type === "5" ? "我的壁纸" : "精选壁纸";
-    previewItem = { src: getPreviewSource(config), type: config.type, name: name };
-    updatePreview(previewItem.src, name);
+    activeWallpaper = readActiveWallpaper();
     var sourceSelect = document.getElementById("wallpaper-daily-source");
     var apiInput = document.getElementById("wallpaper-daily-api");
     var savedSource = localStorage.getItem(dailySourceKey) || "bing";
@@ -232,13 +211,16 @@
       apiInput.value = localStorage.getItem(dailyApiKey) || "";
       apiInput.hidden = savedSource !== "custom";
     }
-    renderCategory();
+    renderWallpapers();
   }
 
   document.addEventListener("click", function (event) {
-    var category = event.target.closest && event.target.closest("[data-wallpaper-category]");
-    if (category) return switchCategory(category.getAttribute("data-wallpaper-category"));
-    if (event.target.closest && event.target.closest(".wallpaper-add")) return openAddDialog();
+    if (event.target.closest && event.target.closest(".wallpaper-add")) {
+      return setAddDialogOpen(true);
+    }
+    if (event.target.closest && event.target.closest(".wallpaper-add-cancel")) {
+      return setAddDialogOpen(false);
+    }
     var mode = event.target.closest && event.target.closest("[data-wallpaper-add-mode]");
     if (mode) {
       var modeName = mode.getAttribute("data-wallpaper-add-mode");
@@ -249,31 +231,49 @@
     if (event.target.closest && event.target.closest(".wallpaper-add-confirm")) {
       return activeAddMode() === "local" ? addLocalWallpaper() : addRemoteWallpaper(activeAddMode());
     }
-    if (event.target.closest && event.target.closest(".wallpaper-daily-apply")) return applyDailyWallpaper();
+    if (event.target.closest && event.target.closest(".wallpaper-daily-cover")) {
+      return applyDailyWallpaper();
+    }
     var card = event.target.closest && event.target.closest(".wallpaper-option");
     if (!card) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
     var item = card._wallpaperItem;
     if (event.target.closest(".wallpaper-option-remove")) {
       writeCustomWallpapers(readCustomWallpapers().filter(function (entry) { return entry.src !== item.src; }));
-      renderCategory();
+      renderWallpapers();
       return showMessage("已删除壁纸");
     }
-    if (event.target.closest(".wallpaper-option-apply")) {
-      return applyWallpaper(item.src, item.type, item.name);
-    }
-    previewItem = item;
-    updatePreview(item.src, item.name);
-    renderCategory();
-    var text = document.getElementById("wallpaper_text");
-    if (text) text.textContent = "正在预览“" + item.name + "”，点击卡片上的“应用”后才会更换首页壁纸。";
+    applyWallpaper(item.src, item.type, item.name);
   });
 
   document.addEventListener("change", function (event) {
     if (event.target.id === "wallpaper-daily-source") {
       var apiInput = document.getElementById("wallpaper-daily-api");
       if (apiInput) apiInput.hidden = event.target.value !== "custom";
+      updateDailyCard();
     }
   });
+
+  document.addEventListener("input", function (event) {
+    if (event.target.id === "wallpaper-daily-api") updateDailyCard();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    var dialog = document.getElementById("wallpaper-add-dialog");
+    var key = event.key || event.keyCode;
+    if (!dialog || !dialog.open || (key !== "Escape" && key !== "Esc" && key !== "ESC" && key !== 27)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    setAddDialogOpen(false);
+  }, true);
+
+  var addDialog = document.getElementById("wallpaper-add-dialog");
+  if (addDialog) {
+    addDialog.addEventListener("click", function (event) {
+      if (event.target === addDialog) setAddDialogOpen(false);
+    });
+  }
 
   window.initWallpaperPicker = initWallpaperPicker;
 }());

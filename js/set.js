@@ -1008,6 +1008,8 @@ $(document).ready(function () {
     $(document).on('keydown', function (event) {
         var key = event.key || event.keyCode;
         if (key !== "Escape" && key !== "Esc" && key !== 27) return;
+        // Let the native dialog consume Escape before closing the settings surface.
+        if (document.querySelector("dialog[open]")) return;
         if (closeActiveSurface()) {
             event.preventDefault();
             event.stopPropagation();
