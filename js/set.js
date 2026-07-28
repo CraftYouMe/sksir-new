@@ -240,15 +240,25 @@ function renderQuickLaunchCustomList() {
     items.forEach(function (item) {
         var row = document.createElement("div");
         row.className = "quick-launch-custom-item";
+        var icon = document.createElement("img");
+        icon.src = item.icon;
+        icon.alt = "";
+        icon.loading = "lazy";
         var text = document.createElement("span");
-        text.textContent = item.name;
+        var name = document.createElement("strong");
+        name.textContent = item.name;
+        var host = document.createElement("small");
+        host.textContent = new URL(item.url).hostname;
         text.title = item.url;
+        text.appendChild(name);
+        text.appendChild(host);
         var remove = document.createElement("button");
         remove.type = "button";
         remove.className = "quick-launch-custom-remove";
         remove.setAttribute("data-url", item.url);
         remove.setAttribute("aria-label", "删除 " + item.name);
         remove.textContent = "删除";
+        row.appendChild(icon);
         row.appendChild(text);
         row.appendChild(remove);
         panel.appendChild(row);

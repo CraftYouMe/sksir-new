@@ -473,8 +473,121 @@ html.perf-lite.is-booting::after {
 .quick-launch-item:active,
 .quick-launch-item.is-dragging {
     cursor: grabbing;
+}
+
+.quick-launch-item.is-dragging {
+    position: fixed;
+    top: -100px;
+    left: -100px;
+    z-index: -1;
+    border-style: dashed;
+    border-color: rgba(155, 231, 215, 0.84);
+    background: rgba(155, 231, 215, 0.10);
+    box-shadow: 0 0 0 3px rgba(155, 231, 215, 0.10);
     transform: scale(0.92);
-    opacity: 0.72;
+    opacity: 0.28;
+}
+
+.quick-launch-item.just-dropped {
+    animation: quickLaunchDrop 0.3s var(--motion-ease);
+}
+
+.quick-launch.is-reordering .quick-launch-item:not(.is-dragging) {
+    border-color: rgba(255, 255, 255, 0.24);
+}
+
+.quick-launch-add {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    flex: 0 0 34px;
+    place-items: center;
+    border: 1px dashed rgba(255, 255, 255, 0.34);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.055);
+    color: rgba(255, 255, 255, 0.78);
+    cursor: pointer;
+    transition: transform var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) ease,
+        border-color var(--motion-fast) ease;
+}
+
+.quick-launch-add:hover {
+    border-style: solid;
+    border-color: rgba(155, 231, 215, 0.62);
+    background: rgba(155, 231, 215, 0.14);
+    color: #dffff8;
+    transform: translateY(-2px);
+}
+
+.quick-launch-add svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+}
+
+.quick-launch-drag-ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2147483000;
+    display: flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(155, 231, 215, 0.72);
+    border-radius: 13px;
+    background: rgba(20, 28, 36, 0.92);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38), 0 0 0 4px rgba(155, 231, 215, 0.12);
+    pointer-events: none;
+    transform: translate3d(-100px, -100px, 0);
+    transition: none;
+    will-change: transform;
+    contain: layout paint style;
+}
+
+.quick-launch-drag-ghost img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.quick-launch-drag-ghost span {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    max-width: 140px;
+    padding: 5px 9px;
+    overflow: hidden;
+    border-radius: 7px;
+    background: rgba(8, 12, 18, 0.94);
+    color: #fff;
+    font-size: 0.74rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+.quick-launch-drop-placeholder {
+    display: block;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    box-sizing: border-box;
+    border: 1px dashed rgba(155, 231, 215, 0.86);
+    border-radius: 11px;
+    background: rgba(155, 231, 215, 0.10);
+    box-shadow: 0 0 0 3px rgba(155, 231, 215, 0.10);
+}
+
+@keyframes quickLaunchDrop {
+    0% { transform: scale(0.86); }
+    55% { transform: scale(1.12); }
+    100% { transform: scale(1); }
 }
 
 .quick-launch-item img {
@@ -2389,12 +2502,50 @@ body.onsearch .close_sou {
 }
 
 .quick-launch-custom-form {
-    margin-top: 12px;
+    display: grid;
+    margin-top: 16px;
     margin-bottom: 10px;
+    gap: 12px;
+}
+
+.quick-launch-add-card,
+.quick-launch-manage-card {
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 12px;
+    background: rgba(8, 12, 18, 0.18);
+}
+
+.quick-launch-add-card-head {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 12px;
+}
+
+.quick-launch-add-card-head p,
+.quick-launch-section-note {
+    margin: 3px 0 0;
+    color: rgba(255, 255, 255, 0.54);
+    font-size: 0.76rem;
+    line-height: 1.45;
+}
+
+.quick-launch-add-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    place-items: center;
+    border: 1px solid rgba(155, 231, 215, 0.24);
+    border-radius: 10px;
+    background: rgba(155, 231, 215, 0.10);
+    color: #bdf6ea;
+    font-size: 1rem;
 }
 
 .quick-launch-custom-heading {
-    margin-bottom: 8px;
+    margin-bottom: 0;
 }
 
 .quick-launch-library-picker {
@@ -2463,7 +2614,7 @@ body.onsearch .close_sou {
 
 .quick-launch-custom-fields {
     display: grid;
-    grid-template-columns: minmax(80px, 0.7fr) minmax(160px, 1.5fr) minmax(140px, 1.2fr) auto;
+    grid-template-columns: minmax(110px, 0.7fr) minmax(180px, 1.35fr) minmax(150px, 1fr) auto;
     gap: 8px;
 }
 
@@ -2507,8 +2658,8 @@ body.onsearch .close_sou {
 .quick-launch-custom-list {
     display: grid;
     gap: 6px;
-    max-height: 132px;
-    margin-bottom: 12px;
+    max-height: 180px;
+    margin-top: 11px;
     overflow: auto;
 }
 
@@ -2526,9 +2677,37 @@ body.onsearch .close_sou {
 }
 
 .quick-launch-custom-item span {
+    display: grid;
+    min-width: 0;
+    flex: 1 1 auto;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.quick-launch-custom-item > img {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 26px;
+    object-fit: contain;
+    border-radius: 7px;
+}
+
+.quick-launch-custom-item strong,
+.quick-launch-custom-item small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.quick-launch-custom-item strong {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.8rem;
+}
+
+.quick-launch-custom-item small {
+    color: rgba(255, 255, 255, 0.46);
+    font-size: 0.7rem;
 }
 
 .performance-settings-block .quick-launch-custom-remove {
@@ -2546,6 +2725,131 @@ body.onsearch .close_sou {
     background: rgba(255, 255, 255, 0.04);
     color: rgba(255, 255, 255, 0.42);
     font-size: 0.78rem;
+}
+
+.quick-launch-add-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 2147482000;
+    display: grid;
+    padding: max(18px, env(safe-area-inset-top, 0px)) 16px max(18px, env(safe-area-inset-bottom, 0px));
+    place-items: center;
+}
+
+.quick-launch-add-dialog[hidden] {
+    display: none;
+}
+
+.quick-launch-add-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 8, 13, 0.58);
+    -webkit-backdrop-filter: blur(9px);
+    backdrop-filter: blur(9px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.quick-launch-add-sheet {
+    position: relative;
+    width: min(430px, 100%);
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 20px;
+    background: rgba(18, 25, 34, 0.94);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition: opacity 0.2s ease, transform 0.24s var(--motion-ease);
+}
+
+.quick-launch-add-dialog.is-visible .quick-launch-add-backdrop,
+.quick-launch-add-dialog.is-visible .quick-launch-add-sheet {
+    opacity: 1;
+}
+
+.quick-launch-add-dialog.is-visible .quick-launch-add-sheet {
+    transform: translateY(0) scale(1);
+}
+
+.quick-launch-add-sheet header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.quick-launch-add-sheet h2 {
+    margin: 0;
+    font-size: 1.18rem;
+}
+
+.quick-launch-add-sheet header p {
+    margin: 4px 0 0;
+    color: rgba(232, 239, 247, 0.60);
+    font-size: 0.78rem;
+}
+
+.quick-launch-add-close {
+    width: 38px;
+    height: 38px;
+    padding: 0 0 2px;
+    flex: 0 0 38px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 1.4rem;
+}
+
+#quick-launch-home-form {
+    display: grid;
+    gap: 13px;
+}
+
+#quick-launch-home-form label {
+    display: grid;
+    gap: 6px;
+    color: rgba(232, 239, 247, 0.76);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+#quick-launch-home-form small {
+    color: rgba(232, 239, 247, 0.46);
+    font-weight: 400;
+}
+
+#quick-launch-home-form input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    outline: 0;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    background: rgba(8, 12, 18, 0.44);
+    color: #fff;
+    font-size: 16px;
+}
+
+#quick-launch-home-form input:focus {
+    border-color: rgba(155, 231, 215, 0.68);
+    box-shadow: 0 0 0 3px rgba(155, 231, 215, 0.11);
+}
+
+.quick-launch-home-submit {
+    height: 44px;
+    margin-top: 3px;
+    border: 1px solid rgba(155, 231, 215, 0.34);
+    border-radius: 10px;
+    background: rgba(123, 221, 204, 0.90);
+    color: #10231f;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 /*iconcss*/
@@ -3309,6 +3613,13 @@ html.ios-standalone .bg-all {
     .quick-launch-item {
         width: 32px;
         height: 32px;
+        border-radius: 9px;
+    }
+
+    .quick-launch-add {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
         border-radius: 9px;
     }
 
@@ -4497,6 +4808,11 @@ html.ios-standalone .bg-all {
         flex-direction: column;
     }
 
+    .set .quick-launch-add-card,
+    .set .quick-launch-manage-card {
+        padding: 12px;
+    }
+
     .set .quick-launch-auto {
         width: 100%;
     }
@@ -4523,6 +4839,19 @@ html.ios-standalone .bg-all {
     .set .quick-launch-custom-add {
         width: 100%;
     }
+
+    .quick-launch-add-dialog {
+        padding: max(10px, env(safe-area-inset-top, 0px)) 8px 0;
+        align-items: end;
+    }
+
+    .quick-launch-add-sheet {
+        width: 100%;
+        max-height: calc(var(--app-height, 100vh) - max(10px, env(safe-area-inset-top, 0px)));
+        padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+        overflow-y: auto;
+        border-radius: 20px 20px 0 0;
+    }
 }
 
 @media (max-width: 380px) {
@@ -4539,5 +4868,203 @@ html.ios-standalone .bg-all {
 
     .set .wallpaper-preview {
         min-height: 128px;
+    }
+}
+
+/* ==========================================================================
+   Quick launch settings: final isolated layout
+   ========================================================================== */
+
+.settings-quick-launch-panel .set_blocks,
+.settings-quick-launch-panel .performance-settings-block,
+.settings-quick-launch-panel .set_blocks_content,
+.settings-quick-launch-panel .from_container,
+.settings-quick-launch-panel .froms,
+.settings-quick-launch-panel .quick-launch-settings,
+.settings-quick-launch-panel .from_row_content {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.settings-quick-launch-panel .set_blocks,
+.settings-quick-launch-panel .performance-settings-block,
+.settings-quick-launch-panel .froms {
+    display: block;
+}
+
+.settings-quick-launch-panel .set_blocks_content {
+    display: block;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.settings-quick-launch-panel .quick-launch-settings {
+    display: block;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.settings-quick-launch-panel .quick-launch-setting-head {
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.settings-quick-launch-panel #quick-launch-setting {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.settings-quick-launch-panel .quick-launch-count-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 10px;
+}
+
+.settings-quick-launch-panel .quick-launch-count-settings label {
+    width: 100%;
+    min-width: 0;
+}
+
+.settings-quick-launch-panel .quick-launch-count-settings select {
+    width: 100%;
+}
+
+.settings-quick-launch-panel .quick-launch-custom-form {
+    display: grid;
+    width: 100%;
+    margin: 14px 0 12px;
+    gap: 12px;
+    align-items: start;
+    grid-auto-flow: row;
+}
+
+.settings-quick-launch-panel .quick-launch-add-card,
+.settings-quick-launch-panel .quick-launch-manage-card {
+    position: static;
+    display: block;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    clear: both;
+    float: none;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+.settings-quick-launch-panel .quick-launch-library-picker {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) auto;
+    width: 100%;
+    gap: 8px;
+}
+
+.settings-quick-launch-panel .quick-launch-library-picker select {
+    width: 100%;
+    min-width: 0;
+}
+
+.settings-quick-launch-panel #quick-launch-library-add {
+    width: auto;
+    min-width: 112px;
+    height: 42px;
+    min-height: 42px;
+    align-self: stretch;
+}
+
+.settings-quick-launch-panel .quick-launch-custom-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    width: 100%;
+    gap: 9px;
+}
+
+.settings-quick-launch-panel .quick-launch-custom-fields input {
+    width: 100%;
+    min-width: 0;
+}
+
+.settings-quick-launch-panel #quick-launch-custom-icon,
+.settings-quick-launch-panel .quick-launch-custom-add {
+    grid-column: 1 / -1;
+}
+
+.settings-quick-launch-panel .quick-launch-custom-add {
+    width: 100%;
+    height: 42px;
+    min-height: 40px;
+}
+
+.settings-quick-launch-panel .quick-launch-auto {
+    width: auto;
+    height: 38px;
+    min-height: 38px;
+}
+
+.settings-quick-launch-panel .quick-launch-custom-remove {
+    width: auto;
+    height: 28px;
+    min-height: 28px;
+}
+
+.settings-quick-launch-panel .quick-launch-add-card button,
+.settings-quick-launch-panel .quick-launch-setting-head button,
+.settings-quick-launch-panel .quick-launch-manage-card button {
+    position: static;
+    margin: 0;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+}
+
+.settings-quick-launch-panel .quick-launch-manage-card {
+    margin-top: 0;
+}
+
+.settings-quick-launch-panel .quick-launch-custom-list {
+    width: 100%;
+    max-height: 220px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+    .quick-launch-drop-placeholder {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        border-radius: 9px;
+    }
+
+    .settings-quick-launch-panel .quick-launch-setting-head {
+        gap: 10px;
+    }
+
+    .settings-quick-launch-panel .quick-launch-auto {
+        width: 100%;
+    }
+
+    .settings-quick-launch-panel .quick-launch-library-picker,
+    .settings-quick-launch-panel .quick-launch-custom-fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .settings-quick-launch-panel #quick-launch-library-add,
+    .settings-quick-launch-panel #quick-launch-custom-icon,
+    .settings-quick-launch-panel .quick-launch-custom-add {
+        width: 100%;
+        grid-column: 1;
     }
 }

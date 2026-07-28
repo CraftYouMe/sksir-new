@@ -18,10 +18,98 @@
         service.write(service.orderKey, order);
     }
 
+    function animateReorder(panel, previousRects) {
+        panel.querySelectorAll(".quick-launch-item").forEach(function (entry) {
+            var previous = previousRects.get(entry);
+            if (!previous || entry.classList.contains("is-dragging")) return;
+            var current = entry.getBoundingClientRect();
+            var deltaX = previous.left - current.left;
+            var deltaY = previous.top - current.top;
+            if (!deltaX && !deltaY) return;
+            if (typeof entry.animate !== "function") return;
+            if (typeof entry.getAnimations === "function") {
+                entry.getAnimations().forEach(function (animation) { animation.cancel(); });
+            }
+            entry.animate([
+                { transform: "translate(" + deltaX + "px," + deltaY + "px)" },
+                { transform: "translate(0,0)" }
+            ], { duration: 160, easing: "cubic-bezier(.2,.8,.2,1)" });
+        });
+    }
+
     function bindDrag(item, service) {
         var startX = 0;
         var startY = 0;
+        var pointerX = 0;
+        var pointerY = 0;
+        var moveFrame = 0;
         var dragging = false;
+        var ghost = null;
+        var placeholder = null;
+        var panel = null;
+
+        function moveGhostImmediately(event) {
+            var points = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : null;
+            var point = points && points.length ? points[points.length - 1] : event;
+            pointerX = point.clientX;
+            pointerY = point.clientY;
+            if (ghost) {
+                ghost.style.transform = "translate3d(" + (pointerX - 22) + "px," +
+                    (pointerY - 30) + "px,0)";
+            }
+        }
+
+        function updateDragPosition() {
+            moveFrame = 0;
+            if (!dragging || !ghost || !placeholder || !panel) return;
+
+            var entries = Array.from(panel.querySelectorAll(".quick-launch-item")).filter(function (entry) {
+                return entry !== item;
+            });
+            var before = null;
+            for (var index = 0; index < entries.length; index += 1) {
+                var rect = entries[index].getBoundingClientRect();
+                if (pointerX < rect.left + rect.width / 2) {
+                    before = entries[index];
+                    break;
+                }
+            }
+            var nextNode = before || panel.querySelector(".quick-launch-add");
+            if (placeholder.nextSibling === nextNode) return;
+
+            var previousRects = new Map();
+            entries.forEach(function (entry) {
+                previousRects.set(entry, entry.getBoundingClientRect());
+            });
+            panel.insertBefore(placeholder, nextNode);
+            animateReorder(panel, previousRects);
+        }
+
+        function scheduleDragPosition(event) {
+            moveGhostImmediately(event);
+            if (!moveFrame) moveFrame = requestAnimationFrame(updateDragPosition);
+        }
+
+        function startDrag(event) {
+            dragging = true;
+            panel = item.parentNode;
+            item.classList.add("is-dragging");
+            panel.classList.add("is-reordering");
+            item.setAttribute("aria-grabbed", "true");
+            placeholder = document.createElement("span");
+            placeholder.className = "quick-launch-drop-placeholder";
+            placeholder.setAttribute("aria-hidden", "true");
+            panel.insertBefore(placeholder, item);
+            ghost = item.cloneNode(true);
+            ghost.removeAttribute("href");
+            ghost.removeAttribute("data-url");
+            ghost.className = "quick-launch-drag-ghost";
+            var label = document.createElement("span");
+            label.textContent = item.getAttribute("aria-label") || item.title || "快捷入口";
+            ghost.appendChild(label);
+            document.body.appendChild(ghost);
+            scheduleDragPosition(event);
+        }
 
         item.addEventListener("pointerdown", function (event) {
             if (event.button !== undefined && event.button !== 0) return;
@@ -33,25 +121,49 @@
 
         item.addEventListener("pointermove", function (event) {
             if (!item.hasPointerCapture(event.pointerId)) return;
-            if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 7) return;
-            dragging = true;
-            item.classList.add("is-dragging");
-            var target = document.elementFromPoint(event.clientX, event.clientY);
-            var targetItem = target && target.closest && target.closest(".quick-launch-item");
-            if (!targetItem || targetItem === item || targetItem.parentNode !== item.parentNode) return;
-            var targetRect = targetItem.getBoundingClientRect();
-            var insertAfter = event.clientX > targetRect.left + targetRect.width / 2;
-            targetItem.parentNode.insertBefore(item, insertAfter ? targetItem.nextSibling : targetItem);
+            if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 3) return;
+            if (!dragging) startDrag(event);
+            event.preventDefault();
+            scheduleDragPosition(event);
+        });
+
+        item.addEventListener("pointerrawupdate", function (event) {
+            if (!dragging || !item.hasPointerCapture(event.pointerId)) return;
+            moveGhostImmediately(event);
         });
 
         function finishDrag(event) {
             if (item.hasPointerCapture(event.pointerId)) item.releasePointerCapture(event.pointerId);
-            item.classList.remove("is-dragging");
+            if (moveFrame) {
+                cancelAnimationFrame(moveFrame);
+                moveFrame = 0;
+            }
             if (!dragging) return;
+
+            panel.insertBefore(item, placeholder);
+            placeholder.remove();
+            placeholder = null;
+            item.classList.remove("is-dragging");
+            item.removeAttribute("aria-grabbed");
+            panel.classList.remove("is-reordering");
+            if (ghost) {
+                var finalRect = item.getBoundingClientRect();
+                ghost.style.transition = "transform 160ms cubic-bezier(.2,.8,.2,1), opacity 160ms ease";
+                ghost.style.opacity = "0";
+                ghost.style.transform = "translate3d(" + (finalRect.left - 5) + "px," +
+                    (finalRect.top - 5) + "px,0) scale(0.78)";
+                setTimeout(function () {
+                    if (ghost) ghost.remove();
+                    ghost = null;
+                }, 170);
+            }
             suppressClickUntil = Date.now() + 400;
             saveOrder(service);
+            item.classList.add("just-dropped");
+            setTimeout(function () { item.classList.remove("just-dropped"); }, 320);
             event.preventDefault();
             dragging = false;
+            panel = null;
         }
 
         item.addEventListener("pointerup", finishDrag);
@@ -106,8 +218,50 @@
             bindDrag(link, service);
             panel.appendChild(link);
         });
-        panel.hidden = items.length === 0;
+        var addButton = document.createElement("button");
+        addButton.type = "button";
+        addButton.className = "quick-launch-add";
+        addButton.title = "添加快捷入口";
+        addButton.setAttribute("aria-label", "添加快捷入口");
+        addButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>';
+        panel.appendChild(addButton);
+        panel.hidden = false;
         return Promise.resolve();
+    }
+
+    function setQuickAddDialog(open) {
+        var dialog = document.getElementById("quick-launch-add-dialog");
+        if (!dialog) return;
+        dialog.hidden = !open;
+        document.body.classList.toggle("quick-add-open", open);
+        if (open) {
+            requestAnimationFrame(function () {
+                dialog.classList.add("is-visible");
+                var name = document.getElementById("quick-launch-home-name");
+                if (name) name.focus();
+            });
+        } else {
+            dialog.classList.remove("is-visible");
+        }
+    }
+
+    function saveFormItem(service, values, form) {
+        var name = String(values.name || "").trim().slice(0, 30);
+        var url = service.normalizeWebUrl(values.url);
+        var rawIcon = String(values.icon || "").trim();
+        var icon = rawIcon ? service.normalizeWebUrl(rawIcon) : "";
+        if (!name) return service.showMessage("请填写入口名称", true);
+        if (!url) return service.showMessage("请输入正确的网址", true);
+        if (rawIcon && !icon) return service.showMessage("请输入正确的图标网址", true);
+        var result = service.saveCustomItem({
+            name: name,
+            url: url,
+            icon: icon || new URL("/favicon.ico", url).href
+        });
+        if (result.full) return service.showMessage("只能添加 " + service.customLimit + " 个自定义入口", true);
+        if (form) form.reset();
+        service.showMessage(result.updated ? "已更新快捷入口" : "已添加到首页");
+        return true;
     }
 
     window.SksirQuickLaunchRenderer = render;
@@ -134,22 +288,11 @@
 
     function addCustomItem(event, service) {
         event.preventDefault();
-        var name = readValue("quick-launch-custom-name").trim().slice(0, 30);
-        var url = service.normalizeWebUrl(readValue("quick-launch-custom-url"));
-        var rawIcon = readValue("quick-launch-custom-icon").trim();
-        var icon = rawIcon ? service.normalizeWebUrl(rawIcon) : "";
-        if (!name) return service.showMessage("请填写入口名称", true);
-        if (!url) return service.showMessage("网址请使用 http:// 或 https:// 开头", true);
-        if (rawIcon && !icon) return service.showMessage("图标网址请使用 http:// 或 https:// 开头", true);
-
-        var result = service.saveCustomItem({
-            name: name,
-            url: url,
-            icon: icon || new URL("/favicon.ico", url).href
-        });
-        if (result.full) return service.showMessage("只能添加 " + service.customLimit + " 个自定义入口", true);
-        event.target.reset();
-        service.showMessage(result.updated ? "已更新自定义入口" : "已添加自定义入口");
+        saveFormItem(service, {
+            name: readValue("quick-launch-custom-name"),
+            url: readValue("quick-launch-custom-url"),
+            icon: readValue("quick-launch-custom-icon")
+        }, event.target);
     }
 
     function removeCustomItem(button, service) {
@@ -195,6 +338,12 @@
             });
         }
         if (event.target.closest("#quick-launch-library-add")) addLibraryItem(service);
+        if (event.target.closest(".quick-launch-add")) {
+            event.preventDefault();
+            event.stopPropagation();
+            setQuickAddDialog(true);
+        }
+        if (event.target.closest("[data-quick-add-close]")) setQuickAddDialog(false);
 
         var removeButton = event.target.closest(".quick-launch-custom-remove");
         if (removeButton) removeCustomItem(removeButton, service);
@@ -217,9 +366,26 @@
     });
 
     document.addEventListener("submit", function (event) {
-        if (!event.target.matches("#quick-launch-custom-form")) return;
         var service = api();
-        if (service) addCustomItem(event, service);
+        if (!service) return;
+        if (event.target.matches("#quick-launch-custom-form")) {
+            addCustomItem(event, service);
+        } else if (event.target.matches("#quick-launch-home-form")) {
+            event.preventDefault();
+            var saved = saveFormItem(service, {
+                name: readValue("quick-launch-home-name"),
+                url: readValue("quick-launch-home-url"),
+                icon: readValue("quick-launch-home-icon")
+            }, event.target);
+            if (saved) setQuickAddDialog(false);
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && !document.getElementById("quick-launch-add-dialog").hidden) {
+            event.preventDefault();
+            setQuickAddDialog(false);
+        }
     });
 
     window.addEventListener("storage", function (event) {

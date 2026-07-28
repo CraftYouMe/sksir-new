@@ -620,7 +620,10 @@
                                             <div class="from_row quick-launch-settings">
                                                 <div class="from_row_content">
                                                     <div class="quick-launch-setting-head">
-                                                        <div class="quick-launch-setting-title">快捷入口</div>
+                                                        <div>
+                                                            <div class="quick-launch-setting-title">显示顺序</div>
+                                                            <div class="quick-launch-section-note">首页显示数量，移动首页图标可以修改顺序。</div>
+                                                        </div>
                                                         <button type="button" id="quick-launch-auto" class="quick-launch-auto secondary">恢复自动顺序</button>
                                                     </div>
                                                     <div id="quick-launch-setting">
@@ -651,29 +654,48 @@
                                                         </label>
                                                     </div>
                                                     <form id="quick-launch-custom-form" class="quick-launch-custom-form" novalidate>
-                                                        <div class="quick-launch-custom-heading">自定义入口</div>
-                                                        <div class="quick-launch-library-picker">
-                                                            <select id="quick-launch-library-tab" aria-label="选择收藏标签">
-                                                                <option value="">选择标签</option>
-                                                            </select>
-                                                            <select id="quick-launch-library-item" aria-label="选择收藏网站" disabled>
-                                                                <option value="">选择网站</option>
-                                                            </select>
-                                                            <button type="button" id="quick-launch-library-add" class="secondary">添加选中</button>
-                                                        </div>
-                                                        <div class="quick-launch-custom-divider"><span>手动添加</span></div>
-                                                        <div class="quick-launch-custom-fields">
-                                                            <input type="text" id="quick-launch-custom-name" maxlength="30"
-                                                                placeholder="名称" aria-label="快捷入口名称" autocomplete="off" required>
-                                                            <input type="url" id="quick-launch-custom-url" maxlength="500"
-                                                                placeholder="https://example.com" aria-label="快捷入口网址" autocomplete="off" required>
-                                                            <input type="url" id="quick-launch-custom-icon" maxlength="500"
-                                                                placeholder="图标 URL 可以不填" aria-label="快捷入口图标网址" autocomplete="off">
-                                                            <button type="submit" class="quick-launch-custom-add primary">添加</button>
-                                                        </div>
+                                                        <section class="quick-launch-add-card">
+                                                            <div class="quick-launch-add-card-head">
+                                                                <span class="quick-launch-add-icon" aria-hidden="true">★</span>
+                                                                <div>
+                                                                    <div class="quick-launch-custom-heading">收藏添加</div>
+                                                                    <p>选择已有收藏，添加到首页。</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="quick-launch-library-picker">
+                                                                <select id="quick-launch-library-tab" aria-label="选择收藏标签">
+                                                                    <option value="">选择标签</option>
+                                                                </select>
+                                                                <select id="quick-launch-library-item" aria-label="选择收藏网站" disabled>
+                                                                    <option value="">选择网站</option>
+                                                                </select>
+                                                                <button type="button" id="quick-launch-library-add" class="secondary">添加到首页</button>
+                                                            </div>
+                                                        </section>
+                                                        <section class="quick-launch-add-card">
+                                                            <div class="quick-launch-add-card-head">
+                                                                <span class="quick-launch-add-icon" aria-hidden="true">+</span>
+                                                                <div>
+                                                                    <div class="quick-launch-custom-heading">新建快捷入口</div>
+                                                                    <p>填写名称和网址，图标不填时自动获取。</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="quick-launch-custom-fields">
+                                                                <input type="text" id="quick-launch-custom-name" maxlength="30"
+                                                                    placeholder="名称：网站" aria-label="快捷入口名称" autocomplete="off" required>
+                                                                <input type="url" id="quick-launch-custom-url" maxlength="500"
+                                                                    placeholder="网址：example.com" aria-label="快捷入口网址" autocomplete="off" required>
+                                                                <input type="url" id="quick-launch-custom-icon" maxlength="500"
+                                                                    placeholder="图标网址 选填" aria-label="快捷入口图标网址" autocomplete="off">
+                                                                <button type="submit" class="quick-launch-custom-add primary">添加到首页</button>
+                                                            </div>
+                                                        </section>
                                                     </form>
-                                                    <div id="quick-launch-custom-list" class="quick-launch-custom-list" aria-live="polite"></div>
-                                                    <div class="quick-launch-setting-tip">默认开启，按点击次数自动调整，移动首页图标可自定义顺序。设置只保存在本机。</div>
+                                                    <section class="quick-launch-manage-card">
+                                                        <div class="quick-launch-custom-heading">已添加的自定义入口</div>
+                                                        <div id="quick-launch-custom-list" class="quick-launch-custom-list" aria-live="polite"></div>
+                                                    </section>
+                                                    <div class="quick-launch-setting-tip">所有快捷入口设置只保存在当前设备。</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -702,12 +724,44 @@
                 </div>
             </div>
         </div>
+
+        <div id="quick-launch-add-dialog" class="quick-launch-add-dialog" hidden>
+            <div class="quick-launch-add-backdrop" data-quick-add-close></div>
+            <section class="quick-launch-add-sheet" role="dialog" aria-modal="true"
+                aria-labelledby="quick-launch-add-title">
+                <header>
+                    <div>
+                        <h2 id="quick-launch-add-title">添加快捷入口</h2>
+                        <p>保存后会显示在首页。</p>
+                    </div>
+                    <button type="button" class="quick-launch-add-close" data-quick-add-close aria-label="关闭">&times;</button>
+                </header>
+                <form id="quick-launch-home-form" novalidate>
+                    <label>
+                        <span>名称</span>
+                        <input id="quick-launch-home-name" type="text" maxlength="30" placeholder="名称：网站"
+                            autocomplete="off" required>
+                    </label>
+                    <label>
+                        <span>网址</span>
+                        <input id="quick-launch-home-url" type="url" maxlength="500"
+                            placeholder="example.com" inputmode="url" autocomplete="off" required>
+                    </label>
+                    <label>
+                        <span>图标网址 <small>选填</small></span>
+                        <input id="quick-launch-home-icon" type="url" maxlength="500"
+                            placeholder="留空时自动获取" inputmode="url" autocomplete="off">
+                    </label>
+                    <button type="submit" class="quick-launch-home-submit">添加到首页</button>
+                </form>
+            </section>
+        </div>
         
         <!-- 页脚信息 -->
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.28.4">v2026.07.28.4</span>
+                <span id="app-version" class="app-version" data-version="2026.07.28.8">v2026.07.28.8</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
                 <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>

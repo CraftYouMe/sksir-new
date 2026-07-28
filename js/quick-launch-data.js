@@ -31,8 +31,10 @@
     }
 
     function normalizeWebUrl(url) {
+        var value = String(url || "").trim();
+        if (value && !/^[a-z][a-z0-9+.-]*:/i.test(value)) value = "https://" + value;
         try {
-            var parsed = new URL(String(url || "").trim());
+            var parsed = new URL(value);
             return /^(https?:)$/.test(parsed.protocol) ? parsed.href : "";
         } catch (error) {
             return "";
