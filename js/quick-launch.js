@@ -99,7 +99,6 @@
         var button = menu.querySelector(".quick-launch-context-delete");
         quickContextTrigger = trigger;
         menu.setAttribute("data-url", entry.url);
-        menu.setAttribute("data-custom", entry.custom ? "true" : "false");
         if (name) name.textContent = entry.name;
         menu.hidden = false;
         menu.classList.remove("is-visible");
@@ -527,7 +526,7 @@
         return true;
     }
 
-    function requestCapacityExpansion(service, expansion, item, form) {
+    function requestCapacityExpansion(service, expansion, item, form, trigger) {
         var dialog = document.getElementById("quick-launch-capacity-dialog");
         var description = document.getElementById("quick-launch-capacity-description");
         var confirmButton = document.getElementById("quick-launch-capacity-confirm");
@@ -548,7 +547,7 @@
             item: item,
             form: form
         };
-        setQuickCapacityDialog(true, form && form.querySelector(".quick-launch-home-submit"));
+        setQuickCapacityDialog(true, trigger || (form && form.querySelector(".quick-launch-home-submit")));
         return true;
     }
 
@@ -571,6 +570,36 @@
     }
 
     window.SksirQuickLaunchRenderer = render;
+    window.SksirQuickLaunchActions = {
+        addItem: function (values, trigger) {
+            var service = api();
+            if (!service || !values) return false;
+            var name = String(values.name || "").trim().slice(0, 30);
+            var url = service.normalizeWebUrl(values.url);
+            var icon = service.normalizeWebUrl(values.icon);
+            if (!name || !url) {
+                service.showMessage("无法读取这个收藏的网址", true);
+                return false;
+            }
+            var alreadyVisible = Array.from(document.querySelectorAll("#quick-launch .quick-launch-item"))
+                .some(function (entry) {
+                    return service.normalizeWebUrl(entry.getAttribute("data-url")) === url;
+                });
+            if (alreadyVisible) {
+                service.showMessage("这个入口已在首页");
+                return true;
+            }
+            var item = {
+                name: name,
+                url: url,
+                icon: icon || new URL("/favicon.ico", url).href,
+                desc: String(values.desc || "").trim().slice(0, 80)
+            };
+            var expansion = getCapacityExpansion(service, url);
+            if (expansion && requestCapacityExpansion(service, expansion, item, null, trigger)) return false;
+            return commitFormItem(service, item, null);
+        }
+    };
 
     function addLibraryItem(service) {
         var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
@@ -605,29 +634,42 @@
         }, event.target);
     }
 
-    function removeQuickLaunchItemByUrl(url, custom, service) {
-        if (!url) return;
-        if (custom) {
-            var items = service.getCustomItems().filter(function (item) { return item.url !== url; });
-            service.write(service.customKey, items.map(function (item) {
-                return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
+    function removeQuickLaunchItemByUrl(url, service) {
+        var normalizedUrl = service.normalizeWebUrl(url);
+        if (!normalizedUrl) return;
+        var matchesUrl = function (itemUrl) {
+            return service.normalizeWebUrl(itemUrl) === normalizedUrl;
+        };
+        var items = service.getCustomItems().filter(function (item) {
+            return !matchesUrl(item.url);
+        });
+        service.write(service.customKey, items.map(function (item) {
+            return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
+        }));
+        var hiddenItems = service.getHiddenUrls().filter(function (itemUrl) {
+            return !matchesUrl(itemUrl);
+        });
+        hiddenItems.push(normalizedUrl);
+        service.write(service.hiddenKey, hiddenItems.slice(0, 100));
+        var roster = service.read(service.rosterKey, []);
+        if (Array.isArray(roster)) {
+            service.write(service.rosterKey, roster.filter(function (itemUrl) {
+                return !matchesUrl(itemUrl);
             }));
-        } else {
-            var hiddenItems = service.getHiddenUrls();
-            if (hiddenItems.indexOf(url) === -1) hiddenItems.push(url);
-            service.write(service.hiddenKey, hiddenItems.slice(0, 100));
         }
         var manualOrder = service.read(service.orderKey, []);
         if (Array.isArray(manualOrder)) {
-            service.write(service.orderKey, manualOrder.filter(function (itemUrl) { return itemUrl !== url; }));
+            service.write(service.orderKey, manualOrder.filter(function (itemUrl) {
+                return !matchesUrl(itemUrl);
+            }));
         }
         service.renderCustomList();
         service.render();
-        service.showMessage(custom ? "已删除自定义入口" : "快捷入口已移除");
+        service.showMessage("快捷入口已移除");
     }
 
     function removeCustomItem(button, service) {
-        removeQuickLaunchItemByUrl(button.getAttribute("data-url"), true, service);
+        removeQuickLaunchItemByUrl(button.getAttribute("data-url"), service);
     }
 
     document.addEventListener("click", function (event) {
@@ -699,9 +741,8 @@
             event.preventDefault();
             var contextMenu = contextDelete.closest(".quick-launch-context-menu");
             var contextUrl = contextMenu && contextMenu.getAttribute("data-url");
-            var contextCustom = contextMenu && contextMenu.getAttribute("data-custom") === "true";
             closeQuickContextMenu(false);
-            removeQuickLaunchItemByUrl(contextUrl, contextCustom, service);
+            removeQuickLaunchItemByUrl(contextUrl, service);
             return;
         }
         if (!event.target.closest(".quick-launch-context-menu")) closeQuickContextMenu(false);

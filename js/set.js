@@ -1080,7 +1080,7 @@ $(document).ready(function () {
         var bookmarksOpen = $('#content').hasClass('bookmarks-open');
         if (!settingOpen && !bookmarksOpen) return;
         var activePanel = settingOpen ? '.set' : '.mark';
-        if ($(event.target).closest(activePanel + ', .tool-all, #menu, .settings-confirm-dialog, .bookmark-item-dialog').length) return;
+        if ($(event.target).closest(activePanel + ', .tool-all, #menu, #bookmark-quick-context-menu, .settings-confirm-dialog, .bookmark-item-dialog').length) return;
         event.preventDefault();
         event.stopPropagation();
         closeActiveSurface();

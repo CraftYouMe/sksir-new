@@ -7,6 +7,7 @@
   var cardSortingEnabledKey = "sksir-bookmark-card-sort-enabled";
   var bookmarkCardSelector = ".quick, .quicks, .quickjl";
   var customItemsKey = "sksir-bookmark-custom-items";
+  var deletedItemsKey = "sksir-bookmark-deleted-items";
   var customItemsLimit = 120;
   var suppressTabClickUntil = 0;
   var suppressCardClickUntil = 0;
@@ -15,7 +16,11 @@
   var resetDialogCloseTimer = 0;
   var pendingItemPanel = null;
   var pendingDeleteId = "";
+  var pendingDeleteKey = "";
+  var pendingDeleteName = "";
   var resetDialogTrigger = null;
+  var bookmarkQuickContextEntry = null;
+  var bookmarkQuickContextTrigger = null;
 
   function getPanels(products) {
     return Array.prototype.filter.call(
@@ -68,6 +73,19 @@
       });
       return items;
     }, []);
+  }
+
+  function getDeletedItemKeys() {
+    var stored = readJson(deletedItemsKey, []);
+    var seen = {};
+    return Array.isArray(stored) ? stored.reduce(function (keys, key) {
+      key = String(key || "").trim();
+      if (key && !seen[key]) {
+        seen[key] = true;
+        keys.push(key);
+      }
+      return keys;
+    }, []).slice(0, 300) : [];
   }
 
   function getTabData(panel) {
@@ -141,6 +159,15 @@
     }).forEach(function (item) {
       var card = createCustomCard(item, tab, panel);
       if (card) container.appendChild(card);
+    });
+    var deletedLookup = {};
+    getDeletedItemKeys().forEach(function (key) {
+      deletedLookup[key] = true;
+    });
+    container.querySelectorAll(bookmarkCardSelector).forEach(function (card) {
+      if (deletedLookup[getCardKey(card)] && !card.classList.contains("bookmark-custom-card")) {
+        card.remove();
+      }
     });
     container.appendChild(createAddCard(panel, tab));
     initPanelCardSorting(panel);
@@ -869,6 +896,105 @@
     });
   }
 
+  function ensureBookmarkQuickContextMenu() {
+    var menu = document.getElementById("bookmark-quick-context-menu");
+    if (menu) return menu;
+    menu = document.createElement("div");
+    menu.id = "bookmark-quick-context-menu";
+    menu.className = "bookmark-quick-context-menu";
+    menu.hidden = true;
+    menu.setAttribute("role", "menu");
+    menu.setAttribute("aria-label", "收藏操作");
+    var addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "bookmark-quick-context-add";
+    addButton.textContent = "添加到首页";
+    addButton.setAttribute("role", "menuitem");
+    menu.appendChild(addButton);
+    var deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "bookmark-quick-context-delete";
+    deleteButton.textContent = "删除收藏";
+    deleteButton.setAttribute("role", "menuitem");
+    menu.appendChild(deleteButton);
+    document.body.appendChild(menu);
+    return menu;
+  }
+
+  function closeBookmarkQuickContextMenu(restoreFocus) {
+    var menu = document.getElementById("bookmark-quick-context-menu");
+    if (!menu || menu.hidden) return;
+    menu.classList.remove("is-visible");
+    menu.hidden = true;
+    bookmarkQuickContextEntry = null;
+    if (restoreFocus && bookmarkQuickContextTrigger &&
+      document.contains(bookmarkQuickContextTrigger)) {
+      var link = bookmarkQuickContextTrigger.querySelector("a[href]");
+      if (link) link.focus({ preventScroll: true });
+    }
+    bookmarkQuickContextTrigger = null;
+  }
+
+  function openBookmarkQuickContextMenu(event, card) {
+    var link = card && card.querySelector("a[href]");
+    if (!link) return;
+    event.preventDefault();
+    event.stopPropagation();
+    var image = card.querySelector("img");
+    var imageSource = image && (
+      image.dataset.iconSrc ||
+      (!image.classList.contains("error") ? image.src : "")
+    );
+    bookmarkQuickContextEntry = {
+      name: link.textContent.trim() || link.href,
+      url: link.href,
+      icon: imageSource || "",
+      desc: (card.querySelector(".quick-desc") || {}).textContent || "",
+      key: getCardKey(card),
+      customId: String(card.dataset.bookmarkCustomId || "")
+    };
+    bookmarkQuickContextTrigger = card;
+    var menu = ensureBookmarkQuickContextMenu();
+    menu.hidden = false;
+    menu.classList.remove("is-visible");
+    var gap = 8;
+    var width = menu.offsetWidth;
+    var height = menu.offsetHeight;
+    menu.style.left = Math.max(gap,
+      Math.min(event.clientX, document.documentElement.clientWidth - width - gap)) + "px";
+    menu.style.top = Math.max(gap,
+      Math.min(event.clientY, document.documentElement.clientHeight - height - gap)) + "px";
+    void menu.offsetWidth;
+    menu.classList.add("is-visible");
+    var button = menu.querySelector("button");
+    if (button) button.focus({ preventScroll: true });
+  }
+
+  function addContextBookmarkToQuickLaunch() {
+    var entry = bookmarkQuickContextEntry;
+    var trigger = bookmarkQuickContextTrigger;
+    var focusTrigger = trigger && trigger.querySelector
+      ? trigger.querySelector("a[href]")
+      : null;
+    closeBookmarkQuickContextMenu(false);
+    if (!entry || !window.SksirQuickLaunchActions) {
+      showBookmarkMessage("快捷入口暂时无法使用", true);
+      return;
+    }
+    window.SksirQuickLaunchActions.addItem(entry, focusTrigger || trigger);
+  }
+
+  function openContextBookmarkDelete() {
+    var entry = bookmarkQuickContextEntry;
+    var trigger = bookmarkQuickContextTrigger;
+    if (!entry || !entry.key) {
+      closeBookmarkQuickContextMenu(false);
+      return;
+    }
+    closeBookmarkQuickContextMenu(false);
+    openDeleteDialog(entry.customId, entry.name, trigger, entry.key);
+  }
+
   function saveCustomItem() {
     var tab = getTabData(pendingItemPanel);
     var name = String(document.getElementById("bookmark-item-name").value || "").trim().slice(0, 30);
@@ -938,37 +1064,62 @@
     }
     dialog.classList.remove("is-visible");
     pendingDeleteId = "";
+    pendingDeleteKey = "";
+    pendingDeleteName = "";
     deleteDialogCloseTimer = setTimeout(function () {
       dialog.hidden = true;
       deleteDialogCloseTimer = 0;
     }, 220);
   }
 
-  function openDeleteDialog(id, name) {
+  function openDeleteDialog(id, name, trigger, bookmarkKey) {
     var description = document.getElementById("bookmark-delete-description");
     if (!description) return;
-    pendingDeleteId = id;
-    description.textContent = "“" + name + "”将在当前设备移除，此操作不能恢复。";
+    pendingDeleteId = String(id || "");
+    pendingDeleteKey = String(bookmarkKey || (pendingDeleteId ? "custom:" + pendingDeleteId : ""));
+    pendingDeleteName = String(name || "这个收藏");
+    description.textContent = pendingDeleteId
+      ? "“" + pendingDeleteName + "”将在当前设备移除，此操作不能恢复。"
+      : "“" + pendingDeleteName + "”将在当前设备移除，可通过重置收藏中心恢复。";
     setDeleteDialog(true);
   }
 
-  function deleteCustomItem() {
-    if (!pendingDeleteId) return;
+  function deleteBookmarkItem() {
+    if (!pendingDeleteId && !pendingDeleteKey) return;
     var id = pendingDeleteId;
-    var item = getCustomItems().find(function (entry) {
-      return entry.id === id;
+    var key = pendingDeleteKey;
+    var name = pendingDeleteName;
+    if (id) {
+      var items = getCustomItems().filter(function (entry) {
+        return entry.id !== id;
+      });
+      if (!writeJson(customItemsKey, items)) {
+        showBookmarkMessage("删除失败，请稍后再试", true);
+        return;
+      }
+    } else {
+      var deletedKeys = getDeletedItemKeys();
+      if (deletedKeys.indexOf(key) === -1) deletedKeys.push(key);
+      if (!writeJson(deletedItemsKey, deletedKeys.slice(0, 300))) {
+        showBookmarkMessage("删除失败，请稍后再试", true);
+        return;
+      }
+    }
+    var orders = getCardOrders();
+    Object.keys(orders).forEach(function (tabTitle) {
+      if (!Array.isArray(orders[tabTitle])) return;
+      orders[tabTitle] = orders[tabTitle].filter(function (itemKey) {
+        return itemKey !== key;
+      });
     });
-    var items = getCustomItems().filter(function (entry) {
-      return entry.id !== id;
-    });
-    if (!writeJson(customItemsKey, items)) {
+    if (!writeJson(cardOrderKey, orders)) {
       showBookmarkMessage("删除失败，请稍后再试", true);
       return;
     }
     setDeleteDialog(false);
     syncAllCustomItems();
     scheduleFilter();
-    showBookmarkMessage(item ? "已删除“" + item.name + "”" : "已删除自定义收藏");
+    showBookmarkMessage("已删除“" + name + "”");
   }
 
   function setBookmarkResetDialog(open, trigger) {
@@ -1000,6 +1151,7 @@
   function resetBookmarkCenter() {
     [
       customItemsKey,
+      deletedItemsKey,
       cardOrderKey,
       cardSortingEnabledKey,
       tabOrderKey,
@@ -1052,6 +1204,23 @@
     showBookmarkMessage(event.target.checked ? "已开启分类标签拖动" : "已关闭分类标签拖动");
   });
   document.addEventListener("click", function (event) {
+    var quickContextMenu = document.getElementById("bookmark-quick-context-menu");
+    if (event.target && event.target.closest &&
+      event.target.closest(".bookmark-quick-context-add")) {
+      event.preventDefault();
+      addContextBookmarkToQuickLaunch();
+      return;
+    }
+    if (event.target && event.target.closest &&
+      event.target.closest(".bookmark-quick-context-delete")) {
+      event.preventDefault();
+      openContextBookmarkDelete();
+      return;
+    }
+    if (quickContextMenu && !quickContextMenu.hidden &&
+      (!event.target.closest || !event.target.closest("#bookmark-quick-context-menu"))) {
+      closeBookmarkQuickContextMenu(false);
+    }
     if (event.target && event.target.closest && event.target.closest("[data-bookmark-item-close]")) {
       event.preventDefault();
       setItemDialog(false);
@@ -1064,7 +1233,7 @@
     }
     if (event.target && event.target.closest && event.target.closest("#bookmark-delete-confirm")) {
       event.preventDefault();
-      deleteCustomItem();
+      deleteBookmarkItem();
       return;
     }
     if (event.target && event.target.closest && event.target.closest("[data-bookmark-reset-close]")) {
@@ -1084,6 +1253,13 @@
     if (typeof window.closeBox === "function") window.closeBox();
   });
 
+  document.addEventListener("contextmenu", function (event) {
+    var card = event.target && event.target.closest &&
+      event.target.closest(bookmarkCardSelector);
+    if (!card || !card.closest(".products") || card.classList.contains("is-dragging")) return;
+    openBookmarkQuickContextMenu(event, card);
+  });
+
   document.addEventListener("submit", function (event) {
     if (!event.target || event.target.id !== "bookmark-item-form") return;
     event.preventDefault();
@@ -1092,6 +1268,13 @@
 
   document.addEventListener("keydown", function (event) {
     if (event.key !== "Escape") return;
+    var quickContextMenu = document.getElementById("bookmark-quick-context-menu");
+    if (quickContextMenu && !quickContextMenu.hidden) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      closeBookmarkQuickContextMenu(true);
+      return;
+    }
     var itemDialog = document.getElementById("bookmark-item-dialog");
     if (itemDialog && !itemDialog.hidden) {
       event.preventDefault();
@@ -1109,7 +1292,7 @@
       event.preventDefault();
       setBookmarkResetDialog(false);
     }
-  });
+  }, true);
 
   document.addEventListener("nav-sites-rendered", function (event) {
     initTabSorting();
@@ -1128,6 +1311,9 @@
     if (event.key === tabSortingEnabledKey || event.key === tabOrderKey) initTabSorting();
     if (event.key === cardOrderKey || event.key === cardSortingEnabledKey) {
       document.querySelectorAll(".products .mainCont[data-nav-hydrated='1']").forEach(initPanelCardSorting);
+    }
+    if (event.key === deletedItemsKey && typeof window.renderNavSites === "function") {
+      window.renderNavSites();
     }
   });
 

@@ -8355,6 +8355,70 @@ html.ios-standalone .bg-all {
     white-space: nowrap;
 }
 
+.bookmark-quick-context-menu {
+    position: fixed;
+    z-index: 2147482500;
+    width: 142px;
+    padding: 6px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    background: rgba(17, 24, 32, 0.90);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(20px) saturate(1.08);
+    backdrop-filter: blur(20px) saturate(1.08);
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+    transform-origin: top left;
+    transition: opacity 160ms ease, transform 190ms var(--motion-ease);
+}
+
+.bookmark-quick-context-menu[hidden] {
+    display: none;
+}
+
+.bookmark-quick-context-menu.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.bookmark-quick-context-menu button {
+    width: 100%;
+    min-height: 36px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: rgba(238, 251, 248, 0.92);
+    font-size: 0.78rem;
+    font-weight: 620;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.bookmark-quick-context-menu button:hover,
+.bookmark-quick-context-menu button:focus-visible {
+    background: rgba(155, 231, 215, 0.13);
+    color: #e4fff9;
+    outline: none;
+}
+
+.bookmark-quick-context-menu button:active {
+    transform: scale(0.98);
+}
+
+.bookmark-quick-context-menu .bookmark-quick-context-delete {
+    margin-top: 3px;
+    color: rgba(255, 153, 160, 0.96);
+}
+
+.bookmark-quick-context-menu .bookmark-quick-context-delete:hover,
+.bookmark-quick-context-menu .bookmark-quick-context-delete:focus-visible {
+    background: rgba(255, 92, 104, 0.14);
+    color: #ffd5d8;
+}
+
 .bookmark-tab-sort-toggle {
     flex: 0 0 auto;
 }
