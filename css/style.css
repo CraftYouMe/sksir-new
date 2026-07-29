@@ -460,18 +460,19 @@ html.perf-lite.is-booting::after {
     touch-action: none;
     backface-visibility: hidden;
     transform: translateZ(0);
+    will-change: transform;
     -webkit-backdrop-filter: blur(12px) saturate(1.08);
     backdrop-filter: blur(12px) saturate(1.08);
     transition:
-        transform var(--motion-fast) var(--motion-ease),
-        background-color var(--motion-fast) ease,
-        border-color var(--motion-fast) ease,
-        box-shadow var(--motion-fast) ease;
+        transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        background-color 160ms ease,
+        border-color 160ms ease;
 }
 
 .quick-launch-label {
     position: absolute;
-    bottom: calc(100% + 8px);
+    top: calc(100% + 9px);
+    bottom: auto;
     left: 50%;
     z-index: 6;
     display: block;
@@ -494,17 +495,16 @@ html.perf-lite.is-booting::after {
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, 4px) scale(0.96);
-    transform-origin: center bottom;
-    transition: opacity 0.16s ease, transform 0.2s var(--motion-ease);
+    transform: translate(-50%, -3px) scale(0.96);
+    transform-origin: center top;
+    transition: opacity 150ms ease, transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .quick-launch-item:hover {
     border-color: var(--glass-border-strong);
     background: var(--glass-surface-hover);
-    box-shadow: var(--glass-highlight), 0 12px 28px rgba(0, 0, 0, 0.20);
     z-index: 5;
-    transform: translateY(-6px) scale(1.22);
+    transform: translate3d(0, -3px, 0) scale(1.12);
 }
 
 .quick-launch-item:hover .quick-launch-label,
@@ -516,13 +516,6 @@ html.perf-lite.is-booting::after {
 .quick-launch-item:active,
 .quick-launch-item.is-dragging {
     cursor: grabbing;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .quick-launch-item:has(+ .quick-launch-item:hover),
-    .quick-launch-item:hover + .quick-launch-item {
-        transform: translateY(-3px) scale(1.08);
-    }
 }
 
 /* Wallpaper center */
@@ -1504,10 +1497,39 @@ html.perf-lite.is-booting::after {
 }
 
 .quick-launch-item img {
+    position: absolute;
     width: 20px;
     height: 20px;
     object-fit: contain;
+    opacity: 0;
     pointer-events: none;
+    transform: scale(0.88);
+    transition: opacity 160ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.quick-launch-icon-fallback {
+    display: grid;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    border-radius: 6px;
+    background: rgba(155, 231, 215, 0.11);
+    color: rgba(235, 252, 248, 0.92);
+    font-size: 0.7rem;
+    font-weight: 720;
+    line-height: 1;
+    pointer-events: none;
+    transition: opacity 140ms ease, transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.quick-launch-item.is-icon-ready img {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.quick-launch-item.is-icon-ready .quick-launch-icon-fallback {
+    opacity: 0;
+    transform: scale(0.82);
 }
 
 .onsearch .quick-launch,

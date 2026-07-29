@@ -13,6 +13,38 @@
     var mobileLimitKey = "sksir-quick-launch-mobile-limit";
     var storageKeys = [enabledKey, clicksKey, orderKey, sortModeKey, customKey, hiddenKey, rosterKey, rosterVersionKey, desktopLimitKey, mobileLimitKey];
     var customLimit = 24;
+    var bootItems = [
+        {
+            name: "BiliBili",
+            url: "https://BiliBili.com",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/bilibili.ico",
+            desc: "视频弹幕社区"
+        },
+        {
+            name: "ChatGPT",
+            url: "https://chat.openai.com/",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/chatgpt.ico",
+            desc: "AI 对话助手"
+        },
+        {
+            name: "DeepSeek",
+            url: "https://www.deepseek.com/",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/deepseek.ico",
+            desc: "国产 AI 助手"
+        },
+        {
+            name: "GitHub",
+            url: "https://github.com/",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/github.png",
+            desc: "代码托管平台"
+        },
+        {
+            name: "iLoveIMG",
+            url: "https://www.iloveimg.com/zh-cn",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/iloveimg.png",
+            desc: "图片批量处理"
+        }
+    ];
 
     function read(key, fallback) {
         return window.SksirStorage ? window.SksirStorage.readJson(key, fallback) : fallback;
@@ -154,8 +186,8 @@
         items.forEach(function (item) {
             seenUrls[item.url] = true;
         });
-        if (!Array.isArray(tabs)) return items;
-        tabs.forEach(function (tab) {
+        var sourceTabs = Array.isArray(tabs) ? tabs : [{ items: bootItems }];
+        sourceTabs.forEach(function (tab) {
             if (tab.lock || !Array.isArray(tab.items)) return;
             tab.items.forEach(function (item) {
                 if (!item || !item.url || !item.icon) return;

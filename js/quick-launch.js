@@ -280,6 +280,7 @@
         if (!service.isEnabled()) {
             panel.hidden = true;
             panel.replaceChildren();
+            delete panel.dataset.renderSignature;
             return Promise.resolve();
         }
 
@@ -300,8 +301,16 @@
             return itemsByUrl[url];
         }).filter(Boolean);
         items = service.sortItems(items);
+        var renderSignature = JSON.stringify(items.map(function (entry) {
+            return [entry.name, entry.url, entry.icon, entry.custom === true];
+        }));
+        if (panel.dataset.renderSignature === renderSignature &&
+            panel.querySelectorAll(".quick-launch-item").length === items.length) {
+            panel.hidden = false;
+            return Promise.resolve();
+        }
         panel.replaceChildren();
-        items.forEach(function (entry) {
+        items.forEach(function (entry, itemIndex) {
             var link = document.createElement("a");
             link.className = "quick-launch-item";
             link.href = entry.url;
@@ -311,15 +320,25 @@
             link.setAttribute("data-url", entry.url);
             if (entry.custom) link.setAttribute("data-custom", "true");
 
+            var iconFallback = document.createElement("span");
+            iconFallback.className = "quick-launch-icon-fallback";
+            iconFallback.textContent = String(entry.name || "?").trim().slice(0, 1).toUpperCase();
+            iconFallback.setAttribute("aria-hidden", "true");
+            link.appendChild(iconFallback);
+
             var icon = document.createElement("img");
-            icon.src = entry.icon;
             icon.alt = "";
-            icon.loading = "lazy";
+            icon.loading = "eager";
             icon.decoding = "async";
-            icon.onerror = function () {
-                this.onerror = null;
-                this.src = "./img/icon/fangdiu.png";
-            };
+            if (itemIndex < 5) icon.setAttribute("fetchpriority", "high");
+            icon.addEventListener("load", function () {
+                link.classList.add("is-icon-ready");
+            });
+            icon.addEventListener("error", function () {
+                icon.remove();
+                link.classList.add("is-icon-fallback");
+            });
+            icon.src = entry.icon;
             if (entry.url === pendingAddedUrl) {
                 var slowTimer = setTimeout(function () {
                     var currentService = api();
@@ -365,6 +384,7 @@
             setQuickAddDialog(true, addButton);
         });
         panel.appendChild(addButton);
+        panel.dataset.renderSignature = renderSignature;
         panel.hidden = false;
         return Promise.resolve();
     }
