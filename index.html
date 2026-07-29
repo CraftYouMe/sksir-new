@@ -14,7 +14,7 @@
     <title>导航酱 - 但行好事，莫问前程</title>
     <link rel="icon" href="apple-touch-icon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="preload" href="./css/style.css?v=2026.07.29.26" as="style">
+    <link rel="preload" href="./css/style.css?v=2026.07.29.34" as="style">
     <link rel="preload" href="./font/iconfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preload" href="./font/MiSans-UI.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
@@ -250,18 +250,18 @@
         }());
     </script>
     <!-- 引入样式 -->
-    <link rel="stylesheet" type="text/css" href="./css/style.css?v=2026.07.29.26">
+    <link rel="stylesheet" type="text/css" href="./css/style.css?v=2026.07.29.34">
     <script defer src="./js/jquery-3.6.0.min.js"></script>
-    <script defer src="./js/main.js?v=2026.07.29.26"></script>
-    <script defer src="./js/storage.js?v=2026.07.29.26"></script>
-    <script defer src="./js/quick-launch-data.js?v=2026.07.29.26"></script>
-    <script defer src="./js/search-engines.js?v=2026.07.29.26"></script>
-    <script defer src="./js/set.js?v=2026.07.29.26"></script>
-    <script defer src="./js/wallpaper.js?v=2026.07.29.26"></script>
-    <script defer src="./js/quick-launch.js?v=2026.07.29.26"></script>
-    <script defer src="./js/search-ui.js?v=2026.07.29.26"></script>
-    <script defer src="./js/settings.js?v=2026.07.29.26"></script>
-    <script defer src="./js/bootstrap.js?v=2026.07.29.26"></script>
+    <script defer src="./js/main.js?v=2026.07.29.34"></script>
+    <script defer src="./js/storage.js?v=2026.07.29.34"></script>
+    <script defer src="./js/quick-launch-data.js?v=2026.07.29.34"></script>
+    <script defer src="./js/search-engines.js?v=2026.07.29.34"></script>
+    <script defer src="./js/set.js?v=2026.07.29.34"></script>
+    <script defer src="./js/wallpaper.js?v=2026.07.29.34"></script>
+    <script defer src="./js/quick-launch.js?v=2026.07.29.34"></script>
+    <script defer src="./js/search-ui.js?v=2026.07.29.34"></script>
+    <script defer src="./js/settings.js?v=2026.07.29.34"></script>
+    <script defer src="./js/bootstrap.js?v=2026.07.29.34"></script>
     <!-- 书签数据、渲染和状态检测资源由 main.js 在首屏后按需加载 -->
     <!-- IE Out -->
 </head>
@@ -416,7 +416,7 @@
                     <div class="contents productss">
                         <div id="settings-page-tabs" class="settings-page-tabs" role="tablist" aria-label="具体设置页面"></div>
                         <!-- 搜索引擎设置 -->
-                        <div class="mainConts selected" data-settings-panel="search">
+                        <div class="mainConts selected settings-search-engine-panel" data-settings-panel="search">
                             <div class="settings-panel-head">
                                 <h3>搜索引擎偏好</h3>
                                 <p>点击卡片设为默认，拖拽调整顺序；右键可编辑、隐藏或删除。</p>
@@ -425,11 +425,6 @@
                                 <div class="set_blocks_content">
                                     <div class="se_list">
                                         <div class="se_list_table"></div>
-                                    </div>
-                                    <div class="se_add_preinstall">
-                                        <div class="set_se_list_preinstall secondary">
-                                            <span class="set_quick_text">重置</span>
-                                        </div>
                                     </div>
                                     <div class="add_content se_add_content" style="display:none;">
                                         <div class="froms">
@@ -464,6 +459,16 @@
                                             <div class="se_add_cancel secondary">取消</div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="settings-section settings-option-list quick-launch-option-list se_add_preinstall settings-engine-reset">
+                                <div class="settings-option-row quick-launch-option-row">
+                                    <div>
+                                        <strong>重置搜索引擎</strong>
+                                        <p>恢复默认搜索引擎、排列顺序和预设内容，移除本机添加的搜索引擎。</p>
+                                    </div>
+                                    <button type="button"
+                                        class="quick-launch-reset set_se_list_preinstall danger">重置搜索引擎</button>
                                 </div>
                             </div>
                         </div>
@@ -941,7 +946,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.29.26">v2026.07.29.26</span>
+                <span id="app-version" class="app-version" data-version="2026.07.29.34">v2026.07.29.34</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
             </div>
         </div>

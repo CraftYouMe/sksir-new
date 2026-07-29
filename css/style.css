@@ -6082,7 +6082,7 @@ html.ios-standalone .bg-all {
     position: relative;
     height: auto;
     min-height: 0;
-    padding-left: 122px;
+    padding-left: 32px;
     box-sizing: border-box;
 }
 
@@ -6094,7 +6094,7 @@ html.ios-standalone .bg-all {
     position: absolute;
     top: 41px;
     bottom: -29px;
-    left: 105px;
+    left: 14px;
     width: 1px;
     background: linear-gradient(rgba(155, 231, 215, 0.42), rgba(255, 255, 255, 0.08));
     content: "";
@@ -6144,7 +6144,7 @@ html.ios-standalone .bg-all {
 .changelog-marker {
     position: absolute;
     top: 22px;
-    left: -22px;
+    left: -24px;
     z-index: 1;
     width: 9px;
     height: 9px;
@@ -6346,6 +6346,27 @@ html.ios-standalone .bg-all {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 28px rgba(0, 0, 0, 0.10);
 }
 
+.set .settings-search-engine-panel {
+    gap: 0;
+}
+
+.set .settings-search-engine-panel .set_blocks_content {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.set .settings-search-engine-panel .settings-engine-reset {
+    margin-top: 12px;
+    padding-top: 0;
+}
+
+.set .settings-search-engine-panel .settings-engine-reset .settings-option-row {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
 .set .set_tip,
 .set .performance-settings-block .set_tip {
     display: flex;
@@ -6400,7 +6421,7 @@ html.ios-standalone .bg-all {
 .set .se-engine-card.is-default {
     border-color: rgba(155, 231, 215, 0.72);
     background: rgba(155, 231, 215, 0.09);
-    box-shadow: inset 0 0 0 1px rgba(155, 231, 215, 0.12);
+    box-shadow: none;
 }
 
 .set .se-engine-card-icon {
@@ -8716,5 +8737,122 @@ html.ios-standalone .bg-all {
     #bookmark-item-form footer button {
         min-width: 0;
         flex: 1 1 0;
+    }
+
+    /* Mobile bookmark and settings surfaces need their own scroll owner. */
+    .mark .products {
+        padding-right: 4px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        box-sizing: border-box;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .mark .products .mainCont.selected {
+        height: auto;
+        min-height: 100%;
+        align-content: flex-start;
+    }
+
+    .mark .products .mainCont.selected > [data-nav-items] {
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+        flex: 0 0 auto;
+    }
+
+    .products [data-nav-items]:not(.bookmark-card-sorting-enabled) > .quick,
+    .products [data-nav-items]:not(.bookmark-card-sorting-enabled) > .quicks,
+    .products [data-nav-items]:not(.bookmark-card-sorting-enabled) > .quickjl {
+        cursor: pointer;
+        touch-action: pan-y;
+        user-select: auto;
+    }
+
+    .settings-bookmark-panel .settings-option-row:last-child {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .settings-bookmark-panel .settings-option-row:last-child > div {
+        width: 100%;
+        flex: 0 0 auto;
+    }
+
+    .set .settings-bookmark-panel #bookmark-center-reset {
+        width: auto;
+        max-width: 100%;
+        min-height: 38px;
+        padding: 0 14px;
+        align-self: flex-start;
+        white-space: nowrap;
+    }
+
+    .set .productss .mainConts {
+        padding-right: 14px;
+    }
+
+    .settings-about-hero {
+        height: 112px;
+        min-height: 112px;
+        max-height: 112px;
+        padding: 14px 14px 36px;
+    }
+
+    .settings-about-identity {
+        gap: 12px;
+    }
+
+    .settings-about-mark {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+        border-radius: 15px;
+        font-size: 1.32rem;
+    }
+
+    .settings-about-copy h3 {
+        margin: 2px 0 1px;
+        font-size: 1.3rem;
+    }
+
+    .settings-about-copy p {
+        font-size: 0.72rem;
+        line-height: 1.45;
+    }
+
+    .settings-about-version {
+        right: 14px;
+        bottom: 7px;
+        min-height: 28px;
+        padding: 0 10px;
+    }
+
+    .settings-about-manifesto {
+        padding: 13px 14px;
+    }
+
+    .settings-about-manifesto blockquote {
+        margin: 6px 0 10px;
+        font-size: 0.86rem;
+        line-height: 1.55;
+    }
+
+    .settings-about-tags {
+        gap: 5px;
+    }
+
+    .settings-about-tags span {
+        min-height: 23px;
+        padding: 0 8px;
+        line-height: 23px;
+    }
+
+    .mark .products::-webkit-scrollbar,
+    .set .productss .mainConts::-webkit-scrollbar {
+        width: 4px;
     }
 }

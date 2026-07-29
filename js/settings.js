@@ -47,6 +47,7 @@
   };
 
   var changelogLoadPromise = null;
+  var bookmarkSettingsLoadPromise = null;
   var changelogTagLabels = {
     fix: "修复",
     new: "新增",
@@ -165,6 +166,37 @@
     return changelogLoadPromise;
   }
 
+  function prepareBookmarkSettings() {
+    var controls = document.querySelectorAll(
+      "#bookmark-card-sort-enabled, #bookmark-tab-sort-enabled, #bookmark-center-reset"
+    );
+    controls.forEach(function (control) {
+      control.disabled = true;
+    });
+    if (!bookmarkSettingsLoadPromise) {
+      bookmarkSettingsLoadPromise = typeof window.ensureNavSitesLoaded === "function"
+        ? window.ensureNavSitesLoaded()
+        : Promise.resolve();
+    }
+    bookmarkSettingsLoadPromise.then(function () {
+      controls.forEach(function (control) {
+        control.disabled = false;
+      });
+    }).catch(function () {
+      bookmarkSettingsLoadPromise = null;
+      controls.forEach(function (control) {
+        control.disabled = false;
+      });
+      if (window.iziToast) {
+        iziToast.show({
+          class: "setting-toast",
+          title: "收藏中心",
+          message: "收藏设置暂时无法加载"
+        });
+      }
+    });
+  }
+
   function showSettingsPage(page) {
     document.querySelectorAll("[data-settings-panel]").forEach(function (panel) {
       var selected = panel.getAttribute("data-settings-panel") === page;
@@ -174,6 +206,7 @@
     var content = document.querySelector(".set .productss");
     if (content) content.scrollTop = 0;
     if (page === "changelog") loadChangelog();
+    if (page === "bookmarks") prepareBookmarkSettings();
   }
 
   function renderSettingsTabs(config) {
@@ -273,7 +306,7 @@
 
   function showEngineEditor(show) {
     document.querySelector(".se_list").style.display = show ? "none" : "";
-    document.querySelector(".se_add_preinstall").style.display = show ? "none" : "";
+    document.querySelector(".settings-engine-reset").style.display = show ? "none" : "";
     document.querySelector(".se_add_content").style.display = show ? "" : "none";
   }
 
