@@ -6,11 +6,14 @@
     var orderKey = "sksir-quick-launch-order";
     var sortModeKey = "sksir-quick-launch-sort-mode";
     var customKey = "sksir-quick-launch-custom";
+    var hiddenKey = "sksir-quick-launch-hidden";
+    var rosterKey = "sksir-quick-launch-roster";
+    var rosterVersionKey = "sksir-quick-launch-roster-version";
     var desktopLimitKey = "sksir-quick-launch-desktop-limit";
     var mobileLimitKey = "sksir-quick-launch-mobile-limit";
-    var storageKeys = [enabledKey, clicksKey, orderKey, sortModeKey, customKey, desktopLimitKey, mobileLimitKey];
+    var storageKeys = [enabledKey, clicksKey, orderKey, sortModeKey, customKey, hiddenKey, rosterKey, rosterVersionKey, desktopLimitKey, mobileLimitKey];
     var customLimit = 24;
-    var defaultHosts = ["bilibili.com", "deepseek.com", "github.com", "iloveimg.com"];
+    var defaultHosts = ["bilibili.com", "deepseek.com", "chat.openai.com", "github.com", "iloveimg.com"];
 
     function read(key, fallback) {
         return window.SksirStorage ? window.SksirStorage.readJson(key, fallback) : fallback;
@@ -82,11 +85,39 @@
         }, []);
     }
 
+    function getHiddenUrls() {
+        var stored = read(hiddenKey, []);
+        var seen = {};
+        return Array.isArray(stored) ? stored.reduce(function (items, url) {
+            var normalized = normalizeWebUrl(url);
+            if (normalized && !seen[normalized]) {
+                seen[normalized] = true;
+                items.push(normalized);
+            }
+            return items;
+        }, []).slice(0, 100) : [];
+    }
+
+    function getRosterUrls() {
+        var stored = read(rosterKey, []);
+        var seen = {};
+        return Array.isArray(stored) ? stored.reduce(function (items, url) {
+            var normalized = normalizeWebUrl(url);
+            if (normalized && !seen[normalized]) {
+                seen[normalized] = true;
+                items.push(normalized);
+            }
+            return items;
+        }, []).slice(0, customLimit) : [];
+    }
+
     function repairStorage() {
         var custom = getCustomItems();
         write(customKey, custom.map(function (item) {
             return { name: item.name, url: item.url, icon: item.icon, desc: item.desc };
         }));
+        write(hiddenKey, getHiddenUrls());
+        if (Array.isArray(read(rosterKey, null))) write(rosterKey, getRosterUrls());
 
         var clicks = read(clicksKey, {});
         var cleanClicks = {};
@@ -114,9 +145,12 @@
         write(orderKey, order);
     }
 
-    function getItems() {
+    function getItems(includeHidden) {
         var tabs = window.NAV_SITES && window.NAV_SITES.tabs;
-        var items = getCustomItems();
+        var hiddenUrls = includeHidden ? [] : getHiddenUrls();
+        var items = getCustomItems().filter(function (item) {
+            return hiddenUrls.indexOf(item.url) === -1;
+        });
         var seenUrls = {};
         items.forEach(function (item) {
             seenUrls[item.url] = true;
@@ -127,7 +161,7 @@
             tab.items.forEach(function (item) {
                 if (!item || !item.url || !item.icon) return;
                 var normalizedUrl = normalizeUrl(item.url);
-                if (seenUrls[normalizedUrl]) return;
+                if (seenUrls[normalizedUrl] || hiddenUrls.indexOf(normalizedUrl) !== -1) return;
                 seenUrls[normalizedUrl] = true;
                 items.push({
                     name: item.name || item.url,
@@ -187,6 +221,9 @@
         orderKey: orderKey,
         sortModeKey: sortModeKey,
         customKey: customKey,
+        hiddenKey: hiddenKey,
+        rosterKey: rosterKey,
+        rosterVersionKey: rosterVersionKey,
         desktopLimitKey: desktopLimitKey,
         mobileLimitKey: mobileLimitKey,
         customLimit: customLimit,
@@ -195,6 +232,8 @@
         normalizeWebUrl: normalizeWebUrl,
         clampLimit: clampLimit,
         getCustomItems: getCustomItems,
+        getHiddenUrls: getHiddenUrls,
+        getRosterUrls: getRosterUrls,
         isEnabled: isEnabled,
         getSortMode: getSortMode,
         getLimit: getLimit,

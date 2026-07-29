@@ -2,6 +2,8 @@
     var resizeFrame = 0;
     var suppressClickUntil = 0;
     var pendingAddedUrl = "";
+    var quickAddTrigger = null;
+    var quickContextTrigger = null;
 
     function api() {
         return window.SksirQuickLaunch;
@@ -17,6 +19,100 @@
             return item.getAttribute("data-url");
         });
         service.write(service.orderKey, order);
+    }
+
+    function getRosterCapacity(service) {
+        var desktopLimit = service.clampLimit(service.read(service.desktopLimitKey, 8), 8, 12);
+        var mobileLimit = service.clampLimit(service.read(service.mobileLimitKey, 6), 6, 8);
+        return Math.max(desktopLimit, mobileLimit);
+    }
+
+    function ensureQuickLaunchRoster(service, fill) {
+        var stored = service.read(service.rosterKey, null);
+        var rosterVersion = Number(service.read(service.rosterVersionKey, 0)) || 0;
+        var canApplyDefaults = rosterVersion < 1 &&
+            service.getCustomItems().length === 0 &&
+            service.getHiddenUrls().length === 0;
+        if (canApplyDefaults) {
+            var defaultsByHost = {};
+            service.getItems(true).forEach(function (entry) {
+                var host = new URL(entry.url).hostname.replace(/^www\./, "").toLowerCase();
+                if (!defaultsByHost[host]) defaultsByHost[host] = entry.url;
+            });
+            var defaultRoster = ["bilibili.com", "deepseek.com", "chat.openai.com", "github.com", "iloveimg.com"]
+                .map(function (host) { return defaultsByHost[host]; })
+                .filter(Boolean);
+            if (defaultRoster.length < 5) {
+                return Array.isArray(stored) ? service.getRosterUrls() : [];
+            }
+            service.write(service.rosterKey, defaultRoster);
+            service.write(service.orderKey, defaultRoster);
+            service.write(service.rosterVersionKey, 1);
+            return defaultRoster;
+        }
+        if (rosterVersion < 1) service.write(service.rosterVersionKey, 1);
+        var roster = Array.isArray(stored)
+            ? service.getRosterUrls()
+            : service.getHiddenUrls().slice(0, service.customLimit);
+        var capacity = getRosterCapacity(service);
+        if (!Array.isArray(stored) || fill) {
+            service.sortItems(service.getItems(true)).forEach(function (entry) {
+                if (roster.length >= capacity) return;
+                if (roster.indexOf(entry.url) === -1) roster.push(entry.url);
+            });
+            service.write(service.rosterKey, roster.slice(0, service.customLimit));
+        }
+        return roster;
+    }
+
+    function ensureQuickContextMenu() {
+        var menu = document.getElementById("quick-launch-context-menu");
+        if (menu) return menu;
+        menu = document.createElement("div");
+        menu.id = "quick-launch-context-menu";
+        menu.className = "quick-launch-context-menu";
+        menu.hidden = true;
+        menu.setAttribute("role", "menu");
+        menu.setAttribute("aria-label", "快捷入口操作");
+        menu.innerHTML = '<span class="quick-launch-context-name"></span>' +
+            '<button type="button" class="quick-launch-context-delete" role="menuitem">删除快捷入口</button>';
+        document.body.appendChild(menu);
+        return menu;
+    }
+
+    function closeQuickContextMenu(restoreFocus) {
+        var menu = document.getElementById("quick-launch-context-menu");
+        if (!menu || menu.hidden) return;
+        menu.classList.remove("is-visible");
+        menu.hidden = true;
+        if (restoreFocus && quickContextTrigger && document.contains(quickContextTrigger)) {
+            quickContextTrigger.focus({ preventScroll: true });
+        }
+    }
+
+    function openQuickContextMenu(event, entry, trigger) {
+        event.preventDefault();
+        event.stopPropagation();
+        var menu = ensureQuickContextMenu();
+        var name = menu.querySelector(".quick-launch-context-name");
+        var button = menu.querySelector(".quick-launch-context-delete");
+        quickContextTrigger = trigger;
+        menu.setAttribute("data-url", entry.url);
+        menu.setAttribute("data-custom", entry.custom ? "true" : "false");
+        if (name) name.textContent = entry.name;
+        menu.hidden = false;
+        menu.classList.remove("is-visible");
+
+        var gap = 8;
+        var width = menu.offsetWidth;
+        var height = menu.offsetHeight;
+        var left = Math.max(gap, Math.min(event.clientX, document.documentElement.clientWidth - width - gap));
+        var top = Math.max(gap, Math.min(event.clientY, document.documentElement.clientHeight - height - gap));
+        menu.style.left = left + "px";
+        menu.style.top = top + "px";
+        void menu.offsetWidth;
+        menu.classList.add("is-visible");
+        if (button) button.focus({ preventScroll: true });
     }
 
     function animateReorder(panel, previousRects) {
@@ -104,6 +200,8 @@
             ghost = item.cloneNode(true);
             ghost.removeAttribute("href");
             ghost.removeAttribute("data-url");
+            var ghostLabel = ghost.querySelector(".quick-launch-label");
+            if (ghostLabel) ghostLabel.remove();
             ghost.className = "quick-launch-drag-ghost";
             var label = document.createElement("span");
             label.textContent = item.getAttribute("aria-label") || item.title || "快捷入口";
@@ -184,7 +282,12 @@
             return Promise.resolve();
         }
 
-        var items = service.sortItems(service.getItems()).slice(0, service.getLimit());
+        var availableItems = service.getItems();
+        var itemsByUrl = {};
+        availableItems.forEach(function (entry) { itemsByUrl[entry.url] = entry; });
+        var roster = ensureQuickLaunchRoster(service, false).slice(0, service.getLimit());
+        var items = roster.map(function (url) { return itemsByUrl[url]; }).filter(Boolean);
+        items = service.sortItems(items);
         panel.replaceChildren();
         items.forEach(function (entry) {
             var link = document.createElement("a");
@@ -192,9 +295,9 @@
             link.href = entry.url;
             link.target = entry.target;
             link.rel = entry.rel;
-            link.title = entry.name;
             link.setAttribute("aria-label", entry.name);
             link.setAttribute("data-url", entry.url);
+            if (entry.custom) link.setAttribute("data-custom", "true");
 
             var icon = document.createElement("img");
             icon.src = entry.icon;
@@ -218,6 +321,10 @@
                 icon.addEventListener("error", finishPendingIcon, { once: true });
             }
             link.appendChild(icon);
+            var dockLabel = document.createElement("span");
+            dockLabel.className = "quick-launch-label";
+            dockLabel.textContent = entry.name;
+            link.appendChild(dockLabel);
             link.addEventListener("click", function (event) {
                 event.stopPropagation();
                 if (Date.now() < suppressClickUntil) {
@@ -228,6 +335,9 @@
                 recordRecentNavItem(entry);
                 service.refreshAutoOrder();
             });
+            link.addEventListener("contextmenu", function (event) {
+                openQuickContextMenu(event, entry, link);
+            });
             if (service.getSortMode() === "manual") bindDrag(link, service);
             panel.appendChild(link);
         });
@@ -237,24 +347,47 @@
         addButton.title = "添加快捷入口";
         addButton.setAttribute("aria-label", "添加快捷入口");
         addButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>';
+        addButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            setQuickAddDialog(true, addButton);
+        });
         panel.appendChild(addButton);
         panel.hidden = false;
         return Promise.resolve();
     }
 
-    function setQuickAddDialog(open) {
+    function positionQuickAddDialog(dialog, trigger) {
+        var sheet = dialog.querySelector(".quick-launch-add-sheet");
+        if (!sheet || !trigger) return;
+        var rect = trigger.getBoundingClientRect();
+        var viewportWidth = document.documentElement.clientWidth;
+        var sideGap = 12;
+        var halfWidth = Math.min(sheet.offsetWidth / 2, (viewportWidth - sideGap * 2) / 2);
+        var anchorX = Math.max(sideGap + halfWidth, Math.min(rect.left + rect.width / 2, viewportWidth - sideGap - halfWidth));
+        var openBelow = rect.top < sheet.offsetHeight + 18;
+        dialog.style.setProperty("--quick-add-x", anchorX + "px");
+        dialog.style.setProperty("--quick-add-y", (openBelow ? rect.bottom : rect.top) + "px");
+        dialog.classList.toggle("is-below", openBelow);
+    }
+
+    function setQuickAddDialog(open, trigger) {
         var dialog = document.getElementById("quick-launch-add-dialog");
         if (!dialog) return;
+        if (trigger) quickAddTrigger = trigger;
         dialog.hidden = !open;
         document.body.classList.toggle("quick-add-open", open);
         if (open) {
-            requestAnimationFrame(function () {
-                dialog.classList.add("is-visible");
-                var name = document.getElementById("quick-launch-home-name");
-                if (name) name.focus();
-            });
+            positionQuickAddDialog(dialog, quickAddTrigger);
+            void dialog.offsetWidth;
+            dialog.classList.add("is-visible");
+            var sheet = dialog.querySelector(".quick-launch-add-sheet");
+            if (sheet) sheet.focus({ preventScroll: true });
         } else {
             dialog.classList.remove("is-visible");
+            if (quickAddTrigger && document.contains(quickAddTrigger)) {
+                quickAddTrigger.focus({ preventScroll: true });
+            }
         }
     }
 
@@ -316,15 +449,29 @@
         }, event.target);
     }
 
-    function removeCustomItem(button, service) {
-        var url = button.getAttribute("data-url");
-        var items = service.getCustomItems().filter(function (item) { return item.url !== url; });
-        service.write(service.customKey, items.map(function (item) {
-            return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
-        }));
+    function removeQuickLaunchItemByUrl(url, custom, service) {
+        if (!url) return;
+        if (custom) {
+            var items = service.getCustomItems().filter(function (item) { return item.url !== url; });
+            service.write(service.customKey, items.map(function (item) {
+                return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
+            }));
+        } else {
+            var hiddenItems = service.getHiddenUrls();
+            if (hiddenItems.indexOf(url) === -1) hiddenItems.push(url);
+            service.write(service.hiddenKey, hiddenItems.slice(0, 100));
+        }
+        var manualOrder = service.read(service.orderKey, []);
+        if (Array.isArray(manualOrder)) {
+            service.write(service.orderKey, manualOrder.filter(function (itemUrl) { return itemUrl !== url; }));
+        }
         service.renderCustomList();
         service.render();
-        service.showMessage("已删除自定义入口");
+        service.showMessage(custom ? "已删除自定义入口" : "快捷入口已移除");
+    }
+
+    function removeCustomItem(button, service) {
+        removeQuickLaunchItemByUrl(button.getAttribute("data-url"), true, service);
     }
 
     document.addEventListener("click", function (event) {
@@ -349,12 +496,22 @@
         }
 
         if (event.target.closest("#quick-launch-library-add")) addLibraryItem(service);
-        if (event.target.closest(".quick-launch-add")) {
+        if (event.target.closest("[data-quick-add-close]")) {
             event.preventDefault();
-            event.stopPropagation();
-            setQuickAddDialog(true);
+            setQuickAddDialog(false);
         }
-        if (event.target.closest("[data-quick-add-close]")) setQuickAddDialog(false);
+
+        var contextDelete = event.target.closest(".quick-launch-context-delete");
+        if (contextDelete) {
+            event.preventDefault();
+            var contextMenu = contextDelete.closest(".quick-launch-context-menu");
+            var contextUrl = contextMenu && contextMenu.getAttribute("data-url");
+            var contextCustom = contextMenu && contextMenu.getAttribute("data-custom") === "true";
+            closeQuickContextMenu(false);
+            removeQuickLaunchItemByUrl(contextUrl, contextCustom, service);
+            return;
+        }
+        if (!event.target.closest(".quick-launch-context-menu")) closeQuickContextMenu(false);
 
         var removeButton = event.target.closest(".quick-launch-custom-remove");
         if (removeButton) removeCustomItem(removeButton, service);
@@ -371,6 +528,7 @@
             var mobile = event.target.id === "quick-launch-mobile-limit";
             var value = service.clampLimit(event.target.value, mobile ? 6 : 8, mobile ? 8 : 12);
             service.write(mobile ? service.mobileLimitKey : service.desktopLimitKey, value);
+            ensureQuickLaunchRoster(service, true);
             service.render();
         }
         if (event.target.matches(".quick-launch-sort-mode")) {
@@ -420,6 +578,12 @@
     });
 
     document.addEventListener("keydown", function (event) {
+        var contextMenu = document.getElementById("quick-launch-context-menu");
+        if (event.key === "Escape" && contextMenu && !contextMenu.hidden) {
+            event.preventDefault();
+            closeQuickContextMenu(true);
+            return;
+        }
         if (event.key === "Escape" && !document.getElementById("quick-launch-add-dialog").hidden) {
             event.preventDefault();
             setQuickAddDialog(false);
@@ -434,10 +598,17 @@
     window.addEventListener("resize", function () {
         var service = api();
         if (!service) return;
+        closeQuickContextMenu(false);
+        var dialog = document.getElementById("quick-launch-add-dialog");
+        if (dialog && !dialog.hidden) positionQuickAddDialog(dialog, quickAddTrigger);
         if (resizeFrame) cancelAnimationFrame(resizeFrame);
         resizeFrame = requestAnimationFrame(function () {
             resizeFrame = 0;
             service.render();
         });
     });
+
+    window.addEventListener("scroll", function () {
+        closeQuickContextMenu(false);
+    }, true);
 }());

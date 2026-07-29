@@ -52,8 +52,18 @@
 
   function isActiveWallpaper(item) {
     return !!activeWallpaper &&
-      activeWallpaper.src === item.src &&
+      normalizeWallpaperSource(activeWallpaper.src) === normalizeWallpaperSource(item.src) &&
       activeWallpaper.type === String(item.type);
+  }
+
+  function normalizeWallpaperSource(src) {
+    var value = String(src || "").trim();
+    if (!value || /^data:/i.test(value)) return value;
+    try {
+      return new URL(value, document.baseURI).href;
+    } catch (error) {
+      return value;
+    }
   }
 
   function applyWallpaper(src, type, name) {
@@ -152,8 +162,7 @@
       return;
     }
     setAddDialogOpen(false);
-    renderWallpapers();
-    showMessage("壁纸已添加");
+    applyWallpaper(item.src, item.type, item.name);
   }
 
   function addLocalWallpaper() {

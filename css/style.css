@@ -414,11 +414,16 @@ html.perf-lite.is-booting::after {
     display: block;
 }
 
-/*时间上移*/
-.onsearch .tool-all,
+/* 搜索时让出输入区域；面板打开时仅淡出，避免与面板位移动画叠加。 */
+.onsearch .tool-all {
+    --time-block-offset: -210%;
+}
+
 #content.bookmarks-open .tool-all,
 #content.setting-open .tool-all {
-    --time-block-offset: -210%;
+    opacity: 0;
+    transform: translate3d(0, var(--time-block-offset), 0) scale(0.94);
+    pointer-events: none;
 }
 
 .quick-launch {
@@ -440,6 +445,7 @@ html.perf-lite.is-booting::after {
 }
 
 .quick-launch-item {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -463,16 +469,60 @@ html.perf-lite.is-booting::after {
         box-shadow var(--motion-fast) ease;
 }
 
+.quick-launch-label {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    z-index: 6;
+    display: block;
+    width: max-content;
+    max-width: min(150px, 42vw);
+    padding: 4px 8px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 8px;
+    background: rgba(16, 22, 30, 0.76);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(14px) saturate(1.08);
+    backdrop-filter: blur(14px) saturate(1.08);
+    color: rgba(248, 251, 255, 0.90);
+    font-size: 0.68rem;
+    font-weight: 560;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 4px) scale(0.96);
+    transform-origin: center bottom;
+    transition: opacity 0.16s ease, transform 0.2s var(--motion-ease);
+}
+
 .quick-launch-item:hover {
     border-color: var(--glass-border-strong);
     background: var(--glass-surface-hover);
     box-shadow: var(--glass-highlight), 0 12px 28px rgba(0, 0, 0, 0.20);
-    transform: translateY(-2px);
+    z-index: 5;
+    transform: translateY(-6px) scale(1.22);
+}
+
+.quick-launch-item:hover .quick-launch-label,
+.quick-launch-item:focus-visible .quick-launch-label {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
 }
 
 .quick-launch-item:active,
 .quick-launch-item.is-dragging {
     cursor: grabbing;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .quick-launch-item:has(+ .quick-launch-item:hover),
+    .quick-launch-item:hover + .quick-launch-item {
+        transform: translateY(-3px) scale(1.08);
+    }
 }
 
 /* Wallpaper center */
@@ -1323,6 +1373,75 @@ html.perf-lite.is-booting::after {
     stroke-linecap: round;
 }
 
+.quick-launch-context-menu {
+    position: fixed;
+    z-index: 2147481500;
+    width: 188px;
+    padding: 7px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 14px;
+    background: rgba(18, 25, 34, 0.88);
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    -webkit-backdrop-filter: blur(22px) saturate(1.12);
+    backdrop-filter: blur(22px) saturate(1.12);
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+    transform-origin: top left;
+    transition: opacity 0.18s ease, transform 0.2s var(--motion-ease);
+}
+
+.quick-launch-context-menu[hidden] {
+    display: none;
+}
+
+.quick-launch-context-menu.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.quick-launch-context-name {
+    display: block;
+    padding: 5px 9px 7px;
+    overflow: hidden;
+    color: rgba(232, 239, 247, 0.58);
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.quick-launch-context-delete {
+    width: 100%;
+    min-height: 36px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: rgba(255, 104, 112, 0.09);
+    color: rgba(255, 206, 210, 0.94);
+    font-size: 0.82rem;
+    font-weight: 650;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
+}
+
+.quick-launch-context-delete:hover,
+.quick-launch-context-delete:focus-visible {
+    border-color: rgba(255, 138, 145, 0.22);
+    background: rgba(255, 104, 112, 0.17);
+    outline: none;
+}
+
+.quick-launch-context-delete:active {
+    transform: scale(0.98);
+}
+
+.quick-launch-context-delete:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .quick-launch-drag-ghost {
     position: fixed;
     top: 0;
@@ -1410,8 +1529,9 @@ html.perf-lite.is-booting::after {
     height: var(--time-block-height);
     transform: translate3d(0, var(--time-block-offset), 0);
     z-index: 3;
-    transition: transform 0.82s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform;
+    opacity: 1;
+    transition: transform 0.28s var(--motion-ease), opacity 0.18s ease;
+    will-change: transform, opacity;
     backface-visibility: hidden;
 }
 
@@ -1856,12 +1976,14 @@ body:not(.onsearch) .all-search:hover {
     max-height: 680px;
     margin-top: 0;
     opacity: 0;
-    transform: translate3d(0, 14px, 0) scale(0.985);
+    filter: blur(6px);
+    transform: scale(0.965);
     transform-origin: center center;
     transition:
         opacity 0.28s ease,
-        transform 0.38s var(--motion-ease);
-    will-change: opacity, transform;
+        filter 0.28s ease,
+        transform 0.32s var(--motion-ease);
+    will-change: opacity, filter, transform;
 }
 
 .mark::before {
@@ -1884,7 +2006,8 @@ body:not(.onsearch) .all-search:hover {
 
 .mark.is-visible {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+    transform: scale(1);
     pointer-events: auto;
 }
 
@@ -3522,12 +3645,13 @@ body.onsearch .close_sou {
 }
 
 .quick-launch-add-dialog {
+    --quick-add-x: 50vw;
+    --quick-add-y: 50vh;
     position: fixed;
     inset: 0;
     z-index: 2147482000;
-    display: grid;
-    padding: max(18px, env(safe-area-inset-top, 0px)) 16px max(18px, env(safe-area-inset-bottom, 0px));
-    place-items: center;
+    display: block;
+    pointer-events: none;
 }
 
 .quick-launch-add-dialog[hidden] {
@@ -3537,26 +3661,41 @@ body.onsearch .close_sou {
 .quick-launch-add-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(4, 8, 13, 0.58);
-    -webkit-backdrop-filter: blur(9px);
-    backdrop-filter: blur(9px);
+    background: rgba(4, 8, 13, 0.10);
     opacity: 0;
+    pointer-events: auto;
     transition: opacity 0.2s ease;
 }
 
 .quick-launch-add-sheet {
-    position: relative;
-    width: min(430px, 100%);
-    padding: 20px;
+    position: fixed;
+    top: var(--quick-add-y);
+    left: var(--quick-add-x);
+    width: min(330px, calc(100vw - 24px));
+    height: auto;
+    min-height: 0;
+    max-height: calc(100dvh - 24px);
+    padding: 15px;
+    overflow-y: auto;
     box-sizing: border-box;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 20px;
-    background: rgba(18, 25, 34, 0.94);
-    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
+    background: rgba(18, 25, 34, 0.88);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    -webkit-backdrop-filter: blur(24px) saturate(1.12);
+    backdrop-filter: blur(24px) saturate(1.12);
     color: #fff;
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    outline: none;
+    pointer-events: auto;
+    transform: translate3d(-50%, calc(-100% - 10px), 0) scale(0.96);
+    transform-origin: center bottom;
     transition: opacity 0.2s ease, transform 0.24s var(--motion-ease);
+}
+
+.quick-launch-add-dialog.is-below .quick-launch-add-sheet {
+    transform: translate3d(-50%, 10px, 0) scale(0.96);
+    transform-origin: center top;
 }
 
 .quick-launch-add-dialog.is-visible .quick-launch-add-backdrop,
@@ -3565,48 +3704,52 @@ body.onsearch .close_sou {
 }
 
 .quick-launch-add-dialog.is-visible .quick-launch-add-sheet {
-    transform: translateY(0) scale(1);
+    transform: translate3d(-50%, calc(-100% - 10px), 0) scale(1);
+}
+
+.quick-launch-add-dialog.is-visible.is-below .quick-launch-add-sheet {
+    transform: translate3d(-50%, 10px, 0) scale(1);
 }
 
 .quick-launch-add-sheet header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 18px;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 .quick-launch-add-sheet h2 {
     margin: 0;
-    font-size: 1.18rem;
+    font-size: 1rem;
 }
 
 .quick-launch-add-sheet header p {
-    margin: 4px 0 0;
+    margin: 3px 0 0;
     color: rgba(232, 239, 247, 0.60);
     font-size: 0.78rem;
 }
 
 .quick-launch-add-close {
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
     padding: 0 0 2px;
-    flex: 0 0 38px;
+    flex: 0 0 32px;
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
 }
 
 #quick-launch-home-form {
     display: grid;
-    gap: 13px;
+    gap: 9px;
 }
 
 #quick-launch-home-form label {
     display: grid;
-    gap: 6px;
+    gap: 4px;
     color: rgba(232, 239, 247, 0.76);
     font-size: 0.8rem;
     font-weight: 600;
@@ -3619,7 +3762,7 @@ body.onsearch .close_sou {
 
 #quick-launch-home-form input {
     width: 100%;
-    height: 44px;
+    height: 40px;
     padding: 0 12px;
     box-sizing: border-box;
     outline: 0;
@@ -3636,14 +3779,29 @@ body.onsearch .close_sou {
 }
 
 .quick-launch-home-submit {
-    height: 44px;
-    margin-top: 3px;
+    height: 40px;
+    margin-top: 2px;
     border: 1px solid rgba(155, 231, 215, 0.34);
     border-radius: 10px;
     background: rgba(123, 221, 204, 0.90);
     color: #10231f;
     font-weight: 700;
     cursor: pointer;
+    transition: background-color 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
+}
+
+.quick-launch-home-submit:hover {
+    background: #9be7d7;
+}
+
+.quick-launch-home-submit:active {
+    transform: scale(0.98);
+}
+
+.quick-launch-home-submit:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /*iconcss*/
@@ -4657,14 +4815,8 @@ html.ios-standalone .bg-all {
     }
 }
 
-/*小于534px时，拉开时间和导航页的距离*/
+/* 小屏面板保持时间原位淡出，不再额外向上移动。 */
 @media (max-width: 534px) {
-
-    #content.bookmarks-open .tool-all,
-    #content.setting-open .tool-all {
-        --time-block-offset: -232%;
-    }
-
     .mark,
     .set {
         margin-top: 224px;
@@ -5088,10 +5240,12 @@ html.ios-standalone .bg-all {
     height: calc(100% - 48px);
     min-height: 0;
     max-width: 900px;
-    padding: 18px 0 22px;
+    padding: 18px 10px 22px 0;
     align-content: flex-start;
     box-sizing: border-box;
     overflow: hidden auto;
+    scrollbar-gutter: stable;
+    scrollbar-color: rgba(220, 233, 244, 0.24) transparent;
     animation: none;
 }
 
@@ -6642,7 +6796,7 @@ html.ios-standalone .bg-all {
 
     .set .productss .mainConts {
         height: calc(100% - 44px);
-        padding: 14px 0 18px;
+        padding: 14px 6px 18px 0;
         -webkit-overflow-scrolling: touch;
     }
 
@@ -6755,11 +6909,11 @@ html.ios-standalone .bg-all {
     }
 
     .settings-about-hero {
-        height: 190px;
-        min-height: 190px;
-        max-height: 190px;
-        padding: 20px 18px 68px;
-        align-items: flex-start;
+        height: 142px;
+        min-height: 142px;
+        max-height: 142px;
+        padding: 16px 16px 48px;
+        align-items: center;
         border-radius: 18px;
     }
 
@@ -6769,11 +6923,11 @@ html.ios-standalone .bg-all {
     }
 
     .settings-about-mark {
-        width: 58px;
-        height: 58px;
-        flex-basis: 58px;
-        border-radius: 17px;
-        font-size: 1.55rem;
+        width: 52px;
+        height: 52px;
+        flex-basis: 52px;
+        border-radius: 16px;
+        font-size: 1.42rem;
     }
 
     .settings-about-mark i {
@@ -6783,8 +6937,8 @@ html.ios-standalone .bg-all {
     }
 
     .settings-about-copy h3 {
-        margin-top: 5px;
-        font-size: 1.55rem;
+        margin: 3px 0 2px;
+        font-size: 1.38rem;
     }
 
     .settings-about-copy p {
@@ -6794,7 +6948,7 @@ html.ios-standalone .bg-all {
     .settings-about-live {
         position: absolute;
         right: 18px;
-        bottom: 18px;
+        bottom: 12px;
     }
 
     .settings-about-layout {
@@ -6920,17 +7074,12 @@ html.ios-standalone .bg-all {
         width: 100%;
     }
 
-    .quick-launch-add-dialog {
-        padding: max(10px, env(safe-area-inset-top, 0px)) 8px 0;
-        align-items: end;
-    }
-
     .quick-launch-add-sheet {
-        width: 100%;
-        max-height: calc(var(--app-height, 100vh) - max(10px, env(safe-area-inset-top, 0px)));
-        padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+        width: min(330px, calc(100vw - 20px));
+        max-height: calc(var(--app-height, 100vh) - max(20px, env(safe-area-inset-top, 0px)) - env(safe-area-inset-bottom, 0px));
+        padding: 15px;
         overflow-y: auto;
-        border-radius: 20px 20px 0 0;
+        border-radius: 18px;
     }
 }
 

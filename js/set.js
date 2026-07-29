@@ -186,6 +186,9 @@ var quickLaunchEnabledKey = quickLaunchData.enabledKey;
 var quickLaunchOrderKey = quickLaunchData.orderKey;
 var quickLaunchSortModeKey = quickLaunchData.sortModeKey;
 var quickLaunchCustomKey = quickLaunchData.customKey;
+var quickLaunchHiddenKey = quickLaunchData.hiddenKey;
+var quickLaunchRosterKey = quickLaunchData.rosterKey;
+var quickLaunchRosterVersionKey = quickLaunchData.rosterVersionKey;
 var quickLaunchDesktopLimitKey = quickLaunchData.desktopLimitKey;
 var quickLaunchMobileLimitKey = quickLaunchData.mobileLimitKey;
 var quickLaunchStorageKeys = quickLaunchData.storageKeys;
@@ -334,6 +337,29 @@ function saveQuickLaunchCustomItem(entry) {
     writeQuickLaunchStorage(quickLaunchCustomKey, items.map(function (item) {
         return { name: item.name, url: item.url, icon: item.icon, desc: item.desc || "" };
     }));
+    var hiddenItems = quickLaunchData.getHiddenUrls();
+    var hiddenBeforeSave = hiddenItems.slice();
+    if (hiddenItems.indexOf(entry.url) !== -1) {
+        writeQuickLaunchStorage(quickLaunchHiddenKey, hiddenItems.filter(function (url) {
+            return url !== entry.url;
+        }));
+    }
+    var rosterStored = readQuickLaunchStorage(quickLaunchRosterKey, null);
+    if (Array.isArray(rosterStored)) {
+        var rosterItems = quickLaunchData.getRosterUrls();
+        if (rosterItems.indexOf(entry.url) === -1) {
+            var visibleLimit = getQuickLaunchLimit();
+            var emptyIndex = rosterItems.findIndex(function (url, index) {
+                return index < visibleLimit && hiddenBeforeSave.indexOf(url) !== -1;
+            });
+            if (emptyIndex !== -1) {
+                rosterItems[emptyIndex] = entry.url;
+            } else {
+                rosterItems.splice(Math.min(rosterItems.length, Math.max(0, visibleLimit - 1)), 0, entry.url);
+            }
+            writeQuickLaunchStorage(quickLaunchRosterKey, rosterItems.slice(0, quickLaunchCustomLimit));
+        }
+    }
     if (getQuickLaunchSortMode() === "manual") {
         var manualOrder = readQuickLaunchStorage(quickLaunchOrderKey, []);
         if (Array.isArray(manualOrder) && manualOrder.length) {
@@ -378,6 +404,9 @@ window.SksirQuickLaunch = {
     orderKey: quickLaunchOrderKey,
     sortModeKey: quickLaunchSortModeKey,
     customKey: quickLaunchCustomKey,
+    hiddenKey: quickLaunchHiddenKey,
+    rosterKey: quickLaunchRosterKey,
+    rosterVersionKey: quickLaunchRosterVersionKey,
     desktopLimitKey: quickLaunchDesktopLimitKey,
     mobileLimitKey: quickLaunchMobileLimitKey,
     customLimit: quickLaunchCustomLimit,
@@ -390,6 +419,8 @@ window.SksirQuickLaunch = {
     getSortMode: getQuickLaunchSortMode,
     getLimit: getQuickLaunchLimit,
     getItems: getQuickLaunchItems,
+    getHiddenUrls: quickLaunchData.getHiddenUrls,
+    getRosterUrls: quickLaunchData.getRosterUrls,
     sortItems: sortQuickLaunchItems,
     recordClick: recordQuickLaunchClick,
     refreshAutoOrder: refreshQuickLaunchAutoOrder,
@@ -444,6 +475,7 @@ var bg_img_preinstall = {
     "type": "1",
     "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background1.webp",
 };
+var bgImgStorageKey = "sksir-bg-img";
 
 var bg_img_pictures = [
     'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background1.webp',
@@ -456,10 +488,19 @@ var bg_img_pictures = [
 
 // 获取背景图片
 function getBgImg() {
+    var bg_img_stored = window.SksirStorage
+        ? window.SksirStorage.readJson(bgImgStorageKey, null)
+        : null;
+    if (bg_img_stored && bg_img_stored.type) {
+        if (bg_img_stored.type === "3") bg_img_stored.type = "5";
+        return bg_img_stored;
+    }
+
     var bg_img_local = Cookies.getJSON('bg_img');
     if (bg_img_local && bg_img_local.type) {
         // 兼容旧版自定义壁纸曾写入的 type: "3"
         if (bg_img_local.type === "3") bg_img_local.type = "5";
+        if (window.SksirStorage) window.SksirStorage.writeJson(bgImgStorageKey, bg_img_local);
         return bg_img_local;
     }
 
@@ -470,10 +511,18 @@ function getBgImg() {
 // 设置背景图片
 function setBgImg(bg_img) {
     if (bg_img) {
-        Cookies.set('bg_img', bg_img, {
-            expires: 36500
-        });
-        return true;
+        var saved = window.SksirStorage
+            ? window.SksirStorage.writeJson(bgImgStorageKey, bg_img)
+            : false;
+        // Keep the legacy Cookie copy only when the wallpaper URL fits safely.
+        if (String(bg_img.path || "").length < 3000) {
+            Cookies.set('bg_img', bg_img, {
+                expires: 36500
+            });
+        } else {
+            Cookies.remove('bg_img');
+        }
+        return saved || !window.SksirStorage;
     }
     return false;
 }
