@@ -8777,6 +8777,12 @@ html.ios-standalone .bg-all {
         user-select: auto;
     }
 
+    .products [data-nav-items]:not(.bookmark-card-sorting-enabled) > .quick:active,
+    .products [data-nav-items]:not(.bookmark-card-sorting-enabled) > .quicks:active,
+    .products [data-nav-items]:not(.bookmark-card-sorting-enabled) > .quickjl:active {
+        transform: none;
+    }
+
     .settings-bookmark-panel .settings-option-row:last-child {
         align-items: flex-start;
         flex-direction: column;
@@ -8808,6 +8814,8 @@ html.ios-standalone .bg-all {
         min-height: 100px;
         max-height: 100px;
         padding: 11px 12px 30px;
+        flex: 0 0 100px;
+        align-self: flex-start;
     }
 
     .settings-about-identity {
@@ -8840,7 +8848,10 @@ html.ios-standalone .bg-all {
     }
 
     .settings-about-manifesto {
+        height: max-content;
+        min-height: 0;
         padding: 11px 12px;
+        align-self: start;
     }
 
     .settings-about-manifesto blockquote {
@@ -8859,19 +8870,27 @@ html.ios-standalone .bg-all {
         line-height: 22px;
     }
 
+    .settings-about-layout {
+        grid-auto-rows: max-content;
+        align-items: start;
+        flex: 0 0 auto;
+    }
+
     .mark .products::-webkit-scrollbar,
     .set .productss .mainConts::-webkit-scrollbar {
         width: 4px;
     }
 }
 
-@media (min-width: 721px) and (max-width: 1100px) {
+@media (pointer: coarse) and (min-width: 721px) {
     .mark .products {
         overflow-x: hidden;
         overflow-y: auto;
         box-sizing: border-box;
         overscroll-behavior: contain;
         scrollbar-gutter: stable both-edges;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(220, 233, 244, 0.34) transparent;
         -webkit-overflow-scrolling: touch;
     }
 
@@ -8892,6 +8911,11 @@ html.ios-standalone .bg-all {
 
     .mark .products::-webkit-scrollbar {
         width: 6px;
+    }
+
+    .mark .products::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: rgba(220, 233, 244, 0.34);
     }
 }
 

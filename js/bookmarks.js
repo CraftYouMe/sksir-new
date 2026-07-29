@@ -231,8 +231,12 @@
     writeJson(cardOrderKey, stored);
   }
 
+  function isPhoneBookmarkViewport() {
+    return !!(window.matchMedia && window.matchMedia("(max-width: 720px)").matches);
+  }
+
   function isCardSortingEnabled() {
-    return readJson(cardSortingEnabledKey, true) !== false;
+    return readJson(cardSortingEnabledKey, !isPhoneBookmarkViewport()) === true;
   }
 
   function getCardDropTarget(cards, pointerX, pointerY) {
@@ -434,6 +438,10 @@
 
     card.addEventListener("pointermove", function (event) {
       if (!card.hasPointerCapture(event.pointerId)) return;
+      if (!isCardSortingEnabled()) {
+        card.releasePointerCapture(event.pointerId);
+        return;
+      }
       if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 4) return;
       if (!dragging) startDrag(event);
       event.preventDefault();
@@ -655,6 +663,14 @@
 
     item.addEventListener("pointermove", function (event) {
       if (!item.hasPointerCapture(event.pointerId)) return;
+      if (!isTabSortingEnabled()) {
+        if (pressTimer) {
+          clearTimeout(pressTimer);
+          pressTimer = 0;
+        }
+        item.releasePointerCapture(event.pointerId);
+        return;
+      }
       var distance = Math.hypot(event.clientX - startX, event.clientY - startY);
       if (coarsePointer && !dragging) {
         if (distance < 8) return;
