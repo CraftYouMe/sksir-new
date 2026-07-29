@@ -387,6 +387,27 @@
       document.getElementById("settings-data-import-file").click();
     }
     if (event.target.closest("#settings-data-reset")) resetData();
+    var bookmarkResetButton = event.target.closest("#bookmark-center-reset");
+    if (bookmarkResetButton) {
+      event.preventDefault();
+      var loadBookmarks = typeof window.ensureNavSitesLoaded === "function"
+        ? window.ensureNavSitesLoaded()
+        : Promise.resolve();
+      loadBookmarks.then(function () {
+        if (window.SksirBookmarks) {
+          window.SksirBookmarks.openResetDialog(bookmarkResetButton);
+        }
+      }).catch(function () {
+        if (window.iziToast) {
+          iziToast.show({
+            class: "setting-toast",
+            title: "收藏中心",
+            message: "收藏数据暂时无法加载"
+          });
+        }
+      });
+      return;
+    }
     var defaultButton = event.target.closest(".set_se_default");
     if (defaultButton) {
       event.preventDefault();

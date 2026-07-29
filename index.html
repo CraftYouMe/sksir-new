@@ -14,7 +14,7 @@
     <title>导航酱 - 但行好事，莫问前程</title>
     <link rel="icon" href="apple-touch-icon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="preload" href="./css/style.css" as="style">
+    <link rel="preload" href="./css/style.css?v=2026.07.29.19" as="style">
     <link rel="preload" href="./font/iconfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preload" href="./font/MiSans-UI.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com">
@@ -250,18 +250,18 @@
         }());
     </script>
     <!-- 引入样式 -->
-    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <link rel="stylesheet" type="text/css" href="./css/style.css?v=2026.07.29.19">
     <script defer src="./js/jquery-3.6.0.min.js"></script>
-    <script defer src="./js/main.js"></script>
-    <script defer src="./js/storage.js"></script>
-    <script defer src="./js/quick-launch-data.js"></script>
-    <script defer src="./js/search-engines.js"></script>
-    <script defer src="./js/set.js"></script>
-    <script defer src="./js/wallpaper.js"></script>
-    <script defer src="./js/quick-launch.js"></script>
-    <script defer src="./js/search-ui.js"></script>
-    <script defer src="./js/settings.js"></script>
-    <script defer src="./js/bootstrap.js"></script>
+    <script defer src="./js/main.js?v=2026.07.29.19"></script>
+    <script defer src="./js/storage.js?v=2026.07.29.19"></script>
+    <script defer src="./js/quick-launch-data.js?v=2026.07.29.19"></script>
+    <script defer src="./js/search-engines.js?v=2026.07.29.19"></script>
+    <script defer src="./js/set.js?v=2026.07.29.19"></script>
+    <script defer src="./js/wallpaper.js?v=2026.07.29.19"></script>
+    <script defer src="./js/quick-launch.js?v=2026.07.29.19"></script>
+    <script defer src="./js/search-ui.js?v=2026.07.29.19"></script>
+    <script defer src="./js/settings.js?v=2026.07.29.19"></script>
+    <script defer src="./js/bootstrap.js?v=2026.07.29.19"></script>
     <!-- 书签数据、渲染和状态检测资源由 main.js 在首屏后按需加载 -->
     <!-- IE Out -->
 </head>
@@ -475,7 +475,21 @@
                             <div class="settings-section settings-option-list">
                                 <div class="settings-option-row">
                                     <div><strong>搜索建议</strong><p>输入内容时同时显示本地收藏结果和在线搜索建议。</p></div>
-                                    <span class="settings-status-value">已启用</span>
+                                    <label class="quick-launch-toggle">
+                                        <input id="search-suggestions-enabled" type="checkbox"
+                                            aria-label="搜索建议">
+                                        <span class="quick-launch-toggle-track" aria-hidden="true"></span>
+                                        <span class="sr-only">搜索建议</span>
+                                    </label>
+                                </div>
+                                <div class="settings-option-row" id="search-history-suggestions-row">
+                                    <div><strong>点击记录建议</strong><p>选中没有内容的搜索框时，自动显示点击过的收藏标签。</p></div>
+                                    <label class="quick-launch-toggle">
+                                        <input id="search-history-suggestions-enabled" type="checkbox"
+                                            aria-label="点击记录建议">
+                                        <span class="quick-launch-toggle-track" aria-hidden="true"></span>
+                                        <span class="sr-only">点击记录建议</span>
+                                    </label>
                                 </div>
                                 <div class="settings-option-row">
                                     <div><strong>离线保护</strong><p>离线时停止在线联想，并保留本地收藏结果。</p></div>
@@ -679,7 +693,12 @@
                                         <strong>收藏内容拖动</strong>
                                         <p>收藏页面中的网站卡片可以拖动，顺序分别保存在每个分类页面。</p>
                                     </div>
-                                    <span class="settings-status-value">已启用</span>
+                                    <label class="quick-launch-toggle bookmark-card-sort-toggle">
+                                        <input id="bookmark-card-sort-enabled" type="checkbox"
+                                            aria-label="收藏内容拖动">
+                                        <span class="quick-launch-toggle-track" aria-hidden="true"></span>
+                                        <span class="sr-only">收藏内容拖动</span>
+                                    </label>
                                 </div>
                                 <div class="settings-option-row">
                                     <div>
@@ -692,6 +711,14 @@
                                         <span class="quick-launch-toggle-track" aria-hidden="true"></span>
                                         <span class="sr-only">分类标签拖动</span>
                                     </label>
+                                </div>
+                                <div class="settings-option-row">
+                                    <div>
+                                        <strong>重置收藏中心</strong>
+                                        <p>恢复默认收藏与排列，移除自定义收藏，并重置所有拖动设置。</p>
+                                    </div>
+                                    <button type="button" id="bookmark-center-reset"
+                                        class="quick-launch-reset danger">重置收藏中心</button>
                                 </div>
                             </div>
                         </div>
@@ -835,6 +862,21 @@
             </section>
         </div>
 
+        <div id="bookmark-center-reset-dialog" class="settings-confirm-dialog" hidden>
+            <div class="settings-confirm-backdrop" data-bookmark-reset-close></div>
+            <section class="settings-confirm-sheet" role="dialog" aria-modal="true" tabindex="-1"
+                aria-labelledby="bookmark-center-reset-title" aria-describedby="bookmark-center-reset-description">
+                <button type="button" class="settings-confirm-close" data-bookmark-reset-close aria-label="关闭">&times;</button>
+                <span class="settings-confirm-kicker">收藏中心</span>
+                <h2 id="bookmark-center-reset-title">重置收藏中心？</h2>
+                <p id="bookmark-center-reset-description">将恢复默认收藏、分类和内容顺序，移除所有自定义收藏，并恢复拖动开关默认状态。此操作不能恢复。</p>
+                <div class="settings-confirm-actions">
+                    <button type="button" class="secondary" data-bookmark-reset-close>取消</button>
+                    <button type="button" id="bookmark-center-reset-confirm" class="danger">确认重置</button>
+                </div>
+            </section>
+        </div>
+
         <div id="bookmark-item-dialog" class="bookmark-item-dialog" hidden>
             <div class="bookmark-item-backdrop" data-bookmark-item-close></div>
             <section class="bookmark-item-sheet" role="dialog" aria-modal="true" tabindex="-1"
@@ -899,7 +941,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.29.17">v2026.07.29.17</span>
+                <span id="app-version" class="app-version" data-version="2026.07.29.19">v2026.07.29.19</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
             </div>
         </div>

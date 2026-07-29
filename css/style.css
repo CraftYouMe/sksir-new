@@ -5471,6 +5471,18 @@ html.ios-standalone .bg-all {
     font-size: 0.78rem;
 }
 
+.settings-option-row.is-disabled {
+    opacity: 0.5;
+}
+
+.settings-option-row.is-disabled .quick-launch-toggle {
+    cursor: not-allowed;
+}
+
+.quick-launch-toggle input:disabled + .quick-launch-toggle-track {
+    opacity: 0.72;
+}
+
 .performance-option-copy {
     min-width: 0;
 }
@@ -8199,9 +8211,9 @@ html.ios-standalone .bg-all {
     will-change: transform;
 }
 
-.products [data-nav-items] > .quick,
-.products [data-nav-items] > .quicks,
-.products [data-nav-items] > .quickjl {
+.products [data-nav-items].bookmark-card-sorting-enabled > .quick,
+.products [data-nav-items].bookmark-card-sorting-enabled > .quicks,
+.products [data-nav-items].bookmark-card-sorting-enabled > .quickjl {
     cursor: grab;
     touch-action: none;
     user-select: none;
@@ -8327,9 +8339,9 @@ html.ios-standalone .bg-all {
 
 @media (pointer: coarse) {
     .mark .tab.bookmark-tab-sorting-enabled .tab-item,
-    .products [data-nav-items] > .quick,
-    .products [data-nav-items] > .quicks,
-    .products [data-nav-items] > .quickjl {
+    .products [data-nav-items].bookmark-card-sorting-enabled > .quick,
+    .products [data-nav-items].bookmark-card-sorting-enabled > .quicks,
+    .products [data-nav-items].bookmark-card-sorting-enabled > .quickjl {
         touch-action: pan-y;
     }
 }

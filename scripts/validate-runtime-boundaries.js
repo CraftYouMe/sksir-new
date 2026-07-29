@@ -19,7 +19,13 @@ const main = read("js/main.js");
 const serviceWorker = read("sw.js");
 const statusApi = read(path.join("api", "check.js"));
 
-const stylesheet = position(html, '<link rel="stylesheet" type="text/css" href="./css/style.css">');
+const versionMatch = html.match(/id="app-version"[^>]*data-version="([^"]+)"/);
+assert(versionMatch, "The app version marker is missing.");
+const assetVersion = versionMatch[1];
+const stylesheet = position(
+  html,
+  `<link rel="stylesheet" type="text/css" href="./css/style.css?v=${assetVersion}">`
+);
 const earlyBoot = position(html, "window.__sksirBootFallbackTimer");
 assert(stylesheet > earlyBoot, "The real stylesheet must remain after the early boot script.");
 
@@ -38,7 +44,8 @@ const requiredScripts = [
 ];
 let previousPosition = stylesheet;
 requiredScripts.forEach((src) => {
-  const marker = `<script defer src="${src}"></script>`;
+  const versionSuffix = src === "./js/jquery-3.6.0.min.js" ? "" : `?v=${assetVersion}`;
+  const marker = `<script defer src="${src}${versionSuffix}"></script>`;
   const currentPosition = position(html, marker);
   assert(currentPosition > previousPosition, `Invalid defer script order at ${src}`);
   previousPosition = currentPosition;

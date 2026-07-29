@@ -155,6 +155,14 @@ $(document).ready(function () {
 var navSitesLoadPromise = null;
 var navStatusLoadPromise = null;
 
+function getVersionedAssetUrl(src) {
+    if (!src || !/^(?:\.\/|\/(?!\/))/.test(src)) return src;
+    var versionElement = document.getElementById("app-version");
+    var version = getRunningAppVersion(versionElement);
+    if (!version || version === "0.0.0.0") return src;
+    return src + (src.indexOf("?") === -1 ? "?" : "&") + "v=" + encodeURIComponent(version);
+}
+
 function loadDeferredScript(id, src) {
     var existing = document.getElementById(id);
     if (existing) {
@@ -164,7 +172,7 @@ function loadDeferredScript(id, src) {
     return new Promise(function (resolve, reject) {
         var script = document.createElement("script");
         script.id = id;
-        script.src = src;
+        script.src = getVersionedAssetUrl(src);
         script.async = true;
         script.onload = resolve;
         script.onerror = function () {

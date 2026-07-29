@@ -4,6 +4,7 @@
   var tabOrderKey = "sksir-bookmark-tab-order";
   var tabSortingEnabledKey = "sksir-bookmark-tab-sort-enabled";
   var cardOrderKey = "sksir-bookmark-card-order";
+  var cardSortingEnabledKey = "sksir-bookmark-card-sort-enabled";
   var bookmarkCardSelector = ".quick, .quicks, .quickjl";
   var customItemsKey = "sksir-bookmark-custom-items";
   var customItemsLimit = 120;
@@ -11,8 +12,10 @@
   var suppressCardClickUntil = 0;
   var itemDialogCloseTimer = 0;
   var deleteDialogCloseTimer = 0;
+  var resetDialogCloseTimer = 0;
   var pendingItemPanel = null;
   var pendingDeleteId = "";
+  var resetDialogTrigger = null;
 
   function getPanels(products) {
     return Array.prototype.filter.call(
@@ -201,6 +204,10 @@
     writeJson(cardOrderKey, stored);
   }
 
+  function isCardSortingEnabled() {
+    return readJson(cardSortingEnabledKey, true) !== false;
+  }
+
   function getCardDropTarget(cards, pointerX, pointerY) {
     var positions = cards.map(function (entry) {
       var rect = entry.getBoundingClientRect();
@@ -288,6 +295,7 @@
     var dragging = false;
     var ghost = null;
     var placeholder = null;
+    var placeholderPositioned = false;
     var dropBefore = null;
 
     function updatePointer(event) {
@@ -325,12 +333,19 @@
         placeholder.hidden = true;
         return;
       }
-      placeholder.hidden = false;
-      placeholder.style.width = targetRect.width + "px";
-      placeholder.style.height = targetRect.height + "px";
-      placeholder.style.transform = "translate3d(" +
+      var nextTransform = "translate3d(" +
         (targetRect.left - containerRect.left + container.scrollLeft) + "px," +
         (targetRect.top - containerRect.top + container.scrollTop) + "px,0)";
+      placeholder.style.width = targetRect.width + "px";
+      placeholder.style.height = targetRect.height + "px";
+      placeholder.style.transform = nextTransform;
+      placeholder.hidden = false;
+      if (!placeholderPositioned) {
+        placeholder.style.transition = "none";
+        void placeholder.offsetWidth;
+        placeholder.style.transition = "transform 90ms cubic-bezier(0.22, 1, 0.36, 1)";
+        placeholderPositioned = true;
+      }
     }
 
     function schedulePosition(event) {
@@ -351,6 +366,7 @@
       placeholder.className = "bookmark-card-placeholder";
       placeholder.setAttribute("aria-hidden", "true");
       placeholder.hidden = true;
+      placeholder.style.transition = "none";
       container.appendChild(placeholder);
 
       ghost = document.createElement("div");
@@ -380,6 +396,7 @@
     card.addEventListener("pointerdown", function (event) {
       if (event.button !== undefined && event.button !== 0) return;
       if (event.target.closest("button, input, select, textarea")) return;
+      if (!isCardSortingEnabled()) return;
       startX = event.clientX;
       startY = event.clientY;
       dragging = false;
@@ -441,6 +458,10 @@
     if (!panel || panel.dataset.navHydrated !== "1" || panel.classList.contains(resultPanelClass)) return;
     var container = panel.querySelector("[data-nav-items]");
     if (!container) return;
+    var enabled = isCardSortingEnabled();
+    container.classList.toggle("bookmark-card-sorting-enabled", enabled);
+    var toggle = document.getElementById("bookmark-card-sort-enabled");
+    if (toggle) toggle.checked = enabled;
     applySavedCardOrder(panel);
     container.querySelectorAll(bookmarkCardSelector).forEach(function (card) {
       bindCardDrag(card, panel);
@@ -950,11 +971,74 @@
     showBookmarkMessage(item ? "已删除“" + item.name + "”" : "已删除自定义收藏");
   }
 
+  function setBookmarkResetDialog(open, trigger) {
+    var dialog = document.getElementById("bookmark-center-reset-dialog");
+    if (!dialog) return;
+    if (trigger) resetDialogTrigger = trigger;
+    if (resetDialogCloseTimer) {
+      clearTimeout(resetDialogCloseTimer);
+      resetDialogCloseTimer = 0;
+    }
+    if (open) {
+      dialog.hidden = false;
+      void dialog.offsetWidth;
+      dialog.classList.add("is-visible");
+      var sheet = dialog.querySelector(".settings-confirm-sheet");
+      if (sheet) sheet.focus({ preventScroll: true });
+      return;
+    }
+    dialog.classList.remove("is-visible");
+    resetDialogCloseTimer = setTimeout(function () {
+      dialog.hidden = true;
+      resetDialogCloseTimer = 0;
+    }, 220);
+    if (resetDialogTrigger && document.contains(resetDialogTrigger)) {
+      resetDialogTrigger.focus({ preventScroll: true });
+    }
+  }
+
+  function resetBookmarkCenter() {
+    [
+      customItemsKey,
+      cardOrderKey,
+      cardSortingEnabledKey,
+      tabOrderKey,
+      tabSortingEnabledKey
+    ].forEach(function (key) {
+      if (window.SksirStorage) {
+        window.SksirStorage.remove(key);
+      } else {
+        localStorage.removeItem(key);
+      }
+    });
+    setBookmarkResetDialog(false);
+    if (typeof window.renderNavSites === "function") {
+      window.renderNavSites();
+    } else {
+      initTabSorting();
+      syncAllCustomItems();
+    }
+    scheduleFilter();
+    showBookmarkMessage("收藏中心已恢复默认内容和设置");
+  }
+
   document.addEventListener("input", function (event) {
     if (event.target && event.target.id === "bookmark-search-input") scheduleFilter();
   });
   document.addEventListener("change", function (event) {
-    if (!event.target || event.target.id !== "bookmark-tab-sort-enabled") return;
+    if (!event.target) return;
+    if (event.target.id === "bookmark-card-sort-enabled") {
+      if (!writeJson(cardSortingEnabledKey, event.target.checked)) {
+        event.target.checked = !event.target.checked;
+        showBookmarkMessage("无法保存收藏内容拖动设置", true);
+        return;
+      }
+      document.querySelectorAll(".products .mainCont[data-nav-hydrated='1']")
+        .forEach(initPanelCardSorting);
+      showBookmarkMessage(event.target.checked ? "已开启收藏内容拖动" : "已关闭收藏内容拖动");
+      return;
+    }
+    if (event.target.id !== "bookmark-tab-sort-enabled") return;
     if (!writeJson(tabSortingEnabledKey, event.target.checked)) {
       event.target.checked = !event.target.checked;
       showBookmarkMessage("无法保存分类排序设置", true);
@@ -983,6 +1067,16 @@
       deleteCustomItem();
       return;
     }
+    if (event.target && event.target.closest && event.target.closest("[data-bookmark-reset-close]")) {
+      event.preventDefault();
+      setBookmarkResetDialog(false);
+      return;
+    }
+    if (event.target && event.target.closest && event.target.closest("#bookmark-center-reset-confirm")) {
+      event.preventDefault();
+      resetBookmarkCenter();
+      return;
+    }
     var close = event.target && event.target.closest && event.target.closest("#bookmark-close");
     if (!close) return;
     event.preventDefault();
@@ -1008,6 +1102,12 @@
     if (deleteDialog && !deleteDialog.hidden) {
       event.preventDefault();
       setDeleteDialog(false);
+      return;
+    }
+    var resetDialog = document.getElementById("bookmark-center-reset-dialog");
+    if (resetDialog && !resetDialog.hidden) {
+      event.preventDefault();
+      setBookmarkResetDialog(false);
     }
   });
 
@@ -1026,10 +1126,16 @@
 
   window.addEventListener("storage", function (event) {
     if (event.key === tabSortingEnabledKey || event.key === tabOrderKey) initTabSorting();
-    if (event.key === cardOrderKey) {
+    if (event.key === cardOrderKey || event.key === cardSortingEnabledKey) {
       document.querySelectorAll(".products .mainCont[data-nav-hydrated='1']").forEach(initPanelCardSorting);
     }
   });
 
   window.scheduleBookmarkCenterFilter = scheduleFilter;
+  window.SksirBookmarks = {
+    openResetDialog: function (trigger) {
+      setBookmarkResetDialog(true, trigger);
+    },
+    reset: resetBookmarkCenter
+  };
 }());

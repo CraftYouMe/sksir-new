@@ -8,6 +8,51 @@
     var remoteState = "idle";
     var remoteCleanup = null;
     var engineCloseTimer = 0;
+    var suggestionsEnabledKey = "sksir-search-suggestions-enabled";
+    var historySuggestionsEnabledKey = "sksir-search-history-suggestions-enabled";
+
+    function readBooleanSetting(key, fallback) {
+        if (window.SksirStorage) {
+            return window.SksirStorage.readJson(key, fallback) !== false;
+        }
+        try {
+            var stored = localStorage.getItem(key);
+            return stored === null ? fallback : JSON.parse(stored) !== false;
+        } catch (error) {
+            return fallback;
+        }
+    }
+
+    function writeBooleanSetting(key, value) {
+        if (window.SksirStorage) return window.SksirStorage.writeJson(key, !!value);
+        try {
+            localStorage.setItem(key, JSON.stringify(!!value));
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function areSuggestionsEnabled() {
+        return readBooleanSetting(suggestionsEnabledKey, true);
+    }
+
+    function areHistorySuggestionsEnabled() {
+        return readBooleanSetting(historySuggestionsEnabledKey, true);
+    }
+
+    function syncSuggestionControls() {
+        var suggestionsToggle = document.getElementById("search-suggestions-enabled");
+        var historyToggle = document.getElementById("search-history-suggestions-enabled");
+        var historyRow = document.getElementById("search-history-suggestions-row");
+        var enabled = areSuggestionsEnabled();
+        if (suggestionsToggle) suggestionsToggle.checked = enabled;
+        if (historyToggle) {
+            historyToggle.checked = areHistorySuggestionsEnabled();
+            historyToggle.disabled = !enabled;
+        }
+        if (historyRow) historyRow.classList.toggle("is-disabled", !enabled);
+    }
 
     function updateKeywordPanel() {
         var searchBox = document.querySelector(".all-search");
@@ -343,7 +388,8 @@
 
     function loadLocalResults(keyword, sequence) {
         if (!keyword) {
-            localResults = typeof window.getRecentNavItems === "function" ? window.getRecentNavItems() : [];
+            localResults = areHistorySuggestionsEnabled() &&
+                typeof window.getRecentNavItems === "function" ? window.getRecentNavItems() : [];
             renderCurrent(keyword, sequence);
             return;
         }
@@ -360,6 +406,10 @@
     }
 
     function remind() {
+        if (!areSuggestionsEnabled()) {
+            hide();
+            return;
+        }
         var input = document.querySelector(".wd");
         var keyword = input ? input.value.trim() : "";
         var sequence = ++requestSeq;
@@ -446,6 +496,30 @@
 
     document.addEventListener("keydown", handleInputKeydown);
 
+    document.addEventListener("change", function (event) {
+        if (!event.target) return;
+        var key = "";
+        if (event.target.id === "search-suggestions-enabled") key = suggestionsEnabledKey;
+        if (event.target.id === "search-history-suggestions-enabled") key = historySuggestionsEnabledKey;
+        if (!key) return;
+        if (!writeBooleanSetting(key, event.target.checked)) {
+            event.target.checked = !event.target.checked;
+            return;
+        }
+        syncSuggestionControls();
+        if (!areSuggestionsEnabled()) {
+            hide();
+            return;
+        }
+        var input = document.querySelector(".wd");
+        if (document.body.classList.contains("onsearch") && input &&
+            (input.value.trim() || areHistorySuggestionsEnabled())) {
+            scheduleReminder(0);
+        } else if (input && !input.value.trim()) {
+            hide();
+        }
+    });
+
     document.addEventListener("click", function (event) {
         var item = event.target.closest && event.target.closest("#keywords .keyword");
         if (item) activateKeyword(item);
@@ -491,6 +565,14 @@
         var enginePanel = document.querySelector(".search-engine");
         if (enginePanel && getComputedStyle(enginePanel).display !== "none") positionEnginePanel();
     });
+
+    window.addEventListener("storage", function (event) {
+        if (event.key !== suggestionsEnabledKey && event.key !== historySuggestionsEnabledKey) return;
+        syncSuggestionControls();
+        if (!areSuggestionsEnabled()) hide();
+    });
+
+    syncSuggestionControls();
 
     window.updateKeywordPanel = updateKeywordPanel;
     window.scheduleKeywordPanelUpdate = scheduleKeywordPanelUpdate;
