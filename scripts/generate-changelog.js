@@ -4,27 +4,171 @@ const { spawnSync } = require("child_process");
 
 const rootDir = path.resolve(__dirname, "..");
 const outputPath = path.join(rootDir, "data", "changelog.js");
-const checkOnly = process.argv.includes("--check");
 const recordSeparator = "\x1e";
 const fieldSeparator = "\x1f";
 
-function runGitLog() {
-  const result = spawnSync("git", [
-    "log",
-    "--no-merges",
-    "--date=short",
-    `--pretty=format:%h${fieldSeparator}%ad${fieldSeparator}%s${fieldSeparator}%b${recordSeparator}`
-  ], {
+function parseOptions(argv) {
+  const options = {
+    checkOnly: false,
+    pendingSubject: "",
+    pendingDetails: [],
+    skipPending: false
+  };
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const argument = argv[index];
+    if (argument === "--check") {
+      options.checkOnly = true;
+    } else if (argument === "--skip-pending") {
+      options.skipPending = true;
+    } else if (argument === "--pending" || argument === "--detail") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        console.error(`${argument} requires a description.`);
+        process.exit(1);
+      }
+      if (argument === "--pending") {
+        if (options.pendingSubject) {
+          console.error("--pending can only be specified once; use --detail for additional facts.");
+          process.exit(1);
+        }
+        options.pendingSubject = value;
+      } else {
+        options.pendingDetails.push(value);
+      }
+      index += 1;
+    } else {
+      console.error(`Unknown option: ${argument}`);
+      process.exit(1);
+    }
+  }
+
+  if (options.pendingDetails.length && !options.pendingSubject) {
+    console.error("--detail must be used together with --pending.");
+    process.exit(1);
+  }
+  if (options.pendingSubject && options.skipPending) {
+    console.error("--pending and --skip-pending cannot be used together.");
+    process.exit(1);
+  }
+  return options;
+}
+
+const options = parseOptions(process.argv.slice(2));
+const checkOnly = options.checkOnly;
+
+function runGit(args, fallbackMessage) {
+  const result = spawnSync("git", args, {
     cwd: rootDir,
     encoding: "utf8",
     windowsHide: true
   });
 
   if (result.status !== 0) {
-    console.error(result.stderr || "Unable to read Git history.");
+    console.error(result.stderr || fallbackMessage);
     process.exit(1);
   }
   return result.stdout;
+}
+
+function runGitLog() {
+  return runGit([
+    "log",
+    "--no-merges",
+    "--date=short",
+    `--pretty=format:%h${fieldSeparator}%ad${fieldSeparator}%s${fieldSeparator}%b${recordSeparator}`
+  ], "Unable to read Git history.");
+}
+
+function getDirtyPaths() {
+  const commands = [
+    ["diff", "--name-only"],
+    ["diff", "--cached", "--name-only"],
+    ["ls-files", "--others", "--exclude-standard"]
+  ];
+  const paths = commands.flatMap((args) => (
+    runGit(args, "Unable to inspect the Git working tree.")
+      .split(/\r?\n/)
+      .map((value) => value.trim())
+      .filter(Boolean)
+  ));
+  return [...new Set(paths)];
+}
+
+function parseChangelogSource(source) {
+  return JSON.parse(
+    String(source || "")
+      .replace(/^window\.SKSIR_CHANGELOG\s*=\s*/, "")
+      .replace(/;\s*$/, "")
+  );
+}
+
+function getChangelogCommitInfo() {
+  const hashes = runGit(
+    ["log", "--no-merges", "--format=%h", "--", "data/changelog.js"],
+    "Unable to inspect changelog commits."
+  )
+    .split(/\r?\n/)
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  const generatedOnlyHashes = new Set();
+  const embeddedEntries = new Map();
+  hashes.forEach((hash) => {
+    const files = runGit(
+      ["diff-tree", "--root", "--no-commit-id", "--name-only", "-r", hash],
+      `Unable to inspect commit ${hash}.`
+    )
+      .split(/\r?\n/)
+      .map((value) => value.trim())
+      .filter(Boolean);
+    if (files.length > 0 && files.every((file) => file === "data/changelog.js")) {
+      generatedOnlyHashes.add(hash);
+      return;
+    }
+
+    const source = runGit(
+      ["show", `${hash}:data/changelog.js`],
+      `Unable to read changelog data from commit ${hash}.`
+    );
+    try {
+      const data = parseChangelogSource(source);
+      const pendingEntry = Array.isArray(data.entries)
+        ? data.entries.find((entry) => entry && entry.hash === "本次更新")
+        : null;
+      if (pendingEntry) {
+        embeddedEntries.set(hash, {
+          hash,
+          date: pendingEntry.date,
+          summary: pendingEntry.summary,
+          details: Array.isArray(pendingEntry.details) ? pendingEntry.details : [],
+          tags: Array.isArray(pendingEntry.tags) ? pendingEntry.tags : ["improve"]
+        });
+      }
+    } catch (error) {
+      // Older generated files may not use the current data shape; fall back to the commit message.
+    }
+  });
+
+  return { generatedOnlyHashes, embeddedEntries };
+}
+
+function assertPendingCoverage() {
+  if (checkOnly) return;
+  const dirtyPaths = getDirtyPaths()
+    .filter((file) => file !== "data/changelog.js");
+  if (!dirtyPaths.length || options.pendingSubject || options.skipPending) return;
+
+  console.error("The working tree contains changes that are not in Git history:");
+  dirtyPaths.slice(0, 8).forEach((file) => console.error(`  - ${file}`));
+  if (dirtyPaths.length > 8) {
+    console.error(`  - ...and ${dirtyPaths.length - 8} more`);
+  }
+  console.error("");
+  console.error("Generate a pre-commit entry with:");
+  console.error('  node scripts/generate-changelog.js --pending "具体变化" --detail "用户可见结果"');
+  console.error("For maintenance-only changes, explicitly use --skip-pending.");
+  process.exit(1);
 }
 
 function cleanLine(value) {
@@ -289,7 +433,7 @@ function createUserFacingContent(subject, body) {
   };
 }
 
-function parseLog(raw) {
+function parseLog(raw, commitInfo) {
   return raw
     .split(recordSeparator)
     .map((record) => record.trim())
@@ -297,6 +441,11 @@ function parseLog(raw) {
     .map((record) => {
       const [hash, date, subject, ...bodyParts] = record.split(fieldSeparator);
       const body = bodyParts.join(fieldSeparator).trim();
+      const cleanHash = cleanLine(hash);
+      if (commitInfo.generatedOnlyHashes.has(cleanHash)) return null;
+      if (commitInfo.embeddedEntries.has(cleanHash)) {
+        return commitInfo.embeddedEntries.get(cleanHash);
+      }
       if (isDocumentationOnly(subject, body) || isLowInformationCommit(subject, body)) return null;
       const tags = classify(subject, body);
       const content = createUserFacingContent(subject, body);
@@ -319,6 +468,40 @@ function parseLog(raw) {
     });
 }
 
+function createPendingEntry() {
+  if (!options.pendingSubject) return null;
+  const body = options.pendingDetails.join("\n");
+  const content = createUserFacingContent(options.pendingSubject, body);
+  if (!content) {
+    console.error("The pending description does not contain enough user-facing information.");
+    process.exit(1);
+  }
+
+  const date = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+  return {
+    hash: "本次更新",
+    date,
+    summary: content.summary,
+    details: content.details,
+    tags: classify(options.pendingSubject, body)
+  };
+}
+
+function mergeEntries(historyEntries, pendingEntry) {
+  const entries = pendingEntry ? [pendingEntry, ...historyEntries] : historyEntries;
+  return entries.filter((entry, index, items) => {
+    const key = `${entry.date}\n${entry.summary}\n${entry.details.join("\n")}`;
+    return items.findIndex((candidate) => (
+      `${candidate.date}\n${candidate.summary}\n${candidate.details.join("\n")}` === key
+    )) === index;
+  });
+}
+
 function serialize(entries) {
   const payload = {
     generatedAt: new Date().toISOString(),
@@ -327,9 +510,6 @@ function serialize(entries) {
   };
   return `window.SKSIR_CHANGELOG = ${JSON.stringify(payload, null, 2)};\n`;
 }
-
-const entries = parseLog(runGitLog());
-const nextOutput = serialize(entries);
 
 if (checkOnly) {
   if (!fs.existsSync(outputPath)) {
@@ -366,5 +546,26 @@ if (checkOnly) {
   process.exit(0);
 }
 
+assertPendingCoverage();
+const commitInfo = getChangelogCommitInfo();
+const entries = mergeEntries(
+  parseLog(runGitLog(), commitInfo),
+  createPendingEntry()
+);
+let currentData = null;
+if (fs.existsSync(outputPath)) {
+  try {
+    currentData = parseChangelogSource(fs.readFileSync(outputPath, "utf8"));
+  } catch (error) {
+    currentData = null;
+  }
+}
+
+if (currentData && JSON.stringify(currentData.entries) === JSON.stringify(entries)) {
+  console.log(`No changelog changes (${entries.length} entries); ${path.relative(rootDir, outputPath)} was not rewritten.`);
+  process.exit(0);
+}
+
+const nextOutput = serialize(entries);
 fs.writeFileSync(outputPath, nextOutput, "utf8");
 console.log(`Generated ${path.relative(rootDir, outputPath)} with ${entries.length} entries.`);

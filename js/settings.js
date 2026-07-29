@@ -33,7 +33,8 @@
     },
     navigation: {
       tabs: [
-        { page: "quick-launch", label: "快捷入口" }
+        { page: "quick-launch", label: "快捷入口" },
+        { page: "bookmarks", label: "收藏中心" }
       ]
     },
     about: {

@@ -169,6 +169,9 @@
 
   function createCard(item, tab) {
     var card = createDiv(item.className || "quicks");
+    card.dataset.bookmarkKey = String(
+      item.bookmarkKey || ("url:" + String(item.url || item.name || "").trim())
+    );
     if (item.category) card.dataset.category = item.category;
     if (item.searchKey) card.dataset.s = item.searchKey;
     card.dataset.bookmarkSearch = [

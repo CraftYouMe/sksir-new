@@ -292,13 +292,16 @@ node scripts\update-version.js YYYY.MM.DD.N
 更新日志来源：
 
 - `scripts/generate-changelog.js` 读取已经提交的 Git 历史。
+- 本轮功能尚未提交时，使用 `--pending "具体变化"` 和可重复的 `--detail "用户结果"` 在提交前生成，使功能与日志进入同一个提交。
+- 下一轮生成时必须从该功能提交中恢复“本次更新”并替换为真实提交哈希，不能丢失已写明的事实。
+- 工作区只有无需展示的维护改动时，显式使用 `--skip-pending`。
 - `data/changelog.js` 是生成结果，不得手工维护。
 - 页面只在打开“更新日志”分栏时加载数据，不得加入首屏脚本链。
 
-功能提交完成后、发布前运行：
+功能完成后、提交前优先运行：
 
 ```powershell
-node scripts\generate-changelog.js
+node scripts\generate-changelog.js --pending "具体变化" --detail "用户结果"
 ```
 
 生成规则必须保持：
@@ -307,6 +310,8 @@ node scripts\generate-changelog.js
 - 从主题和正文中提取具体功能、动作与用户影响。
 - 自动识别“修复”“新增”“改进”“优化”四类标签。
 - 过滤版本号、文档、测试、文件名和内部构建噪声。
+- 过滤只修改 `data/changelog.js` 的历史提交。
+- 生成内容未变化时不得仅因时间戳重写文件。
 - 信息不足的提交不展示，不使用“改进整体体验”一类通用模板补写。
 - 同一天内容完全相同的记录合并。
 

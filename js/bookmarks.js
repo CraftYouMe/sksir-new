@@ -2,9 +2,13 @@
   var filterFrame = 0;
   var resultPanelClass = "bookmark-search-results";
   var tabOrderKey = "sksir-bookmark-tab-order";
+  var tabSortingEnabledKey = "sksir-bookmark-tab-sort-enabled";
+  var cardOrderKey = "sksir-bookmark-card-order";
+  var bookmarkCardSelector = ".quick, .quicks, .quickjl";
   var customItemsKey = "sksir-bookmark-custom-items";
   var customItemsLimit = 120;
   var suppressTabClickUntil = 0;
+  var suppressCardClickUntil = 0;
   var itemDialogCloseTimer = 0;
   var deleteDialogCloseTimer = 0;
   var pendingItemPanel = null;
@@ -91,6 +95,7 @@
     if (typeof window.createNavBookmarkCard !== "function") return null;
     var card = window.createNavBookmarkCard({
       className: "quicks",
+      bookmarkKey: "custom:" + item.id,
       name: item.name,
       url: item.url,
       category: item.category,
@@ -135,6 +140,7 @@
       if (card) container.appendChild(card);
     });
     container.appendChild(createAddCard(panel, tab));
+    initPanelCardSorting(panel);
     if (typeof window.loadDeferredNavIcons === "function") {
       window.loadDeferredNavIcons(panel);
     }
@@ -142,6 +148,311 @@
 
   function syncAllCustomItems() {
     document.querySelectorAll(".products .mainCont[data-nav-tab-index]").forEach(syncPanelCustomItems);
+  }
+
+  function getCardOrders() {
+    var stored = readJson(cardOrderKey, {});
+    return stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
+  }
+
+  function getCardKey(card) {
+    return String(card && card.getAttribute("data-bookmark-key") || "").trim();
+  }
+
+  function applySavedCardOrder(panel) {
+    if (!panel || panel.classList.contains(resultPanelClass)) return;
+    var container = panel.querySelector("[data-nav-items]");
+    var tabTitle = panel.getAttribute("data-nav-tab-title") || "";
+    var order = getCardOrders()[tabTitle];
+    if (!container || !Array.isArray(order) || !order.length) return;
+
+    var orderMap = {};
+    order.forEach(function (key, index) {
+      if (!Object.prototype.hasOwnProperty.call(orderMap, key)) orderMap[key] = index;
+    });
+    Array.prototype.slice.call(container.querySelectorAll(bookmarkCardSelector))
+      .map(function (card, index) {
+        return {
+          card: card,
+          index: index,
+          savedIndex: Object.prototype.hasOwnProperty.call(orderMap, getCardKey(card))
+            ? orderMap[getCardKey(card)]
+            : Number.MAX_SAFE_INTEGER
+        };
+      })
+      .sort(function (left, right) {
+        return left.savedIndex - right.savedIndex || left.index - right.index;
+      })
+      .forEach(function (entry) {
+        container.insertBefore(entry.card, container.querySelector(".bookmark-add-card"));
+      });
+  }
+
+  function saveCardOrder(panel) {
+    var container = panel && panel.querySelector("[data-nav-items]");
+    var tabTitle = panel && panel.getAttribute("data-nav-tab-title");
+    if (!container || !tabTitle) return;
+    var order = Array.prototype.map.call(
+      container.querySelectorAll(bookmarkCardSelector),
+      getCardKey
+    ).filter(Boolean);
+    var stored = getCardOrders();
+    stored[tabTitle] = order;
+    writeJson(cardOrderKey, stored);
+  }
+
+  function getCardDropTarget(cards, pointerX, pointerY) {
+    var positions = cards.map(function (entry) {
+      var rect = entry.getBoundingClientRect();
+      return {
+        entry: entry,
+        rect: rect,
+        centerX: rect.left + rect.width / 2,
+        centerY: rect.top + rect.height / 2
+      };
+    }).filter(function (position) {
+      return position.rect.width > 0 && position.rect.height > 0;
+    });
+    if (!positions.length) return null;
+
+    var hovered = positions.find(function (position) {
+      return pointerX >= position.rect.left &&
+        pointerX <= position.rect.right &&
+        pointerY >= position.rect.top &&
+        pointerY <= position.rect.bottom;
+    });
+    if (hovered) return hovered.entry;
+
+    var rows = [];
+    positions.forEach(function (position) {
+      var row = rows[rows.length - 1];
+      var tolerance = Math.max(10, position.rect.height * 0.46);
+      if (!row || Math.abs(position.centerY - row.centerY) > tolerance) {
+        rows.push({
+          items: [position],
+          centerY: position.centerY,
+          top: position.rect.top,
+          bottom: position.rect.bottom
+        });
+        return;
+      }
+      row.items.push(position);
+      row.centerY = row.items.reduce(function (sum, item) {
+        return sum + item.centerY;
+      }, 0) / row.items.length;
+      row.top = Math.min(row.top, position.rect.top);
+      row.bottom = Math.max(row.bottom, position.rect.bottom);
+    });
+    rows.forEach(function (row) {
+      row.items.sort(function (left, right) {
+        return left.rect.left - right.rect.left;
+      });
+    });
+
+    var firstRow = rows[0];
+    var lastRow = rows[rows.length - 1];
+    var edgeTolerance = Math.max(12, (lastRow.bottom - lastRow.top) * 0.34);
+    if (pointerY < firstRow.top - edgeTolerance) return firstRow.items[0].entry;
+    if (pointerY > lastRow.bottom + edgeTolerance) return null;
+
+    var rowIndex = rows.length - 1;
+    for (var index = 0; index < rows.length - 1; index += 1) {
+      var boundary = (rows[index].centerY + rows[index + 1].centerY) / 2;
+      if (pointerY < boundary) {
+        rowIndex = index;
+        break;
+      }
+    }
+
+    var targetRow = rows[rowIndex];
+    for (var itemIndex = 0; itemIndex < targetRow.items.length; itemIndex += 1) {
+      if (pointerX < targetRow.items[itemIndex].centerX) {
+        return targetRow.items[itemIndex].entry;
+      }
+    }
+    var nextRow = rows[rowIndex + 1];
+    return nextRow && nextRow.items.length ? nextRow.items[0].entry : null;
+  }
+
+  function bindCardDrag(card, panel) {
+    if (!card || card.dataset.bookmarkCardDragBound === "1") return;
+    card.dataset.bookmarkCardDragBound = "1";
+    var container = card.parentNode;
+    var startX = 0;
+    var startY = 0;
+    var pointerX = 0;
+    var pointerY = 0;
+    var grabOffsetX = 0;
+    var grabOffsetY = 0;
+    var moveFrame = 0;
+    var dragging = false;
+    var ghost = null;
+    var placeholder = null;
+    var dropBefore = null;
+
+    function updatePointer(event) {
+      var points = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : null;
+      var point = points && points.length ? points[points.length - 1] : event;
+      pointerX = point.clientX;
+      pointerY = point.clientY;
+      if (ghost) {
+        ghost.style.transform = "translate3d(" + (pointerX - grabOffsetX) + "px," +
+          (pointerY - grabOffsetY) + "px,0)";
+      }
+    }
+
+    function updatePosition() {
+      moveFrame = 0;
+      if (!dragging || !placeholder) return;
+      var products = panel.closest(".products");
+      if (products) {
+        var productsRect = products.getBoundingClientRect();
+        if (pointerY < productsRect.top + 48) products.scrollTop -= 12;
+        if (pointerY > productsRect.bottom - 48) products.scrollTop += 12;
+      }
+
+      var cards = Array.prototype.filter.call(
+        container.querySelectorAll(bookmarkCardSelector),
+        function (entry) {
+          return window.getComputedStyle(entry).display !== "none";
+        }
+      );
+      var before = getCardDropTarget(cards, pointerX, pointerY);
+      var targetRect = before && before.getBoundingClientRect();
+      var containerRect = container.getBoundingClientRect();
+      dropBefore = before;
+      if (!targetRect) {
+        placeholder.hidden = true;
+        return;
+      }
+      placeholder.hidden = false;
+      placeholder.style.width = targetRect.width + "px";
+      placeholder.style.height = targetRect.height + "px";
+      placeholder.style.transform = "translate3d(" +
+        (targetRect.left - containerRect.left + container.scrollLeft) + "px," +
+        (targetRect.top - containerRect.top + container.scrollTop) + "px,0)";
+    }
+
+    function schedulePosition(event) {
+      updatePointer(event);
+      if (!moveFrame) moveFrame = requestAnimationFrame(updatePosition);
+    }
+
+    function startDrag(event) {
+      dragging = true;
+      var rect = card.getBoundingClientRect();
+      grabOffsetX = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+      grabOffsetY = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+      card.classList.add("is-dragging");
+      card.setAttribute("aria-grabbed", "true");
+      container.classList.add("is-reordering");
+
+      placeholder = document.createElement("span");
+      placeholder.className = "bookmark-card-placeholder";
+      placeholder.setAttribute("aria-hidden", "true");
+      placeholder.hidden = true;
+      container.appendChild(placeholder);
+
+      ghost = document.createElement("div");
+      ghost.className = "bookmark-card-drag-ghost";
+      var ghostLabel = document.createElement("span");
+      var sourceLink = card.querySelector("a");
+      var ghostName = sourceLink ? sourceLink.textContent.trim() : card.textContent.trim();
+      var ghostMark = document.createElement("span");
+      ghostMark.className = "bookmark-card-drag-mark";
+      ghostMark.textContent = ghostName.slice(0, 1).toUpperCase();
+      ghost.appendChild(ghostMark);
+      ghostLabel.className = "bookmark-card-drag-label";
+      ghostLabel.textContent = ghostName;
+      ghost.appendChild(ghostLabel);
+      var ghostWidth = Math.min(140, Math.max(112, rect.width * 0.78));
+      var ghostHeight = Math.min(50, rect.height);
+      ghost.style.width = ghostWidth + "px";
+      ghost.style.height = ghostHeight + "px";
+      grabOffsetX = Math.max(0, Math.min(ghostWidth,
+        (event.clientX - rect.left) / rect.width * ghostWidth));
+      grabOffsetY = Math.max(0, Math.min(ghostHeight,
+        (event.clientY - rect.top) / rect.height * ghostHeight));
+      document.body.appendChild(ghost);
+      schedulePosition(event);
+    }
+
+    card.addEventListener("pointerdown", function (event) {
+      if (event.button !== undefined && event.button !== 0) return;
+      if (event.target.closest("button, input, select, textarea")) return;
+      startX = event.clientX;
+      startY = event.clientY;
+      dragging = false;
+      card.setPointerCapture(event.pointerId);
+    });
+
+    card.addEventListener("pointermove", function (event) {
+      if (!card.hasPointerCapture(event.pointerId)) return;
+      if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 4) return;
+      if (!dragging) startDrag(event);
+      event.preventDefault();
+      schedulePosition(event);
+    });
+
+    card.addEventListener("pointerrawupdate", function (event) {
+      if (!dragging || !card.hasPointerCapture(event.pointerId)) return;
+      updatePointer(event);
+    });
+
+    function finishDrag(event) {
+      if (card.hasPointerCapture(event.pointerId)) card.releasePointerCapture(event.pointerId);
+      if (!dragging) return;
+      updatePointer(event);
+      if (moveFrame) cancelAnimationFrame(moveFrame);
+      moveFrame = 0;
+      updatePosition();
+
+      container.insertBefore(card, dropBefore || container.querySelector(".bookmark-add-card"));
+      placeholder.remove();
+      placeholder = null;
+      dropBefore = null;
+      card.classList.remove("is-dragging");
+      card.removeAttribute("aria-grabbed");
+      container.classList.remove("is-reordering");
+      void container.offsetWidth;
+      if (ghost) {
+        ghost.style.boxShadow = "none";
+        ghost.style.webkitBackdropFilter = "none";
+        ghost.style.backdropFilter = "none";
+        ghost.remove();
+        ghost = null;
+      }
+      dragging = false;
+      suppressCardClickUntil = Date.now() + 420;
+      saveCardOrder(panel);
+      card.classList.add("just-dropped");
+      setTimeout(function () { card.classList.remove("just-dropped"); }, 280);
+      event.preventDefault();
+    }
+
+    card.addEventListener("pointerup", finishDrag);
+    card.addEventListener("pointercancel", finishDrag);
+    card.addEventListener("dragstart", function (event) {
+      event.preventDefault();
+    });
+  }
+
+  function initPanelCardSorting(panel) {
+    if (!panel || panel.dataset.navHydrated !== "1" || panel.classList.contains(resultPanelClass)) return;
+    var container = panel.querySelector("[data-nav-items]");
+    if (!container) return;
+    applySavedCardOrder(panel);
+    container.querySelectorAll(bookmarkCardSelector).forEach(function (card) {
+      bindCardDrag(card, panel);
+    });
+    if (container.dataset.bookmarkCardClickGuard !== "1") {
+      container.dataset.bookmarkCardClickGuard = "1";
+      container.addEventListener("click", function (event) {
+        if (Date.now() >= suppressCardClickUntil) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }, true);
+    }
   }
 
   function applySavedTabOrder() {
@@ -163,6 +474,21 @@
     }).forEach(function (item) {
       row.appendChild(item);
     });
+  }
+
+  function isTabSortingEnabled() {
+    return readJson(tabSortingEnabledKey, false) === true;
+  }
+
+  function restoreDefaultTabOrder(row) {
+    Array.prototype.slice.call(row.querySelectorAll(".tab-item"))
+      .sort(function (left, right) {
+        return Number(left.getAttribute("data-nav-tab-index")) -
+          Number(right.getAttribute("data-nav-tab-index"));
+      })
+      .forEach(function (item) {
+        row.appendChild(item);
+      });
   }
 
   function saveTabOrder(row) {
@@ -261,6 +587,7 @@
 
     item.addEventListener("pointerdown", function (event) {
       if (event.button !== undefined && event.button !== 0) return;
+      if (!isTabSortingEnabled()) return;
       startX = event.clientX;
       startY = event.clientY;
       dragging = false;
@@ -300,7 +627,15 @@
   function initTabSorting() {
     var row = document.querySelector(".mark .tab");
     if (!row) return;
-    applySavedTabOrder();
+    var enabled = isTabSortingEnabled();
+    row.classList.toggle("bookmark-tab-sorting-enabled", enabled);
+    if (enabled) {
+      applySavedTabOrder();
+    } else {
+      restoreDefaultTabOrder(row);
+    }
+    var toggle = document.getElementById("bookmark-tab-sort-enabled");
+    if (toggle) toggle.checked = enabled;
     row.querySelectorAll(".tab-item").forEach(function (item) {
       bindTabDrag(item, row);
     });
@@ -618,6 +953,20 @@
   document.addEventListener("input", function (event) {
     if (event.target && event.target.id === "bookmark-search-input") scheduleFilter();
   });
+  document.addEventListener("change", function (event) {
+    if (!event.target || event.target.id !== "bookmark-tab-sort-enabled") return;
+    if (!writeJson(tabSortingEnabledKey, event.target.checked)) {
+      event.target.checked = !event.target.checked;
+      showBookmarkMessage("无法保存分类排序设置", true);
+      return;
+    }
+    initTabSorting();
+    if (!event.target.checked) {
+      var tabRow = document.querySelector(".mark .tab");
+      if (tabRow) saveTabOrder(tabRow);
+    }
+    showBookmarkMessage(event.target.checked ? "已开启分类标签拖动" : "已关闭分类标签拖动");
+  });
   document.addEventListener("click", function (event) {
     if (event.target && event.target.closest && event.target.closest("[data-bookmark-item-close]")) {
       event.preventDefault();
@@ -674,6 +1023,13 @@
 
   initTabSorting();
   syncAllCustomItems();
+
+  window.addEventListener("storage", function (event) {
+    if (event.key === tabSortingEnabledKey || event.key === tabOrderKey) initTabSorting();
+    if (event.key === cardOrderKey) {
+      document.querySelectorAll(".products .mainCont[data-nav-hydrated='1']").forEach(initPanelCardSorting);
+    }
+  });
 
   window.scheduleBookmarkCenterFilter = scheduleFilter;
 }());
