@@ -282,10 +282,14 @@
 
     tabs.forEach(function (tab, index) {
       var isSelected = tab.selected || index === 0;
-      tabRoot.appendChild(createDiv("tab-item" + (isSelected ? " active" : ""), tab.title));
+      var tabItem = createDiv("tab-item" + (isSelected ? " active" : ""), tab.title);
+      tabItem.dataset.navTabIndex = index;
+      tabItem.dataset.navTabTitle = tab.title;
+      tabRoot.appendChild(tabItem);
 
       var panel = createDiv("mainCont" + (isSelected ? " selected" : ""));
       panel.dataset.navTabIndex = index;
+      panel.dataset.navTabTitle = tab.title;
       if (Array.isArray(tab.categories) && tab.categories.length) {
         panel.appendChild(createCategoryTools(tab));
       }
@@ -315,6 +319,7 @@
   window.renderNavSites = renderNavSites;
   window.loadDeferredNavIcons = loadDeferredNavIcons;
   window.ensureNavPanelRendered = ensureNavPanelRendered;
+  window.createNavBookmarkCard = createCard;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", renderNavSites, { once: true });

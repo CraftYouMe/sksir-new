@@ -1080,7 +1080,7 @@ $(document).ready(function () {
         var bookmarksOpen = $('#content').hasClass('bookmarks-open');
         if (!settingOpen && !bookmarksOpen) return;
         var activePanel = settingOpen ? '.set' : '.mark';
-        if ($(event.target).closest(activePanel + ', .tool-all, #menu, .settings-confirm-dialog').length) return;
+        if ($(event.target).closest(activePanel + ', .tool-all, #menu, .settings-confirm-dialog, .bookmark-item-dialog').length) return;
         event.preventDefault();
         event.stopPropagation();
         closeActiveSurface();
@@ -1090,8 +1090,8 @@ $(document).ready(function () {
         var key = event.key || event.keyCode;
         if (key !== "Escape" && key !== "Esc" && key !== 27) return;
         // Let child dialogs consume Escape before closing the settings surface.
-        var resetDialog = document.getElementById("quick-launch-reset-dialog");
-        if (document.querySelector("dialog[open]") || (resetDialog && !resetDialog.hidden)) return;
+        var childDialog = document.querySelector(".settings-confirm-dialog:not([hidden]), .bookmark-item-dialog:not([hidden])");
+        if (document.querySelector("dialog[open]") || childDialog) return;
         if (closeActiveSurface()) {
             event.preventDefault();
             event.stopPropagation();

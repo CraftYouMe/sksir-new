@@ -565,13 +565,13 @@ function getHello() {
 //Tab书签页
 $(function () {
     $(".mark .tab").on("click", ".tab-item", function () {
-        var tabIndex = $(this).index();
+        var tabIndex = parseInt($(this).attr("data-nav-tab-index"), 10);
+        if (!Number.isFinite(tabIndex)) tabIndex = $(this).index();
         if (typeof window.ensureNavPanelRendered === "function") {
             window.ensureNavPanelRendered(tabIndex);
         }
         $(this).addClass("active").siblings().removeClass("active");
-        $(".products .mainCont")
-            .eq(tabIndex)
+        $(".products .mainCont[data-nav-tab-index='" + tabIndex + "']")
             .addClass("selected")
             .css("display", "flex")
             .siblings()

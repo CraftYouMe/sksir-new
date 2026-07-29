@@ -6,6 +6,9 @@
     var quickContextTrigger = null;
     var quickResetTrigger = null;
     var quickResetCloseTimer = 0;
+    var quickCapacityTrigger = null;
+    var quickCapacityCloseTimer = 0;
+    var pendingCapacitySave = null;
 
     function api() {
         return window.SksirQuickLaunch;
@@ -23,48 +26,44 @@
         service.write(service.orderKey, order);
     }
 
-    function getRosterCapacity(service) {
-        var desktopLimit = service.clampLimit(service.read(service.desktopLimitKey, 8), 8, 12);
-        var mobileLimit = service.clampLimit(service.read(service.mobileLimitKey, 6), 6, 8);
-        return Math.max(desktopLimit, mobileLimit);
+    function getDefaultQuickLaunchUrls(service) {
+        var defaultsByHost = {};
+        service.getItems(true).forEach(function (entry) {
+            var host = new URL(entry.url).hostname.replace(/^www\./, "").toLowerCase();
+            if (!defaultsByHost[host]) defaultsByHost[host] = entry.url;
+        });
+        return ["bilibili.com", "deepseek.com", "chat.openai.com", "github.com", "iloveimg.com"]
+            .map(function (host) { return defaultsByHost[host]; })
+            .filter(Boolean);
     }
 
-    function ensureQuickLaunchRoster(service, fill) {
+    function ensureQuickLaunchRoster(service) {
         var stored = service.read(service.rosterKey, null);
         var rosterVersion = Number(service.read(service.rosterVersionKey, 0)) || 0;
-        var canApplyDefaults = rosterVersion < 1 &&
-            service.getCustomItems().length === 0 &&
-            service.getHiddenUrls().length === 0;
-        if (canApplyDefaults) {
-            var defaultsByHost = {};
-            service.getItems(true).forEach(function (entry) {
-                var host = new URL(entry.url).hostname.replace(/^www\./, "").toLowerCase();
-                if (!defaultsByHost[host]) defaultsByHost[host] = entry.url;
-            });
-            var defaultRoster = ["bilibili.com", "deepseek.com", "chat.openai.com", "github.com", "iloveimg.com"]
-                .map(function (host) { return defaultsByHost[host]; })
-                .filter(Boolean);
-            if (defaultRoster.length < 5) {
-                return Array.isArray(stored) ? service.getRosterUrls() : [];
-            }
-            service.write(service.rosterKey, defaultRoster);
-            service.write(service.orderKey, defaultRoster);
-            service.write(service.rosterVersionKey, 1);
-            return defaultRoster;
+        var defaultRoster = getDefaultQuickLaunchUrls(service);
+        if (defaultRoster.length < 5) {
+            return Array.isArray(stored) ? service.getRosterUrls() : [];
         }
-        if (rosterVersion < 1) service.write(service.rosterVersionKey, 1);
-        var roster = Array.isArray(stored)
-            ? service.getRosterUrls()
-            : service.getHiddenUrls().slice(0, service.customLimit);
-        var capacity = getRosterCapacity(service);
-        if (!Array.isArray(stored) || fill) {
-            service.sortItems(service.getItems(true)).forEach(function (entry) {
-                if (roster.length >= capacity) return;
-                if (roster.indexOf(entry.url) === -1) roster.push(entry.url);
+
+        if (rosterVersion < 2 || !Array.isArray(stored)) {
+            var hiddenUrls = service.getHiddenUrls();
+            var roster = defaultRoster.filter(function (url) {
+                return hiddenUrls.indexOf(url) === -1;
+            });
+            service.getCustomItems().forEach(function (entry) {
+                if (hiddenUrls.indexOf(entry.url) === -1 && roster.indexOf(entry.url) === -1) {
+                    roster.push(entry.url);
+                }
             });
             service.write(service.rosterKey, roster.slice(0, service.customLimit));
+            if (rosterVersion < 1 && !service.read(service.orderKey, []).length) {
+                service.write(service.orderKey, roster.slice());
+            }
+            service.write(service.rosterVersionKey, 2);
+            return roster;
         }
-        return roster;
+
+        return service.getRosterUrls();
     }
 
     function ensureQuickContextMenu() {
@@ -287,8 +286,19 @@
         var availableItems = service.getItems();
         var itemsByUrl = {};
         availableItems.forEach(function (entry) { itemsByUrl[entry.url] = entry; });
-        var roster = ensureQuickLaunchRoster(service, false).slice(0, service.getLimit());
-        var items = roster.map(function (url) { return itemsByUrl[url]; }).filter(Boolean);
+        var roster = ensureQuickLaunchRoster(service);
+        var fixedUrls = getDefaultQuickLaunchUrls(service).filter(function (url) {
+            return roster.indexOf(url) !== -1 && itemsByUrl[url];
+        });
+        var fixedLookup = {};
+        fixedUrls.forEach(function (url) { fixedLookup[url] = true; });
+        var customSlots = Math.max(0, service.getLimit() - fixedUrls.length);
+        var customUrls = roster.filter(function (url) {
+            return !fixedLookup[url] && itemsByUrl[url];
+        }).slice(0, customSlots);
+        var items = fixedUrls.concat(customUrls).map(function (url) {
+            return itemsByUrl[url];
+        }).filter(Boolean);
         items = service.sortItems(items);
         panel.replaceChildren();
         items.forEach(function (entry) {
@@ -428,6 +438,100 @@
         service.showMessage("快捷入口已恢复默认设置");
     }
 
+    function setQuickCapacityDialog(open, trigger) {
+        var dialog = document.getElementById("quick-launch-capacity-dialog");
+        if (!dialog) return;
+        if (trigger) quickCapacityTrigger = trigger;
+        if (quickCapacityCloseTimer) {
+            clearTimeout(quickCapacityCloseTimer);
+            quickCapacityCloseTimer = 0;
+        }
+        if (open) {
+            dialog.hidden = false;
+            void dialog.offsetWidth;
+            dialog.classList.add("is-visible");
+            var sheet = dialog.querySelector(".settings-confirm-sheet");
+            if (sheet) sheet.focus({ preventScroll: true });
+            return;
+        }
+        dialog.classList.remove("is-visible");
+        pendingCapacitySave = null;
+        quickCapacityCloseTimer = setTimeout(function () {
+            dialog.hidden = true;
+            quickCapacityCloseTimer = 0;
+        }, 220);
+        if (quickCapacityTrigger && document.contains(quickCapacityTrigger)) {
+            quickCapacityTrigger.focus({ preventScroll: true });
+        }
+    }
+
+    function getCapacityExpansion(service, url) {
+        var hiddenUrls = service.getHiddenUrls();
+        var fixedCount = getDefaultQuickLaunchUrls(service).filter(function (fixedUrl) {
+            return hiddenUrls.indexOf(fixedUrl) === -1;
+        }).length;
+        var visibleCustomUrls = service.getCustomItems().filter(function (entry) {
+            return hiddenUrls.indexOf(entry.url) === -1;
+        }).map(function (entry) {
+            return entry.url;
+        });
+        var projectedTotal = fixedCount + visibleCustomUrls.length +
+            (visibleCustomUrls.indexOf(url) === -1 ? 1 : 0);
+        var currentLimit = service.getLimit();
+        if (projectedTotal <= currentLimit) return null;
+
+        var mobile = window.matchMedia && window.matchMedia("(max-width: 720px)").matches;
+        var options = mobile ? [4, 5, 6, 7, 8] : [4, 6, 8, 10, 12];
+        var expandedLimit = options.find(function (value) {
+            return value >= projectedTotal;
+        });
+        return {
+            mobile: mobile,
+            currentLimit: currentLimit,
+            projectedTotal: projectedTotal,
+            expandedLimit: expandedLimit || options[options.length - 1],
+            canFullyExpand: !!expandedLimit
+        };
+    }
+
+    function commitFormItem(service, item, form) {
+        pendingAddedUrl = item.url;
+        var result = service.saveCustomItem(item);
+        if (result.full) {
+            pendingAddedUrl = "";
+            service.showMessage("只能添加 " + service.customLimit + " 个自定义入口", true);
+            return false;
+        }
+        if (form) form.reset();
+        service.showMessage(result.updated ? "已更新快捷入口" : "已添加到首页");
+        return true;
+    }
+
+    function requestCapacityExpansion(service, expansion, item, form) {
+        var dialog = document.getElementById("quick-launch-capacity-dialog");
+        var description = document.getElementById("quick-launch-capacity-description");
+        var confirmButton = document.getElementById("quick-launch-capacity-confirm");
+        if (!dialog || !description || !confirmButton) return false;
+
+        if (expansion.canFullyExpand) {
+            description.textContent = "添加后会有 " + expansion.projectedTotal + " 个快捷入口，超过当前设置的 " +
+                expansion.currentLimit + " 个。是否自动增加到 " + expansion.expandedLimit + " 个？";
+            confirmButton.textContent = "自动增加";
+        } else {
+            description.textContent = "添加后会有 " + expansion.projectedTotal + " 个快捷入口，超过当前设备可显示的 " +
+                expansion.expandedLimit + " 个。继续保存时，超出的入口暂不显示。";
+            confirmButton.textContent = "继续添加";
+        }
+        pendingCapacitySave = {
+            service: service,
+            expansion: expansion,
+            item: item,
+            form: form
+        };
+        setQuickCapacityDialog(true, form && form.querySelector(".quick-launch-home-submit"));
+        return true;
+    }
+
     function saveFormItem(service, values, form) {
         var name = String(values.name || "").trim().slice(0, 30);
         var url = service.normalizeWebUrl(values.url);
@@ -436,19 +540,14 @@
         if (!name) return service.showMessage("请填写入口名称", true);
         if (!url) return service.showMessage("请输入正确的网址", true);
         if (rawIcon && !icon) return service.showMessage("请输入正确的图标网址", true);
-        pendingAddedUrl = url;
-        var result = service.saveCustomItem({
+        var item = {
             name: name,
             url: url,
             icon: icon || new URL("/favicon.ico", url).href
-        });
-        if (result.full) {
-            pendingAddedUrl = "";
-            return service.showMessage("只能添加 " + service.customLimit + " 个自定义入口", true);
-        }
-        if (form) form.reset();
-        service.showMessage(result.updated ? "已更新快捷入口" : "已添加到首页");
-        return true;
+        };
+        var expansion = getCapacityExpansion(service, url);
+        if (expansion && requestCapacityExpansion(service, expansion, item, form)) return false;
+        return commitFormItem(service, item, form);
     }
 
     window.SksirQuickLaunchRenderer = render;
@@ -549,6 +648,27 @@
             resetQuickLaunch(service);
             return;
         }
+        if (event.target.closest("[data-quick-capacity-close]")) {
+            event.preventDefault();
+            setQuickCapacityDialog(false);
+            return;
+        }
+        if (event.target.closest("#quick-launch-capacity-confirm")) {
+            event.preventDefault();
+            if (!pendingCapacitySave) return;
+            var capacitySave = pendingCapacitySave;
+            if (capacitySave.expansion.canFullyExpand) {
+                var limitKey = capacitySave.expansion.mobile ? service.mobileLimitKey : service.desktopLimitKey;
+                var limitId = capacitySave.expansion.mobile ? "quick-launch-mobile-limit" : "quick-launch-desktop-limit";
+                service.write(limitKey, capacitySave.expansion.expandedLimit);
+                var limitControl = document.getElementById(limitId);
+                if (limitControl) limitControl.value = String(capacitySave.expansion.expandedLimit);
+            }
+            var capacitySaved = commitFormItem(capacitySave.service, capacitySave.item, capacitySave.form);
+            setQuickCapacityDialog(false);
+            if (capacitySaved) setQuickAddDialog(false);
+            return;
+        }
         if (event.target.closest("[data-quick-add-close]")) {
             event.preventDefault();
             setQuickAddDialog(false);
@@ -581,7 +701,6 @@
             var mobile = event.target.id === "quick-launch-mobile-limit";
             var value = service.clampLimit(event.target.value, mobile ? 6 : 8, mobile ? 8 : 12);
             service.write(mobile ? service.mobileLimitKey : service.desktopLimitKey, value);
-            ensureQuickLaunchRoster(service, true);
             service.render();
         }
         if (event.target.matches("#quick-launch-library-tab")) service.renderLibraryItems();
@@ -617,6 +736,12 @@
         if (event.key === "Escape" && contextMenu && !contextMenu.hidden) {
             event.preventDefault();
             closeQuickContextMenu(true);
+            return;
+        }
+        var capacityDialog = document.getElementById("quick-launch-capacity-dialog");
+        if (event.key === "Escape" && capacityDialog && !capacityDialog.hidden) {
+            event.preventDefault();
+            setQuickCapacityDialog(false);
             return;
         }
         if (event.key === "Escape" && !document.getElementById("quick-launch-add-dialog").hidden) {
