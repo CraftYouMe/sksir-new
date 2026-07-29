@@ -39,6 +39,7 @@
     about: {
       tabs: [
         { page: "about", label: "关于本站" },
+        { page: "data", label: "数据管理" },
         { page: "changelog", label: "更新日志" }
       ]
     }

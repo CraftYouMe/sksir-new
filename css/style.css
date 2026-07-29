@@ -3019,7 +3019,7 @@ input[type="radio"]:checked+label {
 }
 
 .app-version {
-    display: inline-flex;
+    display: none;
     align-items: center;
     height: 18px;
     padding: 0 2px;
@@ -3031,11 +3031,6 @@ input[type="radio"]:checked+label {
     text-shadow: var(--main-text-shadow);
     font-variant-numeric: tabular-nums;
     transition: opacity 0.18s ease;
-}
-
-.power:hover .app-version,
-.power:focus-within .app-version {
-    opacity: 0.9;
 }
 
 .update-check {
@@ -3709,6 +3704,144 @@ body.onsearch .close_sou {
 
 .quick-launch-add-dialog.is-visible.is-below .quick-launch-add-sheet {
     transform: translate3d(-50%, 10px, 0) scale(1);
+}
+
+.settings-confirm-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    display: grid;
+    padding: 20px;
+    place-items: center;
+    box-sizing: border-box;
+}
+
+.settings-confirm-dialog[hidden] {
+    display: none;
+}
+
+.settings-confirm-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 8, 13, 0.42);
+    opacity: 0;
+    transition: opacity 0.22s ease;
+}
+
+.settings-confirm-sheet {
+    position: relative;
+    width: min(420px, calc(100vw - 32px));
+    height: auto;
+    min-height: 0;
+    max-height: calc(100dvh - 40px);
+    padding: 24px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 22px;
+    background: rgba(18, 25, 34, 0.88);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    -webkit-backdrop-filter: blur(24px) saturate(1.12);
+    backdrop-filter: blur(24px) saturate(1.12);
+    color: #fff;
+    opacity: 0;
+    outline: none;
+    transform: translateY(8px) scale(0.96);
+    transition: opacity 0.22s ease, transform 0.24s var(--motion-ease);
+}
+
+.settings-confirm-dialog.is-visible .settings-confirm-backdrop,
+.settings-confirm-dialog.is-visible .settings-confirm-sheet {
+    opacity: 1;
+}
+
+.settings-confirm-dialog.is-visible .settings-confirm-sheet {
+    transform: translateY(0) scale(1);
+}
+
+.settings-confirm-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    padding: 0 0 2px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.settings-confirm-kicker {
+    color: rgba(255, 126, 126, 0.86);
+    font-size: 0.68rem;
+    font-weight: 720;
+    letter-spacing: 0.12em;
+}
+
+.settings-confirm-sheet h2 {
+    margin: 8px 46px 8px 0;
+    font-size: 1.25rem;
+}
+
+.settings-confirm-sheet p {
+    margin: 0;
+    color: rgba(232, 239, 247, 0.64);
+    font-size: 0.84rem;
+    line-height: 1.7;
+}
+
+.settings-confirm-actions {
+    display: flex;
+    margin-top: 22px;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.settings-confirm-actions button {
+    min-height: 40px;
+    padding: 0 18px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease,
+        opacity 0.18s ease, transform 0.18s ease;
+}
+
+.settings-confirm-actions .secondary {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.settings-confirm-actions .danger {
+    border-color: rgba(255, 112, 112, 0.28);
+    background: rgba(224, 67, 67, 0.82);
+}
+
+.settings-confirm-close:hover,
+.settings-confirm-actions .secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.settings-confirm-actions .danger:hover {
+    background: rgba(235, 76, 76, 0.94);
+}
+
+.settings-confirm-close:active,
+.settings-confirm-actions button:active {
+    transform: scale(0.96);
+}
+
+.settings-confirm-close:disabled,
+.settings-confirm-actions button:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .quick-launch-add-sheet header {
@@ -5676,13 +5809,13 @@ html.ios-standalone .bg-all {
     line-height: 1.65;
 }
 
-.settings-about-live {
+.settings-about-version {
     display: flex;
     min-height: 34px;
     padding: 0 13px;
     flex: 0 0 auto;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     border: 1px solid rgba(155, 231, 215, 0.19);
     border-radius: 999px;
     background: rgba(9, 18, 22, 0.18);
@@ -5690,13 +5823,15 @@ html.ios-standalone .bg-all {
     font-size: 0.73rem;
 }
 
-.settings-about-live span {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #9be7d7;
-    box-shadow: 0 0 10px rgba(155, 231, 215, 0.8);
-    animation: settingsAboutPulse 2.4s ease-in-out infinite;
+.settings-about-version span {
+    color: rgba(232, 239, 247, 0.52);
+}
+
+.settings-about-version strong {
+    color: #9be7d7;
+    font-size: 0.76rem;
+    font-weight: 680;
+    font-variant-numeric: tabular-nums;
 }
 
 .settings-about-layout {
@@ -5780,22 +5915,6 @@ html.ios-standalone .bg-all {
     line-height: 1.45;
 }
 
-.settings-about-meta {
-    display: flex;
-    min-height: 30px;
-    padding: 0 4px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    color: rgba(232, 239, 247, 0.43);
-    font-size: 0.7rem;
-}
-
-.settings-about-meta strong {
-    color: #9be7d7;
-    font-weight: 650;
-}
-
 @keyframes settingsAboutFloat {
     0%,
     100% {
@@ -5807,24 +5926,16 @@ html.ios-standalone .bg-all {
     }
 }
 
-@keyframes settingsAboutPulse {
-    0%,
-    100% {
-        opacity: 0.58;
-        transform: scale(0.88);
-    }
-
-    50% {
-        opacity: 1;
-        transform: scale(1);
+@media (prefers-reduced-motion: reduce) {
+    .settings-about-orbit {
+        animation: none;
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .settings-about-orbit,
-    .settings-about-live span {
-        animation: none;
-    }
+.settings-data-panel {
+    flex-direction: column;
+    flex-wrap: nowrap !important;
+    align-items: stretch;
 }
 
 .settings-data-panel .settings-data-tools {
@@ -5832,7 +5943,20 @@ html.ios-standalone .bg-all {
 }
 
 .settings-data-section {
-    margin-top: 22px;
+    margin-top: 0;
+}
+
+.quick-launch-reset {
+    width: auto;
+    min-width: 124px;
+    min-height: 40px;
+    padding: 0 16px;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 650;
+    cursor: pointer;
 }
 
 .settings-data-section .settings-inline-note {
@@ -6945,7 +7069,7 @@ html.ios-standalone .bg-all {
         font-size: 0.76rem;
     }
 
-    .settings-about-live {
+    .settings-about-version {
         position: absolute;
         right: 18px;
         bottom: 12px;
@@ -6971,13 +7095,6 @@ html.ios-standalone .bg-all {
 
     .settings-about-stat strong {
         font-size: 0.91rem;
-    }
-
-    .settings-about-meta {
-        padding: 0 2px;
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 4px;
     }
 
     .set .set_blocks_content,
@@ -7269,55 +7386,6 @@ html.ios-standalone .bg-all {
     box-sizing: border-box;
 }
 
-.quick-launch-sort-setting {
-    display: flex;
-    margin-top: 10px;
-    padding: 14px 16px;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.045);
-    color: rgba(255, 255, 255, 0.88);
-}
-
-.quick-launch-sort-segments {
-    display: grid;
-    padding: 3px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    background: rgba(6, 10, 15, 0.38);
-}
-
-.quick-launch-sort-segments input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.quick-launch-sort-segments label {
-    min-height: 36px;
-    display: grid;
-    place-items: center;
-    border-radius: 8px;
-    color: rgba(232, 239, 247, 0.62);
-    cursor: pointer;
-    transition: color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
-}
-
-.quick-launch-sort-segments input:checked + label {
-    background: rgba(123, 221, 204, 0.15);
-    color: #9be7d7;
-    box-shadow: inset 0 0 0 1px rgba(155, 231, 215, 0.22);
-}
-
-.quick-launch-sort-segments input:focus-visible + label {
-    outline: 2px solid rgba(155, 231, 215, 0.72);
-    outline-offset: 1px;
-}
-
-.quick-launch-sort-setting p,
 .quick-launch-page-note {
     margin: 0;
     color: rgba(232, 239, 247, 0.58);
@@ -8024,5 +8092,42 @@ html.ios-standalone .bg-all {
     .set .wallpaper-add-dialog[open],
     .set .wallpaper-add-dialog::backdrop {
         animation: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .settings-confirm-dialog {
+        padding: 0;
+        place-items: end stretch;
+    }
+
+    .settings-confirm-sheet {
+        width: 100%;
+        max-width: none;
+        padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 24px 24px 0 0;
+        transform: translateY(18px) scale(0.98);
+        transform-origin: center bottom;
+    }
+
+    .settings-confirm-dialog.is-visible .settings-confirm-sheet {
+        transform: translateY(0) scale(1);
+    }
+
+    .settings-confirm-actions button {
+        min-width: 0;
+        flex: 1 1 0;
+    }
+
+    .settings-quick-launch-panel .quick-launch-option-row:last-child {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .quick-launch-reset {
+        width: 100%;
     }
 }

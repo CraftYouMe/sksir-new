@@ -4,6 +4,8 @@
     var pendingAddedUrl = "";
     var quickAddTrigger = null;
     var quickContextTrigger = null;
+    var quickResetTrigger = null;
+    var quickResetCloseTimer = 0;
 
     function api() {
         return window.SksirQuickLaunch;
@@ -391,6 +393,41 @@
         }
     }
 
+    function setQuickResetDialog(open, trigger) {
+        var dialog = document.getElementById("quick-launch-reset-dialog");
+        if (!dialog) return;
+        if (trigger) quickResetTrigger = trigger;
+        if (quickResetCloseTimer) {
+            clearTimeout(quickResetCloseTimer);
+            quickResetCloseTimer = 0;
+        }
+        if (open) {
+            dialog.hidden = false;
+            void dialog.offsetWidth;
+            dialog.classList.add("is-visible");
+            var sheet = dialog.querySelector(".settings-confirm-sheet");
+            if (sheet) sheet.focus({ preventScroll: true });
+            return;
+        }
+        dialog.classList.remove("is-visible");
+        quickResetCloseTimer = setTimeout(function () {
+            dialog.hidden = true;
+            quickResetCloseTimer = 0;
+        }, 220);
+        if (quickResetTrigger && document.contains(quickResetTrigger)) {
+            quickResetTrigger.focus({ preventScroll: true });
+        }
+    }
+
+    function resetQuickLaunch(service) {
+        service.storageKeys.forEach(function (key) {
+            localStorage.removeItem(key);
+        });
+        service.init();
+        setQuickResetDialog(false);
+        service.showMessage("快捷入口已恢复默认设置");
+    }
+
     function saveFormItem(service, values, form) {
         var name = String(values.name || "").trim().slice(0, 30);
         var url = service.normalizeWebUrl(values.url);
@@ -496,6 +533,22 @@
         }
 
         if (event.target.closest("#quick-launch-library-add")) addLibraryItem(service);
+        var resetButton = event.target.closest("#quick-launch-reset");
+        if (resetButton) {
+            event.preventDefault();
+            setQuickResetDialog(true, resetButton);
+            return;
+        }
+        if (event.target.closest("[data-quick-reset-close]")) {
+            event.preventDefault();
+            setQuickResetDialog(false);
+            return;
+        }
+        if (event.target.closest("#quick-launch-reset-confirm")) {
+            event.preventDefault();
+            resetQuickLaunch(service);
+            return;
+        }
         if (event.target.closest("[data-quick-add-close]")) {
             event.preventDefault();
             setQuickAddDialog(false);
@@ -531,18 +584,6 @@
             ensureQuickLaunchRoster(service, true);
             service.render();
         }
-        if (event.target.matches(".quick-launch-sort-mode")) {
-            var sortMode = event.target.value === "1" ? "manual" : "auto";
-            service.write(service.sortModeKey, sortMode);
-            if (sortMode === "manual") {
-                service.write(service.orderKey, service.sortItems(service.getItems()).map(function (item) {
-                    return item.url;
-                }).slice(0, 24));
-            }
-            service.syncSettingsControls();
-            service.render();
-            service.showMessage(sortMode === "manual" ? "已切换为手动排序，可拖动首页图标" : "已切换为自动排序");
-        }
         if (event.target.matches("#quick-launch-library-tab")) service.renderLibraryItems();
     });
 
@@ -552,12 +593,6 @@
             var enabled = event.target.value === "0";
             if (enabledControl) enabledControl.setAttribute("data-slider-value", enabled ? "enabled" : "disabled");
             event.target.setAttribute("aria-valuetext", enabled ? "开启" : "关闭");
-        }
-        if (event.target.matches(".quick-launch-sort-mode")) {
-            var sortControl = document.getElementById("quick-launch-sort-control");
-            var sortMode = event.target.value === "1" ? "manual" : "auto";
-            if (sortControl) sortControl.setAttribute("data-slider-value", sortMode);
-            event.target.setAttribute("aria-valuetext", sortMode === "manual" ? "手动排序" : "自动排序");
         }
     });
 
@@ -587,6 +622,12 @@
         if (event.key === "Escape" && !document.getElementById("quick-launch-add-dialog").hidden) {
             event.preventDefault();
             setQuickAddDialog(false);
+            return;
+        }
+        var resetDialog = document.getElementById("quick-launch-reset-dialog");
+        if (event.key === "Escape" && resetDialog && !resetDialog.hidden) {
+            event.preventDefault();
+            setQuickResetDialog(false);
         }
     });
 

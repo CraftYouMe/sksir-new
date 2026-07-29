@@ -658,26 +658,16 @@
                                 </div>
                                 <div class="settings-option-row quick-launch-option-row">
                                     <div>
-                                        <strong>排序方式</strong>
-                                        <p>手动排序时，可在首页拖动图标调整顺序。</p>
+                                        <strong>重置快捷入口</strong>
+                                        <p>恢复默认入口、显示数量和排列顺序，移除本机添加的入口。</p>
                                     </div>
-                                    <div id="quick-launch-sort-control"
-                                        class="performance-slider-control quick-launch-binary-slider quick-launch-sort-slider"
-                                        data-slider-value="manual">
-                                        <span class="performance-slider-indicator" aria-hidden="true"></span>
-                                        <div class="performance-slider-labels" aria-hidden="true">
-                                            <span>自动排序</span>
-                                            <span>手动排序</span>
-                                        </div>
-                                        <input type="range" id="quick-launch-sort-mode" class="quick-launch-sort-mode"
-                                            min="0" max="1" step="1" value="1"
-                                            aria-label="排序方式" aria-valuetext="手动排序">
-                                    </div>
+                                    <button type="button" id="quick-launch-reset"
+                                        class="quick-launch-reset danger">重置快捷入口</button>
                                 </div>
                             </div>
-                            <p class="quick-launch-page-note">设置仅保存在当前设备；新增快捷入口请使用首页末尾的“+”按钮。</p>
+                            <p class="quick-launch-page-note">快捷入口只使用手动排序，可在首页拖动图标调整顺序；新增入口请使用首页末尾的“+”按钮。</p>
                         </div>
-                        <div class="mainConts settings-data-panel settings-about-panel" data-settings-panel="about">
+                        <div class="mainConts settings-about-panel" data-settings-panel="about">
                             <section class="settings-about-hero" aria-labelledby="settings-about-name">
                                 <div class="settings-about-orbit" aria-hidden="true"></div>
                                 <div class="settings-about-identity">
@@ -691,7 +681,10 @@
                                         <p>每天打开，一个快速好看的开始页面。</p>
                                     </div>
                                 </div>
-                                <div class="settings-about-live"><span aria-hidden="true"></span>正在使用</div>
+                                <div class="settings-about-version">
+                                    <span>当前版本</span>
+                                    <strong id="settings-about-version"></strong>
+                                </div>
                             </section>
                             <div class="settings-about-layout">
                                 <section class="settings-about-manifesto">
@@ -718,13 +711,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="settings-about-meta">
-                                <span>当前版本 <strong id="settings-about-version"></strong></span>
-                                <span>桌面和移动端</span>
+                        </div>
+                        <div class="mainConts settings-data-panel" data-settings-panel="data">
+                            <div class="settings-panel-head">
+                                <h3>本机数据</h3>
+                                <p>导出当前设备的配置，或导入之前保存的数据。</p>
                             </div>
                             <div class="settings-section settings-data-section">
-                                <h4>本机数据</h4>
-                                <p class="settings-inline-note">导出当前设备的配置，或导入之前保存的数据。</p>
                                 <div id="settings-data-host"></div>
                             </div>
                         </div>
@@ -783,14 +776,28 @@
                 </form>
             </section>
         </div>
+
+        <div id="quick-launch-reset-dialog" class="settings-confirm-dialog" hidden>
+            <div class="settings-confirm-backdrop" data-quick-reset-close></div>
+            <section class="settings-confirm-sheet" role="dialog" aria-modal="true" tabindex="-1"
+                aria-labelledby="quick-launch-reset-title" aria-describedby="quick-launch-reset-description">
+                <button type="button" class="settings-confirm-close" data-quick-reset-close aria-label="关闭">&times;</button>
+                <span class="settings-confirm-kicker">快捷入口</span>
+                <h2 id="quick-launch-reset-title">重置快捷入口？</h2>
+                <p id="quick-launch-reset-description">将恢复默认入口、显示数量和排列顺序，并移除本机添加的入口。此操作不能恢复。</p>
+                <div class="settings-confirm-actions">
+                    <button type="button" class="secondary" data-quick-reset-close>取消</button>
+                    <button type="button" id="quick-launch-reset-confirm" class="danger">确认重置</button>
+                </div>
+            </section>
+        </div>
         
         <!-- 页脚信息 -->
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.29.9">v2026.07.29.9</span>
+                <span id="app-version" class="app-version" data-version="2026.07.29.10">v2026.07.29.10</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
-                <button type="button" id="update-check" class="update-check" hidden>检查更新</button>
             </div>
         </div>
     </section>

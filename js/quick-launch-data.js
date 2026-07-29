@@ -13,7 +13,6 @@
     var mobileLimitKey = "sksir-quick-launch-mobile-limit";
     var storageKeys = [enabledKey, clicksKey, orderKey, sortModeKey, customKey, hiddenKey, rosterKey, rosterVersionKey, desktopLimitKey, mobileLimitKey];
     var customLimit = 24;
-    var defaultHosts = ["bilibili.com", "deepseek.com", "chat.openai.com", "github.com", "iloveimg.com"];
 
     function read(key, fallback) {
         return window.SksirStorage ? window.SksirStorage.readJson(key, fallback) : fallback;
@@ -28,7 +27,7 @@
     }
 
     function getSortMode() {
-        return read(sortModeKey, "manual") === "auto" ? "auto" : "manual";
+        return "manual";
     }
 
     function normalizeUrl(url) {
@@ -178,32 +177,21 @@
     }
 
     function sortItems(items) {
-        var clicks = read(clicksKey, {});
         var manualOrder = read(orderKey, []);
         var orderMap = {};
-        if (getSortMode() === "manual" && Array.isArray(manualOrder) && manualOrder.length) {
+        if (Array.isArray(manualOrder) && manualOrder.length) {
             manualOrder.forEach(function (url, index) {
                 orderMap[url] = index;
             });
         }
         return items.sort(function (left, right) {
-            if (getSortMode() === "manual" && manualOrder.length) {
+            if (manualOrder.length) {
                 var leftOrder = Object.prototype.hasOwnProperty.call(orderMap, left.url) ? orderMap[left.url] : 9999;
                 var rightOrder = Object.prototype.hasOwnProperty.call(orderMap, right.url) ? orderMap[right.url] : 9999;
                 if (leftOrder !== rightOrder) return leftOrder - rightOrder;
             }
-            var countDiff = (clicks[right.url] || 0) - (clicks[left.url] || 0);
-            if (!countDiff && getSortMode() === "auto") {
-                var leftHost = new URL(left.url).hostname.replace(/^www\./, "").toLowerCase();
-                var rightHost = new URL(right.url).hostname.replace(/^www\./, "").toLowerCase();
-                var leftDefault = defaultHosts.indexOf(leftHost);
-                var rightDefault = defaultHosts.indexOf(rightHost);
-                leftDefault = leftDefault === -1 ? 9999 : leftDefault;
-                rightDefault = rightDefault === -1 ? 9999 : rightDefault;
-                if (leftDefault !== rightDefault) return leftDefault - rightDefault;
-            }
-            if (!countDiff && left.custom !== right.custom) return left.custom ? -1 : 1;
-            return countDiff || left.sourceIndex - right.sourceIndex;
+            if (left.custom !== right.custom) return left.custom ? -1 : 1;
+            return left.sourceIndex - right.sourceIndex;
         });
     }
 

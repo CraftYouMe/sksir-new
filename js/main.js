@@ -300,6 +300,7 @@ window.isMobileNavPriorityViewport = isMobileNavPriorityViewport;
 
 function scheduleWelcomeToast() {
     runAfterFirstPaint(function () {
+        var updatedVersion = getAutomaticUpdateVersion();
         iziToast.settings({
             timeout: 2800,
             backgroundColor: 'transparent',
@@ -316,10 +317,24 @@ function scheduleWelcomeToast() {
         });
         iziToast.show({
             class: 'welcome-toast',
-            title: getHello(),
-            message: '欢迎来到 导航酱'
+            title: updatedVersion ? '版本已自动更新' : getHello(),
+            message: updatedVersion ? '已更新到 v' + updatedVersion : '欢迎来到 导航酱'
         });
+        if (updatedVersion && window.history && window.history.replaceState) {
+            var cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete("site_update");
+            window.history.replaceState(null, "", cleanUrl.toString());
+            sessionStorage.removeItem("sksir-update-attempt");
+        }
     }, 950);
+}
+
+function getAutomaticUpdateVersion() {
+    var requestedVersion = new URL(window.location.href).searchParams.get("site_update");
+    var versionElement = document.getElementById("app-version");
+    var runningVersion = getRunningAppVersion(versionElement);
+    if (!requestedVersion || !/^\d+(?:\.\d+)+$/.test(requestedVersion)) return "";
+    return compareAppVersions(runningVersion, requestedVersion) >= 0 ? requestedVersion : "";
 }
 
 function setDailyQuote() {
@@ -412,9 +427,8 @@ function scheduleUpdateCheck() {
     if (!/^https?:$/.test(window.location.protocol)) return;
 
     runAfterFirstPaint(function () {
-        var updateButton = document.getElementById("update-check");
         var versionElement = document.getElementById("app-version");
-        if (!updateButton) return;
+        if (!versionElement) return;
 
         var versionUrl = "./data/app-version.json?t=" + Date.now();
         fetch(versionUrl, {
@@ -435,7 +449,17 @@ function scheduleUpdateCheck() {
             syncRunningAppVersion(versionElement, runningVersion);
 
             if (compareAppVersions(latestVersion, runningVersion) > 0) {
-                showUpdateButtonAfterIntro(updateButton, latestVersion);
+                if (sessionStorage.getItem("sksir-update-attempt") === latestVersion) {
+                    console.warn("Automatic update did not load the latest page version");
+                    return;
+                }
+                clearSiteCaches().then(function () {
+                    reloadForFreshAssets(latestVersion);
+                }).catch(function (error) {
+                    console.warn("Automatic update failed", error);
+                });
+            } else {
+                sessionStorage.removeItem("sksir-update-attempt");
             }
         }).catch(function (error) {
             console.warn("Update check failed", error);
@@ -482,36 +506,6 @@ function parseAppVersion(version) {
     });
 }
 
-function showUpdateButtonAfterIntro(updateButton, latestVersion) {
-    var elapsed = window.performance && window.performance.now ? window.performance.now() : 0;
-    var introDelay = Math.max(0, 900 - elapsed);
-    setTimeout(function () {
-        showUpdateButton(updateButton, latestVersion);
-    }, introDelay);
-}
-
-function showUpdateButton(updateButton, latestVersion) {
-    var separator = updateButton.previousElementSibling;
-    updateButton.hidden = false;
-    if (separator && separator.classList.contains("footer-separator")) {
-        separator.hidden = false;
-    }
-    updateButton.textContent = "\u66f4\u65b0\u5230 v" + latestVersion;
-
-    updateButton.onclick = function () {
-        updateButton.disabled = true;
-        updateButton.textContent = "\u6b63\u5728\u66f4\u65b0...";
-
-        clearSiteCaches().then(function () {
-            reloadForFreshAssets(latestVersion);
-        }).catch(function (error) {
-            console.warn("Refresh cache failed", error);
-            updateButton.disabled = false;
-            updateButton.textContent = "\u66f4\u65b0\u5931\u8d25\uff0c\u518d\u8bd5\u4e00\u6b21";
-        });
-    };
-}
-
 function clearSiteCaches() {
     var tasks = [];
 
@@ -540,6 +534,7 @@ function clearSiteCaches() {
 function reloadForFreshAssets(version) {
     var url = new URL(window.location.href);
     url.searchParams.set("site_update", version || String(Date.now()));
+    sessionStorage.setItem("sksir-update-attempt", version || "");
     window.location.replace(url.toString());
 }
 

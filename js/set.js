@@ -233,20 +233,12 @@ function syncQuickLaunchSettingsControls() {
     var enabled = isQuickLaunchEnabled();
     var enabledRange = document.getElementById("quick-launch-enabled");
     var enabledControl = document.getElementById("quick-launch-enabled-control");
-    var sortMode = getQuickLaunchSortMode();
-    var sortRange = document.getElementById("quick-launch-sort-mode");
-    var sortControl = document.getElementById("quick-launch-sort-control");
 
     if (enabledRange) {
         enabledRange.value = enabled ? "0" : "1";
         enabledRange.setAttribute("aria-valuetext", enabled ? "开启" : "关闭");
     }
     if (enabledControl) enabledControl.setAttribute("data-slider-value", enabled ? "enabled" : "disabled");
-    if (sortRange) {
-        sortRange.value = sortMode === "manual" ? "1" : "0";
-        sortRange.setAttribute("aria-valuetext", sortMode === "manual" ? "手动排序" : "自动排序");
-    }
-    if (sortControl) sortControl.setAttribute("data-slider-value", sortMode);
 }
 
 function renderQuickLaunchCustomList() {
@@ -1088,7 +1080,7 @@ $(document).ready(function () {
         var bookmarksOpen = $('#content').hasClass('bookmarks-open');
         if (!settingOpen && !bookmarksOpen) return;
         var activePanel = settingOpen ? '.set' : '.mark';
-        if ($(event.target).closest(activePanel + ', .tool-all, #menu').length) return;
+        if ($(event.target).closest(activePanel + ', .tool-all, #menu, .settings-confirm-dialog').length) return;
         event.preventDefault();
         event.stopPropagation();
         closeActiveSurface();
@@ -1097,8 +1089,9 @@ $(document).ready(function () {
     $(document).on('keydown', function (event) {
         var key = event.key || event.keyCode;
         if (key !== "Escape" && key !== "Esc" && key !== 27) return;
-        // Let the native dialog consume Escape before closing the settings surface.
-        if (document.querySelector("dialog[open]")) return;
+        // Let child dialogs consume Escape before closing the settings surface.
+        var resetDialog = document.getElementById("quick-launch-reset-dialog");
+        if (document.querySelector("dialog[open]") || (resetDialog && !resetDialog.hidden)) return;
         if (closeActiveSurface()) {
             event.preventDefault();
             event.stopPropagation();
