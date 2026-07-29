@@ -8451,6 +8451,10 @@ html.ios-standalone .bg-all {
     .products [data-nav-items].bookmark-card-sorting-enabled > .quickjl {
         touch-action: pan-y;
     }
+
+    .mark .tab.bookmark-tab-sorting-enabled .tab-item {
+        touch-action: pan-x pan-y;
+    }
 }
 
 .bookmark-add-card {
@@ -8741,12 +8745,12 @@ html.ios-standalone .bg-all {
 
     /* Mobile bookmark and settings surfaces need their own scroll owner. */
     .mark .products {
-        padding-right: 4px;
+        padding-right: 0;
         overflow-x: hidden;
         overflow-y: auto;
         box-sizing: border-box;
         overscroll-behavior: contain;
-        scrollbar-gutter: stable;
+        scrollbar-gutter: stable both-edges;
         -webkit-overflow-scrolling: touch;
     }
 
@@ -8757,8 +8761,10 @@ html.ios-standalone .bg-all {
     }
 
     .mark .products .mainCont.selected > [data-nav-items] {
+        width: calc(100% - 20px);
         height: auto;
         min-height: 0;
+        box-sizing: border-box;
         overflow: visible;
         flex: 0 0 auto;
     }
@@ -8792,31 +8798,33 @@ html.ios-standalone .bg-all {
     }
 
     .set .productss .mainConts {
-        padding-right: 14px;
+        padding-right: 0;
+        padding-left: 0;
+        scrollbar-gutter: stable both-edges;
     }
 
     .settings-about-hero {
-        height: 112px;
-        min-height: 112px;
-        max-height: 112px;
-        padding: 14px 14px 36px;
+        height: 100px;
+        min-height: 100px;
+        max-height: 100px;
+        padding: 11px 12px 30px;
     }
 
     .settings-about-identity {
-        gap: 12px;
+        gap: 10px;
     }
 
     .settings-about-mark {
-        width: 48px;
-        height: 48px;
-        flex-basis: 48px;
-        border-radius: 15px;
-        font-size: 1.32rem;
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+        border-radius: 14px;
+        font-size: 1.22rem;
     }
 
     .settings-about-copy h3 {
-        margin: 2px 0 1px;
-        font-size: 1.3rem;
+        margin: 1px 0 0;
+        font-size: 1.22rem;
     }
 
     .settings-about-copy p {
@@ -8825,20 +8833,20 @@ html.ios-standalone .bg-all {
     }
 
     .settings-about-version {
-        right: 14px;
-        bottom: 7px;
-        min-height: 28px;
-        padding: 0 10px;
+        right: 12px;
+        bottom: 6px;
+        min-height: 26px;
+        padding: 0 9px;
     }
 
     .settings-about-manifesto {
-        padding: 13px 14px;
+        padding: 11px 12px;
     }
 
     .settings-about-manifesto blockquote {
-        margin: 6px 0 10px;
+        margin: 4px 0 8px;
         font-size: 0.86rem;
-        line-height: 1.55;
+        line-height: 1.45;
     }
 
     .settings-about-tags {
@@ -8846,13 +8854,70 @@ html.ios-standalone .bg-all {
     }
 
     .settings-about-tags span {
-        min-height: 23px;
+        min-height: 22px;
         padding: 0 8px;
-        line-height: 23px;
+        line-height: 22px;
     }
 
     .mark .products::-webkit-scrollbar,
     .set .productss .mainConts::-webkit-scrollbar {
         width: 4px;
+    }
+}
+
+@media (min-width: 721px) and (max-width: 1100px) {
+    .mark .products {
+        overflow-x: hidden;
+        overflow-y: auto;
+        box-sizing: border-box;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable both-edges;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .mark .products .mainCont.selected {
+        height: auto;
+        min-height: 100%;
+        align-content: flex-start;
+    }
+
+    .mark .products .mainCont.selected > [data-nav-items] {
+        width: calc(100% - 40px);
+        height: auto;
+        min-height: 0;
+        box-sizing: border-box;
+        overflow: visible;
+        flex: 0 0 auto;
+    }
+
+    .mark .products::-webkit-scrollbar {
+        width: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .bookmark-head {
+        gap: 8px;
+    }
+
+    .bookmark-head > div:first-child {
+        min-width: max-content;
+        flex: 0 0 auto;
+    }
+
+    .bookmark-title {
+        font-size: 1rem;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .bookmark-head-actions {
+        gap: 7px;
+    }
+
+    .bookmark-search {
+        width: min(150px, calc(100vw - 205px));
+        min-width: 72px;
+        padding: 0 10px;
     }
 }

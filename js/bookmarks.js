@@ -320,6 +320,8 @@
     var grabOffsetY = 0;
     var moveFrame = 0;
     var dragging = false;
+    var pressTimer = 0;
+    var coarsePointer = false;
     var ghost = null;
     var placeholder = null;
     var placeholderPositioned = false;
@@ -636,21 +638,44 @@
     item.addEventListener("pointerdown", function (event) {
       if (event.button !== undefined && event.button !== 0) return;
       if (!isTabSortingEnabled()) return;
+      if (pressTimer) clearTimeout(pressTimer);
       startX = event.clientX;
       startY = event.clientY;
       dragging = false;
+      coarsePointer = event.pointerType === "touch" || event.pointerType === "pen";
       item.setPointerCapture(event.pointerId);
+      if (coarsePointer) {
+        pressTimer = setTimeout(function () {
+          pressTimer = 0;
+          if (!item.hasPointerCapture(event.pointerId) || dragging) return;
+          startDrag(event);
+        }, 360);
+      }
     });
 
     item.addEventListener("pointermove", function (event) {
       if (!item.hasPointerCapture(event.pointerId)) return;
-      if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 4) return;
+      var distance = Math.hypot(event.clientX - startX, event.clientY - startY);
+      if (coarsePointer && !dragging) {
+        if (distance < 8) return;
+        if (pressTimer) {
+          clearTimeout(pressTimer);
+          pressTimer = 0;
+        }
+        item.releasePointerCapture(event.pointerId);
+        return;
+      }
+      if (!dragging && distance < 4) return;
       if (!dragging) startDrag(event);
       event.preventDefault();
       schedulePosition(event);
     });
 
     function finishDrag(event) {
+      if (pressTimer) {
+        clearTimeout(pressTimer);
+        pressTimer = 0;
+      }
       if (item.hasPointerCapture(event.pointerId)) item.releasePointerCapture(event.pointerId);
       if (moveFrame) cancelAnimationFrame(moveFrame);
       moveFrame = 0;
