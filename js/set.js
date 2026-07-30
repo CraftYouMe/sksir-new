@@ -465,20 +465,20 @@ function scheduleKeywordReminder(delay) {
  */
 var bg_img_preinstall = {
     "type": "1",
-    "path": "/assets/oss/2026.07.30.6/icon/background1.webp",
+    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/icon/background1.webp",
 };
 var bgImgStorageKey = "sksir-bg-img";
 
 var bg_img_pictures = [
-    '/assets/oss/2026.07.30.6/icon/background1.webp',
-    '/assets/oss/2026.07.30.6/icon/background-image2.webp',
-    '/assets/oss/2026.07.30.6/icon/background-image3.webp',
-    '/assets/oss/2026.07.30.6/icon/background-image4.webp',
-    '/assets/oss/2026.07.30.6/icon/background-image5.webp',
-    '/assets/oss/2026.07.30.6/icon/background-image6.webp'
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/icon/background1.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/icon/background-image2.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/icon/background-image3.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/icon/background-image4.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/icon/background-image5.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/icon/background-image6.webp'
 ];
 
-var bgImgResponsiveBase = "/assets/oss/2026.07.30.6/wallpaper/responsive/";
+var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/wallpaper/responsive/";
 var bgImgMobileMedia = window.matchMedia
     ? window.matchMedia("(max-width: 720px)")
     : null;

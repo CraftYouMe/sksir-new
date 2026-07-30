@@ -1,9 +1,20 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-07-30T13:56:09.235Z",
+  "generatedAt": "2026-07-30T15:22:45.162Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-07-30",
+      "summary": "静态资源迁移至阿里云 OSS 直连",
+      "details": [
+        "首页 CSS、脚本、字体、收藏数据、图标和壁纸改为从北京 OSS 版本目录读取，减少国内访问 Vercel 跨境链路等待"
+      ],
+      "tags": [
+        "improve"
+      ]
+    },
+    {
+      "hash": "d4f8d25",
       "date": "2026-07-30",
       "summary": "改善导航站首屏图片、壁纸、设置资源和缓存策略",
       "details": [

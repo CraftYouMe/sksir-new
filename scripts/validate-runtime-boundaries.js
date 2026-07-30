@@ -24,11 +24,12 @@ const vercelConfig = JSON.parse(read("vercel.json"));
 const versionMatch = html.match(/id="app-version"[^>]*data-version="([^"]+)"/);
 assert(versionMatch, "The app version marker is missing.");
 const assetVersion = versionMatch[1];
+const assetBase = `https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/${assetVersion}/`;
 [
   "iconfont.woff2",
   "MiSans-UI.woff2"
 ].forEach((font) => {
-  position(html, `./font/${font}?v=${assetVersion}`);
+  position(html, `${assetBase}font/${font}?v=${assetVersion}`);
   position(style, `../font/${font}?v=${assetVersion}`);
 });
 assert(
@@ -49,18 +50,7 @@ const cacheHeaders = new Map(
     `Long-term immutable caching is missing for ${source}.`
   );
 });
-[
-  "index.html",
-  "data/sites.json",
-  "data/sites.js",
-  "js/quick-launch-data.js",
-  "js/set.js"
-].forEach((relativePath) => {
-  assert(
-    !read(relativePath).includes("yuanone-blog-picture.oss-cn-beijing.aliyuncs.com"),
-    `${relativePath} must not use the OSS default domain for browser images.`
-  );
-});
+assert(html.includes(assetBase), "The HTML must reference the versioned OSS asset base.");
 ["/", "/index.html", "/sw.js"].forEach((source) => {
   assert(
     cacheHeaders.get(source)?.get("cache-control")?.includes("no-cache"),
@@ -76,7 +66,7 @@ const cacheHeaders = new Map(
 
 const stylesheet = position(
   html,
-  `<link id="app-styles" rel="stylesheet" type="text/css" href="./css/style.css?v=${assetVersion}">`
+  `<link id="app-styles" rel="stylesheet" type="text/css" href="${assetBase}css/style.css?v=${assetVersion}">`
 );
 const earlyBoot = position(html, "window.__sksirBootFallbackTimer");
 assert(stylesheet > earlyBoot, "The real stylesheet must remain after the early boot script.");
@@ -95,7 +85,7 @@ const requiredScripts = [
 let previousPosition = stylesheet;
 requiredScripts.forEach((src) => {
   const versionSuffix = src === "./js/jquery-3.6.0.min.js" ? "" : `?v=${assetVersion}`;
-  const marker = `<script defer src="${src}${versionSuffix}"></script>`;
+  const marker = `<script defer src="${assetBase}${src.slice(2)}${versionSuffix}"></script>`;
   const currentPosition = position(html, marker);
   assert(currentPosition > previousPosition, `Invalid defer script order at ${src}`);
   previousPosition = currentPosition;

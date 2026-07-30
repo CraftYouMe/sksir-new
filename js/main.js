@@ -164,13 +164,16 @@ var navSitesLoadPromise = null;
 var navStatusLoadPromise = null;
 var settingsLoadPromise = null;
 var wallpaperSettingsLoadPromise = null;
+var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.7/";
 
 function getVersionedAssetUrl(src) {
     if (!src || !/^(?:\.\/|\/(?!\/))/.test(src)) return src;
     var versionElement = document.getElementById("app-version");
     var version = getRunningAppVersion(versionElement);
     if (!version || version === "0.0.0.0") return src;
-    return src + (src.indexOf("?") === -1 ? "?" : "&") + "v=" + encodeURIComponent(version);
+    var normalized = src.replace(/^(?:\.\/|\/)/, "");
+    var assetUrl = sksirAssetBase + normalized;
+    return assetUrl + (assetUrl.indexOf("?") === -1 ? "?" : "&") + "v=" + encodeURIComponent(version);
 }
 
 function loadDeferredScript(id, src) {
@@ -218,7 +221,7 @@ function loadDeferredStylesheet(id, href) {
 
         link.id = id;
         link.rel = "stylesheet";
-        link.href = href;
+        link.href = getVersionedAssetUrl(href);
         link.onload = function () {
             finish(resolve);
         };

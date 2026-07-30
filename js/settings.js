@@ -149,7 +149,8 @@
       var script = document.createElement("script");
       var appVersion = document.getElementById("app-version");
       var version = appVersion && appVersion.getAttribute("data-version");
-      script.src = "./data/changelog.js" + (version ? "?v=" + encodeURIComponent(version) : "");
+      var changelogBase = window.sksirAssetBase || "./";
+      script.src = changelogBase + "data/changelog.js" + (version ? "?v=" + encodeURIComponent(version) : "");
       script.async = true;
       script.onload = function () {
         if (!window.SKSIR_CHANGELOG) {
