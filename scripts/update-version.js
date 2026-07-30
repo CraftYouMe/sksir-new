@@ -11,6 +11,7 @@ if (!nextVersion || !/^\d{4}\.\d{2}\.\d{2}\.\d+$/.test(nextVersion)) {
 
 const versionPath = path.join(rootDir, "data", "app-version.json");
 const indexPath = path.join(rootDir, "index.html");
+const stylePath = path.join(rootDir, "css", "style.css");
 
 const versionInfo = JSON.parse(fs.readFileSync(versionPath, "utf8"));
 versionInfo.version = nextVersion;
@@ -35,5 +36,13 @@ if (!assetVersionPattern.test(nextIndexSource)) {
 }
 nextIndexSource = nextIndexSource.replace(assetVersionPattern, `$1${nextVersion}`);
 
+const styleSource = fs.readFileSync(stylePath, "utf8");
+if (!assetVersionPattern.test(styleSource)) {
+  console.error("Could not find versioned font URLs in css/style.css");
+  process.exit(1);
+}
+const nextStyleSource = styleSource.replace(assetVersionPattern, `$1${nextVersion}`);
+
 fs.writeFileSync(indexPath, nextIndexSource, "utf8");
+fs.writeFileSync(stylePath, nextStyleSource, "utf8");
 console.log(`Updated app version to ${nextVersion}`);

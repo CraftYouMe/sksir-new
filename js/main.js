@@ -147,13 +147,23 @@ $(document).ready(function () {
         if (m < 10) {
             m = "0" + m;
         }
-        $("#time_text").html(h + '<span id="point">:</span>' + m);
-        $("#day").html(mm + "&nbsp;月&nbsp;" + d + "&nbsp;日&nbsp;" + weekday[day]);
+        var timeValue = h + ":" + m;
+        var dayValue = mm + "\u00a0月\u00a0" + d + "\u00a0日\u00a0" + weekday[day];
+        var timeElement = document.getElementById("time_text");
+        var dayElement = document.getElementById("day");
+        if (timeElement && timeElement.textContent !== timeValue) {
+            timeElement.innerHTML = h + '<span id="point">:</span>' + m;
+        }
+        if (dayElement && dayElement.textContent !== dayValue) {
+            dayElement.textContent = dayValue;
+        }
         t = setTimeout(time, 1000);
     }
 });
 var navSitesLoadPromise = null;
 var navStatusLoadPromise = null;
+var settingsLoadPromise = null;
+var wallpaperSettingsLoadPromise = null;
 
 function getVersionedAssetUrl(src) {
     if (!src || !/^(?:\.\/|\/(?!\/))/.test(src)) return src;
@@ -218,6 +228,40 @@ function loadDeferredStylesheet(id, href) {
         };
         document.head.appendChild(link);
     });
+}
+
+function ensureSettingsResourcesLoaded() {
+    if (window.SksirSettingsReady) return Promise.resolve(true);
+    if (settingsLoadPromise) return settingsLoadPromise;
+
+    settingsLoadPromise = loadDeferredScript("settings-controller", "./js/settings.js")
+        .then(function () {
+            if (!window.SksirSettingsReady) {
+                throw new Error("Settings controller did not initialize");
+            }
+            return true;
+        }).catch(function (error) {
+            settingsLoadPromise = null;
+            throw error;
+        });
+    return settingsLoadPromise;
+}
+
+function ensureWallpaperSettingsLoaded() {
+    if (window.SksirWallpaperSettingsReady) return Promise.resolve(true);
+    if (wallpaperSettingsLoadPromise) return wallpaperSettingsLoadPromise;
+
+    wallpaperSettingsLoadPromise = loadDeferredScript("wallpaper-settings-controller", "./js/wallpaper.js")
+        .then(function () {
+            if (!window.SksirWallpaperSettingsReady || typeof window.initWallpaperPicker !== "function") {
+                throw new Error("Wallpaper settings controller did not initialize");
+            }
+            return true;
+        }).catch(function (error) {
+            wallpaperSettingsLoadPromise = null;
+            throw error;
+        });
+    return wallpaperSettingsLoadPromise;
 }
 
 function ensureNavStatusResourcesLoaded() {
@@ -304,13 +348,15 @@ function isMobileNavPriorityViewport() {
 
 window.ensureNavSitesLoaded = ensureNavSitesLoaded;
 window.ensureNavStatusResourcesLoaded = ensureNavStatusResourcesLoaded;
+window.ensureSettingsResourcesLoaded = ensureSettingsResourcesLoaded;
+window.ensureWallpaperSettingsLoaded = ensureWallpaperSettingsLoaded;
 window.isMobileNavPriorityViewport = isMobileNavPriorityViewport;
 
 function scheduleWelcomeToast() {
     runAfterFirstPaint(function () {
         var updatedVersion = getAutomaticUpdateVersion();
         iziToast.settings({
-            timeout: 2800,
+            timeout: 1800,
             backgroundColor: 'transparent',
             titleColor: '#ffffff',
             messageColor: '#ffffff',
@@ -334,7 +380,7 @@ function scheduleWelcomeToast() {
             window.history.replaceState(null, "", cleanUrl.toString());
             sessionStorage.removeItem("sksir-update-attempt");
         }
-    }, 950);
+    }, 120);
 }
 
 function getAutomaticUpdateVersion() {

@@ -72,7 +72,7 @@
     config.type = String(type);
     config.path = src;
     window.setBgImg(config);
-    window.applyBgImg(src);
+    window.applyBgImg(src, { type: config.type });
     activeWallpaper = readActiveWallpaper();
     renderWallpapers();
     showMessage("壁纸已应用");
@@ -88,7 +88,9 @@
     button.type = "button";
     button.className = "wallpaper-option-select";
     button.setAttribute("aria-label", "应用" + item.name);
-    image.src = item.src;
+    image.src = typeof window.resolveResponsiveBgImgSrc === "function"
+      ? window.resolveResponsiveBgImgSrc(item.src, item.type)
+      : item.src;
     image.alt = "";
     image.loading = "lazy";
     image.decoding = "async";
@@ -173,10 +175,79 @@
     if (file.size > 4 * 1024 * 1024) return showMessage("本地图片不能超过 4 MB");
     var reader = new FileReader();
     reader.onload = function () {
-      saveCustomWallpaper({ src: reader.result, name: file.name || "本地壁纸", type: "5", removable: true });
+      optimizeLocalWallpaper(reader.result, file.type, function (src) {
+        saveCustomWallpaper({ src: src, name: file.name || "本地壁纸", type: "5", removable: true });
+      });
     };
     reader.onerror = function () { showMessage("无法读取这张图片"); };
     reader.readAsDataURL(file);
+  }
+
+  function optimizeLocalWallpaper(source, fileType, done) {
+    if (/gif/i.test(fileType) || typeof document.createElement("canvas").toBlob !== "function") {
+      done(source);
+      return;
+    }
+
+    var image = new Image();
+    image.onload = function () {
+      var viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0, 360);
+      var viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, 640);
+      var pixelRatio = Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+      var requestedWidth = Math.min(1920, Math.round(viewportWidth * pixelRatio));
+      var requestedHeight = Math.min(1920, Math.round(viewportHeight * pixelRatio));
+      var targetRatio = requestedWidth / requestedHeight;
+      var sourceRatio = image.naturalWidth / image.naturalHeight;
+      var sourceX = 0;
+      var sourceY = 0;
+      var sourceWidth = image.naturalWidth;
+      var sourceHeight = image.naturalHeight;
+
+      if (sourceRatio > targetRatio) {
+        sourceWidth = Math.round(sourceHeight * targetRatio);
+        sourceX = Math.round((image.naturalWidth - sourceWidth) / 2);
+      } else {
+        sourceHeight = Math.round(sourceWidth / targetRatio);
+        sourceY = Math.round((image.naturalHeight - sourceHeight) / 2);
+      }
+
+      var scale = Math.min(1, requestedWidth / sourceWidth, requestedHeight / sourceHeight);
+      var outputWidth = Math.max(1, Math.round(sourceWidth * scale));
+      var outputHeight = Math.max(1, Math.round(sourceHeight * scale));
+      var canvas = document.createElement("canvas");
+      canvas.width = outputWidth;
+      canvas.height = outputHeight;
+
+      try {
+        var context = canvas.getContext("2d", { alpha: true });
+        if (!context) return done(source);
+        context.drawImage(
+          image,
+          sourceX,
+          sourceY,
+          sourceWidth,
+          sourceHeight,
+          0,
+          0,
+          outputWidth,
+          outputHeight
+        );
+        canvas.toBlob(function (blob) {
+          if (!blob || blob.type !== "image/webp") return done(source);
+          var optimizedReader = new FileReader();
+          optimizedReader.onload = function () {
+            var optimized = String(optimizedReader.result || "");
+            done(optimized && optimized.length < source.length ? optimized : source);
+          };
+          optimizedReader.onerror = function () { done(source); };
+          optimizedReader.readAsDataURL(blob);
+        }, "image/webp", 0.82);
+      } catch (error) {
+        done(source);
+      }
+    };
+    image.onerror = function () { done(source); };
+    image.src = source;
   }
 
   function applyDailyWallpaper() {
@@ -285,4 +356,5 @@
   }
 
   window.initWallpaperPicker = initWallpaperPicker;
+  window.SksirWallpaperSettingsReady = true;
 }());

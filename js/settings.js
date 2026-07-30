@@ -209,6 +209,24 @@
     if (content) content.scrollTop = 0;
     if (page === "changelog") loadChangelog();
     if (page === "bookmarks") prepareBookmarkSettings();
+    if (page === "background") prepareWallpaperSettings();
+  }
+
+  function prepareWallpaperSettings() {
+    var loadWallpaper = typeof window.ensureWallpaperSettingsLoaded === "function"
+      ? window.ensureWallpaperSettingsLoaded()
+      : Promise.resolve();
+    loadWallpaper.then(function () {
+      if (typeof window.initWallpaperPicker === "function") window.initWallpaperPicker();
+    }).catch(function () {
+      if (window.iziToast) {
+        iziToast.show({
+          class: "setting-toast",
+          title: "壁纸设置",
+          message: "壁纸管理暂时无法加载"
+        });
+      }
+    });
   }
 
   function renderSettingsTabs(config) {
@@ -510,13 +528,15 @@
     }
   });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function () {
-      organize();
-      showSettingsGroup("search");
-    }, { once: true });
-  } else {
+  function initializeSettings() {
     organize();
     showSettingsGroup("search");
+    window.SksirSettingsReady = true;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeSettings, { once: true });
+  } else {
+    initializeSettings();
   }
 }());

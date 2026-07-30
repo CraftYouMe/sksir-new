@@ -465,18 +465,65 @@ function scheduleKeywordReminder(delay) {
  */
 var bg_img_preinstall = {
     "type": "1",
-    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background1.webp",
+    "path": "/assets/oss/2026.07.30.6/icon/background1.webp",
 };
 var bgImgStorageKey = "sksir-bg-img";
 
 var bg_img_pictures = [
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background1.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image2.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image3.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image4.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image5.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/icon/background-image6.webp'
+    '/assets/oss/2026.07.30.6/icon/background1.webp',
+    '/assets/oss/2026.07.30.6/icon/background-image2.webp',
+    '/assets/oss/2026.07.30.6/icon/background-image3.webp',
+    '/assets/oss/2026.07.30.6/icon/background-image4.webp',
+    '/assets/oss/2026.07.30.6/icon/background-image5.webp',
+    '/assets/oss/2026.07.30.6/icon/background-image6.webp'
 ];
+
+var bgImgResponsiveBase = "/assets/oss/2026.07.30.6/wallpaper/responsive/";
+var bgImgMobileMedia = window.matchMedia
+    ? window.matchMedia("(max-width: 720px)")
+    : null;
+
+function isMobileWallpaperViewport() {
+    return !!(bgImgMobileMedia && bgImgMobileMedia.matches);
+}
+
+function getPresetResponsiveWallpaperSrc(src) {
+    if (bg_img_pictures.indexOf(src) === -1) return "";
+
+    try {
+        var filename = new URL(src, window.location.href).pathname.split("/").pop().replace(/\.webp$/i, "");
+        return bgImgResponsiveBase + filename + (isMobileWallpaperViewport() ? "-mobile.webp" : "-desktop.webp");
+    } catch (error) {
+        return "";
+    }
+}
+
+function getAliyunResponsiveWallpaperSrc(src) {
+    if (!/^https?:\/\//i.test(src) || /[?&]x-oss-process=/i.test(src)) return src;
+
+    try {
+        var url = new URL(src);
+        if (!/\.aliyuncs\.com$/i.test(url.hostname) || /\.gif$/i.test(url.pathname)) return src;
+
+        var hash = url.hash;
+        var process = isMobileWallpaperViewport()
+            ? "image/resize,m_fill,w_828,h_1792/quality,Q_74/format,webp"
+            : "image/resize,m_lfit,w_1920,h_1200/quality,Q_82/format,webp";
+        url.hash = "";
+        return url.toString() + (url.search ? "&" : "?") + "x-oss-process=" + process + hash;
+    } catch (error) {
+        return src;
+    }
+}
+
+function resolveResponsiveBgImgSrc(src, type) {
+    var source = String(src || "");
+    if (!source || String(type) === "2") return source;
+
+    var preset = getPresetResponsiveWallpaperSrc(source);
+    if (preset) return preset;
+    return getAliyunResponsiveWallpaperSrc(source);
+}
 
 // 获取背景图片
 function getBgImg() {
@@ -564,63 +611,95 @@ function setIosWallpaperFallback(src) {
     root.style.setProperty("--ios-wallpaper-image", "url(" + JSON.stringify(src) + ")");
 }
 
-function applyBgImg(src) {
+function applyBgImg(src, options) {
     var $bg = $('#bg');
-    var targetSrc = src;
-    var currentSrc = $bg.attr('src');
+    var sourceSrc = String(src || "");
+    var wallpaperType = options && options.type;
+    var targetSrc = resolveResponsiveBgImgSrc(sourceSrc, wallpaperType);
+    var currentSource = $bg.attr('data-wallpaper-source');
 
     if (!targetSrc) {
-        $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
+        $bg.addClass('error').removeClass('is-loaded').removeAttr('src data-wallpaper-source');
         setIosWallpaperFallback("");
         setBootWallpaperState("empty", "");
         return;
     }
-    if (currentSrc === targetSrc && $bg.hasClass('is-loaded')) {
-        setIosWallpaperFallback(targetSrc);
-        setBootWallpaperState("loaded", targetSrc);
-        return;
+    if (!options || !options.force) {
+        if (currentSource === sourceSrc && $bg.attr('src') === targetSrc && $bg.hasClass('is-loaded')) {
+            setIosWallpaperFallback(targetSrc);
+            setBootWallpaperState("loaded", targetSrc);
+            return;
+        }
     }
 
     $bg.removeClass('error is-loaded');
     setBootWallpaperState("loading", targetSrc);
 
-    var img = new Image();
-    img.decoding = "async";
-    img.loading = "eager";
-    img.setAttribute("fetchpriority", "high");
-    img.onload = function () {
-        var wallpaperRevealed = false;
-        var decodeFallbackTimer = 0;
-        var revealWallpaper = function () {
-            if (wallpaperRevealed) return;
-            wallpaperRevealed = true;
-            if (decodeFallbackTimer) clearTimeout(decodeFallbackTimer);
+    function loadWallpaperCandidate(candidateSrc, allowFallback) {
+        var img = new Image();
+        img.decoding = "async";
+        img.setAttribute("fetchpriority", "low");
+        img.onload = function () {
+            var wallpaperRevealed = false;
+            var decodeFallbackTimer = 0;
+            var revealWallpaper = function () {
+                if (wallpaperRevealed) return;
+                wallpaperRevealed = true;
+                if (decodeFallbackTimer) clearTimeout(decodeFallbackTimer);
 
-            $bg.attr('src', targetSrc);
-            requestAnimationFrame(function () {
-                setIosWallpaperFallback(targetSrc);
-                $bg.addClass('is-loaded');
-                setBootWallpaperState("loaded", targetSrc);
-            });
-        };
+                $bg.attr({
+                    src: candidateSrc,
+                    "data-wallpaper-source": sourceSrc
+                });
+                requestAnimationFrame(function () {
+                    setIosWallpaperFallback(candidateSrc);
+                    $bg.addClass('is-loaded');
+                    setBootWallpaperState("loaded", candidateSrc);
+                });
+            };
 
-        if (typeof img.decode === "function") {
-            decodeFallbackTimer = setTimeout(revealWallpaper, 180);
-            try {
-                img.decode().then(revealWallpaper, revealWallpaper);
-            } catch (e) {
+            if (typeof img.decode === "function") {
+                decodeFallbackTimer = setTimeout(revealWallpaper, 180);
+                try {
+                    img.decode().then(revealWallpaper, revealWallpaper);
+                } catch (e) {
+                    revealWallpaper();
+                }
+            } else {
                 revealWallpaper();
             }
-        } else {
-            revealWallpaper();
-        }
-    };
-    img.onerror = function () {
-        $bg.addClass('error').removeClass('is-loaded').removeAttr('src');
-        setIosWallpaperFallback("");
-        setBootWallpaperState("error", targetSrc);
-    };
-    img.src = targetSrc;
+        };
+        img.onerror = function () {
+            if (allowFallback && candidateSrc !== sourceSrc) {
+                loadWallpaperCandidate(sourceSrc, false);
+                return;
+            }
+
+            $bg.addClass('error').removeClass('is-loaded').removeAttr('src data-wallpaper-source');
+            setIosWallpaperFallback("");
+            setBootWallpaperState("error", candidateSrc);
+        };
+        img.src = candidateSrc;
+    }
+
+    loadWallpaperCandidate(targetSrc, true);
+}
+
+function refreshResponsiveWallpaper() {
+    var bg_img = getBgImg();
+    if (String(bg_img.type) === "2") return;
+    applyBgImg(resolveBgImgSrc(bg_img), {
+        type: bg_img.type,
+        force: true
+    });
+}
+
+if (bgImgMobileMedia) {
+    if (typeof bgImgMobileMedia.addEventListener === "function") {
+        bgImgMobileMedia.addEventListener("change", refreshResponsiveWallpaper);
+    } else if (typeof bgImgMobileMedia.addListener === "function") {
+        bgImgMobileMedia.addListener(refreshResponsiveWallpaper);
+    }
 }
 
 // 设置-壁纸
@@ -638,7 +717,9 @@ function setBgImgInit() {
         $("#wallpaper-button").hide();
     }
 
-    applyBgImg(resolveBgImgSrc(bg_img));
+    applyBgImg(resolveBgImgSrc(bg_img), {
+        type: wallpaperType
+    });
 }
 
 var bgImgInitStarted = false;
@@ -649,7 +730,22 @@ function startBgImgInit() {
     setBgImgInit();
 }
 
-startBgImgInit();
+function scheduleBgImgInit() {
+    var queueAfterFirstPaint = function () {
+        setTimeout(startBgImgInit, 0);
+    };
+
+    setBootWallpaperState("deferred", "");
+    if (typeof window.requestAnimationFrame === "function") {
+        window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(queueAfterFirstPaint);
+        });
+    } else {
+        setTimeout(queueAfterFirstPaint, 0);
+    }
+}
+
+scheduleBgImgInit();
 
 function getPerformanceMode() {
     return normalizePerformanceMode(window.SksirStorage
@@ -813,24 +909,40 @@ function isMobileNavViewport() {
 }
 
 function openSet() {
-    document.body.classList.remove("bookmarks-surface-open");
-    $("#menu").addClass('on');
+    // 设置内容按需渲染。
+    var loadSettings = typeof window.ensureSettingsResourcesLoaded === "function"
+        ? window.ensureSettingsResourcesLoaded()
+        : Promise.resolve(true);
 
-    $("#content").addClass('box setting-open').removeClass('bookmarks-open');
-    cancelBookmarkOpenTasks();
-    $(".mark").removeClass("is-visible");
+    return loadSettings.then(function () {
+        document.body.classList.remove("bookmarks-surface-open");
+        $("#menu").addClass('on');
+        $("#content").addClass('box setting-open').removeClass('bookmarks-open');
+        cancelBookmarkOpenTasks();
+        $(".mark").removeClass("is-visible");
 
-    //隐藏书签打开设置
-    $(".mark").css({
-        "display": "none",
+        //隐藏书签打开设置
+        $(".mark").css({
+            "display": "none",
+        });
+        $(".set").css({
+            "display": "flex",
+        });
+        setSeInit();
+        setBackgroundFocusEffect(true);
+        return true;
+    }).catch(function (error) {
+        $("#menu").removeClass('on');
+        $(".power").show();
+        console.warn("Settings resources failed to load", error);
+        iziToast.show({
+            timeout: 2200,
+            class: "setting-toast",
+            title: "设置加载失败",
+            message: "请检查网络后重试"
+        });
+        return false;
     });
-    $(".set").css({
-        "display": "flex",
-    });
-    if (typeof window.initWallpaperPicker === "function") {
-        window.initWallpaperPicker();
-    }
-    setBackgroundFocusEffect(true);
 }
 
 // 关闭设置
@@ -1115,10 +1227,11 @@ $(document).ready(function () {
             $("#time_text").trigger("click");
         } else if (event.key === ",") {
             event.preventDefault();
-            openSet();
-            $("#menu").show().addClass("on");
-            $(".power").hide();
-            setSeInit();
+            openSet().then(function (opened) {
+                if (!opened) return;
+                $("#menu").show().addClass("on");
+                $(".power").hide();
+            });
         } else if (event.altKey && /^[1-4]$/.test(event.key)) {
             var engines = document.querySelectorAll(".search-engine-list .se-li");
             var engine = engines[parseInt(event.key, 10) - 1];
@@ -1135,201 +1248,9 @@ $(document).ready(function () {
             closeSet();
         } else {
             openSet();
-
-            // 设置内容加载
-            setSeInit(); //搜索引擎设置
         }
     });
 
-    if (!window.SksirSettingsOwnsSearchEngines) {
-    $(".se_list_table").on("click", ".set_se_default", function () {
-        if (setDefaultSearchEngine($(this).val())) {
-            iziToast.show({
-                timeout: 1800,
-                class: "setting-toast",
-                title: "\u641c\u7d22\u8bbe\u7f6e",
-                message: "\u5df2\u7acb\u5373\u5207\u6362\u9ed8\u8ba4\u641c\u7d22\u5f15\u64ce"
-            });
-        }
-    });
-
-    // 搜索引擎添加
-    $(".set_se_list_add").click(function () {
-        $(".se_add_content input").val("");
-
-        hideSe();
-        $(".se_add_content").show();
-    });
-
-    // 搜索引擎保存
-    $(".se_add_save").click(function () {
-        var key_inhere = $(".se_add_content input[name='key_inhere']").val();
-        var key = $(".se_add_content input[name='key']").val();
-        var title = $(".se_add_content input[name='title']").val();
-        var url = $(".se_add_content input[name='url']").val();
-        var name = $(".se_add_content input[name='name']").val();
-        //var icon = $(".se_add_content input[name='icon']").val();
-        var icon = "iconfont icon-wangluo";
-
-        var num = /^\+?[1-9][0-9]*$/;
-        if (!num.test(key)) {
-            iziToast.show({
-                timeout: 2000,
-                message: '序号 ' + key + ' 不是正整数'
-            });
-            return;
-        }
-
-        var se_list = getSeList();
-
-        if (se_list[key]) {
-            iziToast.show({
-                timeout: 8000,
-                message: '搜索引擎 ' + key + ' 已有数据，是否覆盖？',
-                buttons: [
-                    ['<button>确认</button>', function (instance, toast) {
-                        se_list[key] = {
-                            title: title,
-                            url: url,
-                            name: name,
-                            icon: icon,
-                        };
-                        setSeList(se_list);
-                        setSeInit();
-                        $(".se_add_content").hide();
-                        //显示列表
-                        showSe();
-
-                        instance.hide({
-                            transitionOut: 'flipOutX',
-                        }, toast, 'buttonName');
-                        iziToast.show({
-                            message: '覆盖成功'
-                        });
-                    }, true],
-                    ['<button>取消</button>', function (instance, toast) {
-                        instance.hide({
-                            transitionOut: 'flipOutX',
-                        }, toast, 'buttonName');
-                    }]
-                ]
-            });
-            return;
-        }
-
-        if (key_inhere && key !== key_inhere) {
-            delete se_list[key_inhere];
-        }
-
-        se_list[key] = {
-            title: title,
-            url: url,
-            name: name,
-            icon: icon,
-        };
-        setSeList(se_list);
-        setSeInit();
-        iziToast.show({
-            timeout: 2000,
-            message: '添加成功'
-        });
-        $(".se_add_content").hide();
-        showSe();
-    });
-
-    // 关闭表单
-    $(".se_add_cancel").click(function () {
-        $(".se_add_content").hide();
-
-        //显示列表
-        showSe();
-    });
-
-    // 搜索引擎修改
-    $(".se_list").on("click", ".edit_se", function () {
-
-        var se_list = getSeList();
-        var key = $(this).val();
-        $(".se_add_content input[name='key_inhere']").val(key);
-        $(".se_add_content input[name='key']").val(key);
-        $(".se_add_content input[name='title']").val(se_list[key]["title"]);
-        $(".se_add_content input[name='url']").val(se_list[key]["url"]);
-        $(".se_add_content input[name='name']").val(se_list[key]["name"]);
-        // $(".se_add_content input[name='icon']").val("iconfont icon-Earth");
-
-        //隐藏列表
-        hideSe();
-
-        $(".se_add_content").show();
-    });
-
-    // 搜索引擎删除
-    $(".se_list").on("click", ".delete_se", function () {
-        var se_default = getSeDefault();
-        var key = $(this).val();
-        if (key == se_default) {
-            iziToast.show({
-                message: '默认搜索引擎不可删除'
-            });
-        } else {
-            iziToast.show({
-                timeout: 8000,
-                message: '搜索引擎 ' + key + ' 是否删除？',
-                buttons: [
-                    ['<button>确认</button>', function (instance, toast) {
-                        var se_list = getSeList();
-                        delete se_list[key];
-                        setSeList(se_list);
-                        setSeInit();
-                        instance.hide({
-                            transitionOut: 'flipOutX',
-                        }, toast, 'buttonName');
-                        iziToast.show({
-                            message: '删除成功'
-                        });
-                    }, true],
-                    ['<button>取消</button>', function (instance, toast) {
-                        instance.hide({
-                            transitionOut: 'flipOutX',
-                        }, toast, 'buttonName');
-                    }]
-                ]
-            });
-        }
-    });
-
-    // 恢复预设搜索引擎
-    $(".set_se_list_preinstall").click(function () {
-        iziToast.show({
-            timeout: 8000,
-            message: '现有搜索引擎数据将被清空',
-            buttons: [
-                ['<button>确认</button>', function (instance, toast) {
-                    setSeList(se_list_preinstall);
-                    Cookies.set('se_default', 1, {
-                        expires: 36500
-                    });
-                    setSeInit();
-                    instance.hide({
-                        transitionOut: 'flipOutX',
-                    }, toast, 'buttonName');
-                    iziToast.show({
-                        message: '重置成功'
-                    });
-                    setTimeout(function () {
-                        window.location.reload()
-                    }, 1000);
-                }, true],
-                ['<button>取消</button>', function (instance, toast) {
-                    instance.hide({
-                        transitionOut: 'flipOutX',
-                    }, toast, 'buttonName');
-                }]
-            ]
-        });
-    });
-
-    }
 
     // 性能模式设置
     $("#performance").on("input", ".set-performance", function () {
