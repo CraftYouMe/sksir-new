@@ -147,7 +147,9 @@
     if (changelogLoadPromise) return changelogLoadPromise;
     changelogLoadPromise = new Promise(function (resolve, reject) {
       var script = document.createElement("script");
-      script.src = "./data/changelog.js";
+      var appVersion = document.getElementById("app-version");
+      var version = appVersion && appVersion.getAttribute("data-version");
+      script.src = "./data/changelog.js" + (version ? "?v=" + encodeURIComponent(version) : "");
       script.async = true;
       script.onload = function () {
         if (!window.SKSIR_CHANGELOG) {

@@ -1,9 +1,24 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-07-29T15:53:56.525Z",
+  "generatedAt": "2026-07-30T04:15:46.681Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-07-30",
+      "summary": "解决移动端关于页面与更新日志布局",
+      "details": [
+        "iPhone Safari 中关于卡片恢复紧凑高度，长更新日志不再重叠",
+        "安卓移动浏览器扩大设置卡片可用宽度，并拉开版本信息与简介的间距",
+        "完善日志按应用版本刷新缓存，升级后可立即看到最新记录"
+      ],
+      "tags": [
+        "fix",
+        "improve",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "6cfb556",
       "date": "2026-07-29",
       "summary": "解决触摸设备收藏交互与关于卡片拉伸",
       "details": [
