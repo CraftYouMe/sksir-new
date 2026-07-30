@@ -1,9 +1,21 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-07-30T15:30:18.032Z",
+  "generatedAt": "2026-07-30T15:56:07.568Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-07-30",
+      "summary": "回归首屏关键资源加载策略",
+      "details": [
+        "提前建立 OSS 连接，壁纸恢复立即高优先级加载，异常情况下首屏约 1.2 秒内显示"
+      ],
+      "tags": [
+        "fix",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "3b03609",
       "date": "2026-07-30",
       "summary": "静态资源迁移并修复壁纸设置",
       "details": [

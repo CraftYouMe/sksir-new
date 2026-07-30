@@ -465,20 +465,20 @@ function scheduleKeywordReminder(delay) {
  */
 var bg_img_preinstall = {
     "type": "1",
-    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.8/icon/background1.webp",
+    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/icon/background1.webp",
 };
 var bgImgStorageKey = "sksir-bg-img";
 
 var bg_img_pictures = [
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.8/icon/background1.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.8/icon/background-image2.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.8/icon/background-image3.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.8/icon/background-image4.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.8/icon/background-image5.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.8/icon/background-image6.webp'
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/icon/background1.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/icon/background-image2.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/icon/background-image3.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/icon/background-image4.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/icon/background-image5.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/icon/background-image6.webp'
 ];
 
-var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.8/wallpaper/responsive/";
+var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/wallpaper/responsive/";
 var bgImgMobileMedia = window.matchMedia
     ? window.matchMedia("(max-width: 720px)")
     : null;
@@ -644,7 +644,7 @@ function applyBgImg(src, options) {
     function loadWallpaperCandidate(candidateSrc, allowFallback) {
         var img = new Image();
         img.decoding = "async";
-        img.setAttribute("fetchpriority", "low");
+        img.setAttribute("fetchpriority", "high");
         img.onload = function () {
             var wallpaperRevealed = false;
             var decodeFallbackTimer = 0;
@@ -736,22 +736,7 @@ function startBgImgInit() {
     setBgImgInit();
 }
 
-function scheduleBgImgInit() {
-    var queueAfterFirstPaint = function () {
-        setTimeout(startBgImgInit, 0);
-    };
-
-    setBootWallpaperState("deferred", "");
-    if (typeof window.requestAnimationFrame === "function") {
-        window.requestAnimationFrame(function () {
-            window.requestAnimationFrame(queueAfterFirstPaint);
-        });
-    } else {
-        setTimeout(queueAfterFirstPaint, 0);
-    }
-}
-
-scheduleBgImgInit();
+startBgImgInit();
 
 function getPerformanceMode() {
     return normalizePerformanceMode(window.SksirStorage
