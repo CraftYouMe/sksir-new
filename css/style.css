@@ -5748,10 +5748,10 @@ html.ios-standalone .bg-all {
 .settings-about-hero {
     position: relative;
     display: flex;
-    height: 178px;
-    min-height: 178px;
-    max-height: 178px;
-    padding: 26px 28px;
+    height: 204px;
+    min-height: 204px;
+    max-height: 204px;
+    padding: 30px 32px;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
@@ -5805,16 +5805,16 @@ html.ios-standalone .bg-all {
 .settings-about-mark {
     position: relative;
     display: grid;
-    width: 76px;
-    height: 76px;
-    flex: 0 0 76px;
+    width: 84px;
+    height: 84px;
+    flex: 0 0 84px;
     place-items: center;
     border: 1px solid rgba(255, 255, 255, 0.20);
-    border-radius: 22px;
+    border-radius: 24px;
     background: linear-gradient(145deg, rgba(155, 231, 215, 0.25), rgba(255, 255, 255, 0.055));
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 14px 28px rgba(0, 0, 0, 0.14);
     color: #f7fbff;
-    font-size: 2rem;
+    font-size: 2.16rem;
     font-weight: 760;
     transform: rotate(-4deg);
 }
@@ -5854,17 +5854,17 @@ html.ios-standalone .bg-all {
 .settings-about-copy p {
     margin: 0;
     color: rgba(232, 239, 247, 0.68);
-    font-size: 0.84rem;
+    font-size: 0.88rem;
     line-height: 1.65;
 }
 
 .settings-about-version {
     display: flex;
-    min-height: 34px;
-    padding: 0 13px;
+    min-height: 38px;
+    padding: 0 15px;
     flex: 0 0 auto;
     align-items: center;
-    gap: 7px;
+    gap: 9px;
     border: 1px solid rgba(155, 231, 215, 0.19);
     border-radius: 999px;
     background: rgba(9, 18, 22, 0.18);
@@ -5962,6 +5962,72 @@ html.ios-standalone .bg-all {
     color: rgba(232, 239, 247, 0.46);
     font-size: 0.66rem;
     line-height: 1.45;
+}
+
+.settings-about-principles {
+    position: relative;
+    display: grid;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    grid-template-columns: minmax(190px, 1.15fr) repeat(3, minmax(145px, 1fr));
+    align-items: stretch;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 8% 100%, rgba(155, 231, 215, 0.10), transparent 34%),
+        rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+}
+
+.settings-about-principles-head {
+    padding: 20px 22px;
+}
+
+.settings-about-principles-head h4 {
+    margin: 7px 0 6px;
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.settings-about-principles-head p,
+.settings-about-principle p {
+    margin: 0;
+    color: rgba(232, 239, 247, 0.52);
+    font-size: 0.72rem;
+    line-height: 1.6;
+}
+
+.settings-about-principle {
+    display: flex;
+    min-width: 0;
+    padding: 20px 16px;
+    align-items: flex-start;
+    gap: 11px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-about-principle > span {
+    display: grid;
+    width: 27px;
+    height: 27px;
+    flex: 0 0 27px;
+    place-items: center;
+    border: 1px solid rgba(155, 231, 215, 0.18);
+    border-radius: 9px;
+    background: rgba(155, 231, 215, 0.08);
+    color: rgba(155, 231, 215, 0.74);
+    font-size: 0.61rem;
+    font-weight: 720;
+}
+
+.settings-about-principle strong {
+    display: block;
+    margin: 2px 0 5px;
+    color: rgba(255, 255, 255, 0.90);
+    font-size: 0.82rem;
+    font-weight: 680;
 }
 
 @keyframes settingsAboutFloat {
@@ -8963,21 +9029,39 @@ html.ios-standalone .bg-all {
 
     .settings-about-hero {
         width: 100%;
-        height: 112px;
-        min-height: 112px;
-        max-height: 112px;
-        padding: 12px 14px 38px;
-        flex: 0 0 112px;
+        height: 148px;
+        min-height: 148px;
+        max-height: 148px;
+        padding: 18px 16px 48px;
+        flex: 0 0 148px;
         align-self: auto;
         box-sizing: border-box;
     }
 
     .settings-about-version {
-        right: 14px;
-        bottom: 9px;
-        min-height: 28px;
-        padding: 0 10px;
-        gap: 8px;
+        right: 16px;
+        bottom: 12px;
+        min-height: 30px;
+        padding: 0 11px;
+        gap: 9px;
+    }
+
+    .settings-about-mark {
+        width: 56px;
+        height: 56px;
+        flex-basis: 56px;
+        border-radius: 17px;
+        font-size: 1.5rem;
+    }
+
+    .settings-about-copy h3 {
+        margin: 4px 0 4px;
+        font-size: 1.45rem;
+    }
+
+    .settings-about-copy p {
+        font-size: 0.78rem;
+        line-height: 1.55;
     }
 
     .settings-about-layout {
@@ -8991,12 +9075,33 @@ html.ios-standalone .bg-all {
     }
 
     .settings-about-manifesto,
-    .settings-about-stats {
+    .settings-about-stats,
+    .settings-about-principles {
         width: 100%;
         height: auto;
         min-height: 0;
         align-self: start;
         box-sizing: border-box;
+    }
+
+    .settings-about-principles {
+        grid-template-columns: minmax(0, 1fr);
+        border-radius: 16px;
+    }
+
+    .settings-about-principles-head {
+        padding: 16px 17px;
+    }
+
+    .settings-about-principle {
+        padding: 13px 17px;
+        align-items: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-left: 0;
+    }
+
+    .settings-about-principle strong {
+        margin-top: 0;
     }
 
     .changelog-panel-head,
@@ -9024,9 +9129,9 @@ html.ios-standalone .bg-all {
 @media (max-width: 720px) {
     html.ios-safari .settings-about-hero,
     html.ios-standalone .settings-about-hero {
-        block-size: 112px;
-        min-block-size: 112px;
-        max-block-size: 112px;
+        block-size: 148px;
+        min-block-size: 148px;
+        max-block-size: 148px;
     }
 
     html.ios-safari .settings-about-layout,
@@ -9038,8 +9143,10 @@ html.ios-standalone .bg-all {
 
     html.ios-safari .settings-about-manifesto,
     html.ios-safari .settings-about-stats,
+    html.ios-safari .settings-about-principles,
     html.ios-standalone .settings-about-manifesto,
     html.ios-standalone .settings-about-stats,
+    html.ios-standalone .settings-about-principles,
     html.ios-safari .changelog-panel-head,
     html.ios-safari .changelog-timeline,
     html.ios-safari .changelog-day,
