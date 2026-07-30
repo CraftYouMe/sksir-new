@@ -2,7 +2,7 @@
   var customStorageKey = "sksir-custom-wallpapers";
   var dailySourceKey = "sksir-wallpaper-daily-source";
   var dailyApiKey = "sksir-wallpaper-daily-api";
-  var bingUrl = "https://api.dujin.org/bing/1920.php";
+  var bingUrl = "/api/bing";
   var activeWallpaper = null;
 
   function showMessage(message) {
@@ -30,9 +30,15 @@
     return source === "custom" && customUrl ? customUrl : bingUrl;
   }
 
+  function isLegacyBingWallpaperUrl(src) {
+    return /^https?:\/\/api\.dujin\.org\/bing\//i.test(String(src || ""));
+  }
+
   function getPreviewSource(config) {
     if (config.type === "2") {
-      return config.path && window.bg_img_pictures.indexOf(config.path) === -1
+      return config.path &&
+        window.bg_img_pictures.indexOf(config.path) === -1 &&
+        !isLegacyBingWallpaperUrl(config.path)
         ? config.path
         : getDailySource();
     }

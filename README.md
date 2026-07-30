@@ -27,7 +27,7 @@
 - 首屏启动遮罩会短暂覆盖组装过程，并以轻量过渡显现完整页面
 - 首屏内容完成首次绘制后再低优先级加载响应式壁纸，移动端使用小尺寸版本，壁纸失败时自动回退原图
 - 设置中心和壁纸管理脚本仅在使用对应功能时加载，不占用首页首屏请求
-- 内置图标与壁纸随站点静态部署，避免 OSS 默认域名强制下载，并使用一年不可变缓存
+- CSS、JavaScript、字体、收藏数据、图标与壁纸使用阿里云 OSS 版本目录直连，并使用一年不可变缓存
 - 搜索框使用轻量毛玻璃，进入和退出搜索状态均保持平滑位移，展开后自动隐藏占位提示
 - 每日一言页脚：桌面端使用左下角轻量引语标记，手机端隐藏引语，仅保留版本号和更新入口
 - 通用动画关键帧和图标字体映射已合并到主样式，减少独立的首屏阻塞样式请求
@@ -46,6 +46,7 @@
 ```text
 .
 ├── api/check.js              # 网站状态检测接口
+├── api/bing.js               # 按需获取必应每日壁纸地址
 ├── assets/oss/2026.07.30.6/  # 本地化且不可覆盖的内置图标与响应式壁纸
 ├── css/                      # 样式文件
 ├── data/sites.json           # 规范化导航站点源数据
@@ -66,6 +67,7 @@
 ├── scripts/manage-sites.js   # 启动本地收藏管理器
 ├── tools/bookmark-editor/    # 本地收藏管理器页面
 ├── scripts/update-version.js # 同步更新数据文件和页脚版本号
+├── scripts/upload-oss-assets.js # 读取 PicGo 配置并上传、验证当前版本 OSS 静态资源
 ├── scripts/generate-changelog.js # 从 Git 历史生成更新日志
 ├── sw.js                     # 旧 Service Worker 退役与缓存清理
 ├── vercel.json               # Vercel 缓存和基础安全响应头
@@ -190,6 +192,42 @@ node scripts\update-version.js YYYY.MM.DD.N
 - `index.html` 页脚显示的当前版本号
 - `index.html` 的静态资源查询参数
 - `css/style.css` 的字体查询参数
+- HTML、JavaScript 和收藏数据中的 OSS 版本目录
+
+### 发布 OSS 静态资源
+
+当前页面入口和 API 部署在 Vercel，CSS、JavaScript、字体、收藏数据、更新日志、图标和壁纸部署在阿里云 OSS。发布脚本会读取电脑上 PicGo 当前使用的阿里云配置，不需要把 AccessKey 写入项目。
+
+首次使用先安装本地发布依赖：
+
+```powershell
+npm install
+```
+
+每次功能提交完成后、推送触发 Vercel 部署前运行：
+
+```powershell
+node scripts\upload-oss-assets.js
+```
+
+脚本将资源上传到当前版本目录，并检查关键文件的状态码、MIME 和字体跨域配置。只有出现以下成功提示后才能推送：
+
+```text
+Uploaded and verified ... OSS assets for YYYY.MM.DD.N
+```
+
+固定发布顺序：
+
+1. 更新功能与数据。
+2. 运行版本更新脚本。
+3. 生成待提交更新日志。
+4. 运行统一检查。
+5. 提交全部修改。
+6. 提交后运行 OSS 上传脚本。
+7. OSS 验证通过后再推送和部署 Vercel。
+8. 部署后确认线上页脚、`data/app-version.json` 和 OSS 路径版本一致。
+
+不要覆盖已经上线的 OSS 版本目录来修复问题。浏览器会长期缓存版本化资源；任何 CSS、JavaScript、数据、字体或图片变更都应递增版本并上传新目录，否则用户可能继续读到旧配置。
 
 ### 生成更新日志
 

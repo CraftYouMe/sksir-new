@@ -42,8 +42,16 @@ const checks = [
     args: ["--check", projectPath("api", "check.js")]
   },
   {
+    name: "Syntax check Bing wallpaper API",
+    args: ["--check", projectPath("api", "bing.js")]
+  },
+  {
     name: "Syntax check update-version.js",
     args: ["--check", projectPath("scripts", "update-version.js")]
+  },
+  {
+    name: "Syntax check OSS uploader",
+    args: ["--check", projectPath("scripts", "upload-oss-assets.js")]
   },
   {
     name: "Syntax check generate-changelog.js",

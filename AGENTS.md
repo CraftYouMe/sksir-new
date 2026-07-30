@@ -276,8 +276,54 @@ node scripts\update-version.js YYYY.MM.DD.N
 
 - data/app-version.json
 - index.html 页脚版本
+- index.html、JavaScript、收藏数据中的 OSS 版本目录
+- index.html 与 css/style.css 的资源查询参数
 
 不要只修改其中一个。
+
+---
+
+# OSS 静态资源发布
+
+当前部署架构：
+
+- Vercel：`index.html`、`data/app-version.json`、`/api/check`、`/api/bing`
+- 阿里云 OSS：CSS、JavaScript、字体、收藏运行时数据、更新日志、内置图标和壁纸
+- OSS 公共前缀：`https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/YYYY.MM.DD.N/`
+- OSS 使用版本目录和一年 `immutable` 缓存；已经上线的版本目录不得覆盖
+
+本地发布脚本：
+
+```powershell
+npm install
+node scripts\upload-oss-assets.js
+```
+
+脚本读取当前 PicGo 的阿里云 OSS 配置，不得把 AccessKey 写入仓库、日志或回复。脚本负责：
+
+- 读取 `data/app-version.json` 作为目标 OSS 目录；
+- 上传 CSS、JavaScript、字体、运行时数据、更新日志、图标和壁纸；
+- 设置正确 `Content-Type` 与一年不可变缓存；
+- 上传后验证主样式、主脚本、收藏数据、字体和字体 CORS。
+
+任何会部署到线上的功能提交都必须按以下顺序：
+
+1. 完成功能和数据修改。
+2. 运行 `node scripts\update-version.js YYYY.MM.DD.N`，不得复用已经上线的版本号。
+3. 生成本轮待提交更新日志。
+4. 运行 `node scripts\check.js` 与 `git diff --check`。
+5. 提交本轮全部文件。
+6. 提交后立即运行 `node scripts\upload-oss-assets.js`，确保上传的是已提交版本。
+7. OSS 上传和验证成功后，才允许推送或触发 Vercel 部署。
+8. Vercel 部署后确认线上 HTML、`data/app-version.json` 和 OSS 目录使用同一版本。
+9. 抽查线上 CSS、JavaScript、字体、`data/sites.js`、`data/changelog.js` 均为 HTTP 200 且 MIME 正确。
+
+失败处理：
+
+- OSS 上传或验证失败：不得推送、不得部署、不得只更新 Vercel。
+- Vercel 已上线但 OSS 目录缺失：立即回滚 Vercel，或补齐同版本 OSS 文件后重新验证。
+- 浏览器仍读旧配置：先检查线上 HTML 和 `app-version.json` 是否一致，不要通过覆盖旧 OSS 目录解决；任何运行时修复都递增版本。
+- 纯文档且不部署的提交可跳过版本与 OSS 上传；一旦该提交会触发生产部署，仍需确认生产运行时版本对应的 OSS 目录完整。
 
 ---
 
@@ -756,6 +802,14 @@ data/sites.js
 ---
 
 # 发布前检查
+
+发布阻塞顺序：
+
+1. 版本和更新日志已同步。
+2. 功能提交已经完成。
+3. `node scripts\upload-oss-assets.js` 在提交后运行并通过。
+4. OSS 当前版本关键资源验证通过。
+5. 才能推送并触发 Vercel。
 
 必须：
 
