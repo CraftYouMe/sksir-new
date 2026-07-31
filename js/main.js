@@ -164,7 +164,7 @@ var navSitesLoadPromise = null;
 var navStatusLoadPromise = null;
 var settingsLoadPromise = null;
 var wallpaperSettingsLoadPromise = null;
-var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.30.9/";
+var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.1/";
 
 function getVersionedAssetUrl(src) {
     if (!src || !/^(?:\.\/|\/(?!\/))/.test(src)) return src;

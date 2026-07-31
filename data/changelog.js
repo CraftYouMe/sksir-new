@@ -1,9 +1,23 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-07-30T15:56:07.568Z",
+  "generatedAt": "2026-07-31T11:05:55.079Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-07-31",
+      "summary": "改善开屏体验与本地预览流程",
+      "details": [
+        "首屏关键内容和壁纸准备完成后统一淡入，避免页面组件逐块拼接出现",
+        "站点图标改用版本化 OSS 缓存，减少线上 Apple Touch Icon 的慢请求",
+        "新增 npm run preview 命令并完整映射内置壁纸与图标，无需上传 OSS 即可测试当前工作区"
+      ],
+      "tags": [
+        "new",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "e8091bb",
       "date": "2026-07-30",
       "summary": "回归首屏关键资源加载策略",
       "details": [

@@ -72,6 +72,7 @@ function collectFiles() {
   ["sites.js", "sites.json", "changelog.js"].forEach((name) => {
     add(path.join(rootDir, "data", name), `data/${name}`);
   });
+  add(path.join(rootDir, "apple-touch-icon.png"), "icon/apple-touch-icon.png");
   add(path.join(rootDir, "img", "icon", "fangdiu.png"), "img/icon/fangdiu.png");
 
   const assetDir = latestBundledAssetDir();
@@ -102,7 +103,8 @@ async function verifyPublicAssets() {
     ["css/style.css", "text/css"],
     ["js/main.js", "application/javascript"],
     ["data/sites.js", "application/javascript"],
-    ["font/MiSans-UI.woff2", "font/woff2"]
+    ["font/MiSans-UI.woff2", "font/woff2"],
+    ["icon/apple-touch-icon.png", "image/png"]
   ];
 
   for (const [relativePath, expectedType] of checks) {

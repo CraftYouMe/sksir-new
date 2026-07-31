@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "preview": "node scripts/preview.js"
+  },
   "devDependencies": {
     "ali-oss": "^6.23.0",
     "playwright-core": "^1.61.1"

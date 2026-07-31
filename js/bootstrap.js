@@ -31,7 +31,7 @@
 
     function scheduleFirstScreenReveal(elapsed, firstScreenTask) {
         var root = document.documentElement;
-        if (window.__sksirEarlyRevealStarted || !root.classList.contains("is-booting")) return;
+        if (!root.classList.contains("is-booting")) return;
         var minVisibleMs = root.classList.contains("perf-lite") ? 80 : 160;
         var remaining = Math.max(0, minVisibleMs - (elapsed || 0));
         var minTimeReady = false;
@@ -66,6 +66,26 @@
         }
     }
 
+    function waitForBootWallpaper() {
+        var state = window.__sksirWallpaperState;
+        if (state && state.status !== "loading") return Promise.resolve();
+
+        return new Promise(function (resolve) {
+            var finished = false;
+            var timer = setTimeout(finish, 900);
+
+            function finish() {
+                if (finished) return;
+                finished = true;
+                clearTimeout(timer);
+                document.removeEventListener("sksir-wallpaper-ready", finish);
+                resolve();
+            }
+
+            document.addEventListener("sksir-wallpaper-ready", finish, { once: true });
+        });
+    }
+
     function markFirstScreenVisible(firstScreenTask) {
         runAfterFirstPaint(function () {
             var elapsed = window.performance && typeof window.performance.now === "function"
@@ -82,7 +102,11 @@
         var quickLaunchReady = typeof window.prepareQuickLaunchForBoot === "function"
             ? window.prepareQuickLaunchForBoot()
             : Promise.resolve();
-        markFirstScreenVisible(quickLaunchReady);
+        var firstScreenReady = Promise.all([
+            quickLaunchReady,
+            waitForBootWallpaper()
+        ]);
+        markFirstScreenVisible(firstScreenReady);
         scheduleNavSitesLoad();
         scheduleWelcomeToast();
         scheduleUpdateCheck();

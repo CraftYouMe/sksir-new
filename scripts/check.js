@@ -54,6 +54,10 @@ const checks = [
     args: ["--check", projectPath("scripts", "upload-oss-assets.js")]
   },
   {
+    name: "Syntax check local preview server",
+    args: ["--check", projectPath("scripts", "preview.js")]
+  },
+  {
     name: "Syntax check generate-changelog.js",
     args: ["--check", projectPath("scripts", "generate-changelog.js")]
   },
