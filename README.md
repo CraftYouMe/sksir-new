@@ -60,6 +60,7 @@
 ├── js/nav-render.js          # 根据 data/sites.js 渲染导航
 ├── js/status-dot.js          # 网站状态检测交互
 ├── scripts/check.js          # 本地统一检查入口
+├── scripts/preview.js        # 映射版本化 OSS 资源的首页本地预览服务
 ├── scripts/build-font-subset.js # 生成/校验 MiSans UI 子集
 ├── scripts/preflight.js      # 兼容旧检查入口
 ├── scripts/validate-sites.js # 内部收藏数据校验
@@ -83,6 +84,25 @@
 [`docs/REFACTOR_PLAN.md`](docs/REFACTOR_PLAN.md) 分阶段实施。该文档包含每个阶段的范围、步骤、兼容边界、验收标准和交付记录格式。
 
 ## 日常维护
+
+### 本地预览首页
+
+先安装依赖，然后启动专用预览服务：
+
+```powershell
+npm install
+npm run preview
+```
+
+打开命令行显示的 `http://127.0.0.1:4173/`。预览服务会在响应阶段把当前版本的 OSS 地址映射到工作区文件，并从 `assets/oss` 的最新内置资源目录补齐图标和响应式壁纸；不需要临时修改 `index.html`，也不需要提前上传 OSS。
+
+端口被占用时可以指定其他端口：
+
+```powershell
+npm run preview -- --port=4187
+```
+
+测试首屏动画时，在浏览器开发者工具中勾选 `Disable cache` 后硬刷新；完成后取消勾选，以便同时验证一年不可变缓存的正常读取。按 `Ctrl+C` 停止预览服务。
 
 ### 更新收藏
 

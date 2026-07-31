@@ -1,9 +1,21 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-07-31T11:05:55.079Z",
+  "generatedAt": "2026-07-31T11:23:50.437Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-07-31",
+      "summary": "解决首屏搜索框玻璃背景闪变",
+      "details": [
+        "开屏遮罩淡出时搜索框直接保持最终玻璃质感，不再从透明状态突然补上背景"
+      ],
+      "tags": [
+        "fix",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "65ce664",
       "date": "2026-07-31",
       "summary": "改善开屏体验与本地预览流程",
       "details": [
