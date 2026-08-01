@@ -239,11 +239,10 @@
     return readJson(cardSortingEnabledKey, !isPhoneBookmarkViewport()) === true;
   }
 
-  function getCardDropTarget(cards, pointerX, pointerY) {
-    var positions = cards.map(function (entry) {
-      var rect = entry.getBoundingClientRect();
+  function getCardDropSlot(slots, pointerX, pointerY) {
+    var positions = slots.map(function (rect, index) {
       return {
-        entry: entry,
+        index: index,
         rect: rect,
         centerX: rect.left + rect.width / 2,
         centerY: rect.top + rect.height / 2
@@ -257,38 +256,27 @@
       var normalizedY = (pointerY - position.centerY) / Math.max(1, position.rect.height);
       var distance = normalizedX * normalizedX + normalizedY * normalizedY;
       return !best || distance < best.distance
-        ? { entry: position.entry, distance: distance }
+        ? { index: position.index, distance: distance }
         : best;
     }, null);
-    return closest && closest.entry;
-  }
-
-  function getCardSwapInsertionPoint(container, placeholder, target, draggingCard) {
-    if (!target) return container.querySelector(".bookmark-add-card");
-    var targetFollowsPlaceholder = !!(placeholder.compareDocumentPosition(target) & 4);
-    if (!targetFollowsPlaceholder) return target;
-    var next = target.nextElementSibling;
-    while (next && (next === placeholder || next === draggingCard)) {
-      next = next.nextElementSibling;
-    }
-    return next || container.querySelector(".bookmark-add-card");
+    return closest ? closest.index : 0;
   }
 
   function animateCardReorder(container, previousRects, draggingCard) {
     container.querySelectorAll(bookmarkCardSelector).forEach(function (entry) {
       var previous = previousRects.get(entry);
       if (!previous || entry === draggingCard || typeof entry.animate !== "function") return;
+      if (typeof entry.getAnimations === "function") {
+        entry.getAnimations().forEach(function (animation) { animation.cancel(); });
+      }
       var current = entry.getBoundingClientRect();
       var deltaX = previous.left - current.left;
       var deltaY = previous.top - current.top;
       if (!deltaX && !deltaY) return;
-      if (typeof entry.getAnimations === "function") {
-        entry.getAnimations().forEach(function (animation) { animation.cancel(); });
-      }
       entry.animate([
         { transform: "translate3d(" + deltaX + "px," + deltaY + "px,0)" },
         { transform: "translate3d(0,0,0)" }
-      ], { duration: 150, easing: "cubic-bezier(.2,.8,.2,1)" });
+      ], { duration: 180, easing: "cubic-bezier(.2,.8,.2,1)" });
     });
   }
 
@@ -311,6 +299,9 @@
     var ghost = null;
     var placeholder = null;
     var originalNextCard = null;
+    var cardSlots = [];
+    var activeSlotIndex = -1;
+    var slotScrollTop = 0;
 
     function updatePointer(event) {
       var points = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : null;
@@ -346,9 +337,15 @@
           probeY >= placeholderRect.top && probeY <= placeholderRect.bottom) {
         return;
       }
-      var target = getCardDropTarget(cards, probeX, probeY);
-      var insertionPoint = getCardSwapInsertionPoint(container, placeholder, target, card);
+      var slotIndex = getCardDropSlot(
+        cardSlots,
+        probeX,
+        probeY + (products.scrollTop - slotScrollTop)
+      );
+      if (slotIndex === activeSlotIndex) return;
+      var insertionPoint = cards[slotIndex] || container.querySelector(".bookmark-add-card");
       if (placeholder.nextSibling === insertionPoint || (!insertionPoint && !placeholder.nextSibling)) {
+        activeSlotIndex = slotIndex;
         return;
       }
       var previousRects = new Map();
@@ -356,6 +353,7 @@
         previousRects.set(entry, entry.getBoundingClientRect());
       });
       container.insertBefore(placeholder, insertionPoint);
+      activeSlotIndex = slotIndex;
       animateCardReorder(container, previousRects, card);
     }
 
@@ -367,6 +365,13 @@
     function startDrag(event) {
       dragging = true;
       var rect = card.getBoundingClientRect();
+      var initialCards = Array.prototype.filter.call(
+        container.querySelectorAll(bookmarkCardSelector),
+        function (entry) { return window.getComputedStyle(entry).display !== "none"; }
+      );
+      cardSlots = initialCards.map(function (entry) { return entry.getBoundingClientRect(); });
+      activeSlotIndex = initialCards.indexOf(card);
+      slotScrollTop = products.scrollTop;
       grabOffsetX = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
       grabOffsetY = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
       cardProbeOffsetX = rect.width / 2 - grabOffsetX;
@@ -458,6 +463,9 @@
       placeholder.remove();
       placeholder = null;
       originalNextCard = null;
+      cardSlots = [];
+      activeSlotIndex = -1;
+      slotScrollTop = 0;
       card.classList.remove("is-dragging");
       card.removeAttribute("aria-grabbed");
       container.classList.remove("is-reordering");
