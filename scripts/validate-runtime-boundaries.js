@@ -16,6 +16,7 @@ function position(source, marker) {
 
 const html = read("index.html");
 const style = read("css/style.css");
+const settingsStyle = read("css/settings.css");
 const main = read("js/main.js");
 const serviceWorker = read("sw.js");
 const statusApi = read(path.join("api", "check.js"));
@@ -97,6 +98,7 @@ requiredScripts.forEach((src) => {
   "./js/bookmarks.js",
   "./js/status-dot.js",
   "./css/status-dot.css",
+  "./css/settings.css",
   "./js/settings.js",
   "./js/wallpaper.js"
 ].forEach((resource) => {
@@ -112,9 +114,19 @@ requiredScripts.forEach((src) => {
   'loadDeferredScript("nav-bookmarks-controller", "./js/bookmarks.js")',
   'loadDeferredScript("nav-status-checker", "./js/status-dot.js")',
   'loadDeferredStylesheet("status-dot-styles", "./css/status-dot.css")',
+  'loadDeferredStylesheet("settings-styles", "./css/settings.css")',
   'loadDeferredScript("settings-controller", "./js/settings.js")',
   'loadDeferredScript("wallpaper-settings-controller", "./js/wallpaper.js")'
 ].forEach((marker) => position(main, marker));
+
+[
+  "Settings center",
+  "Quick launch settings: final isolated layout",
+  "Wallpaper center: one continuous featured, daily and custom library.",
+  "Mobile settings: keep cards roomy"
+].forEach((marker) => position(settingsStyle, marker));
+assert(!style.includes("Settings center\n"), "Settings center CSS must remain deferred.");
+assert(!style.includes("Mobile settings: keep cards roomy"), "Mobile settings CSS must remain deferred.");
 
 const appVersion = position(html, 'id="app-version"');
 const separator = position(html, 'class="footer-separator"');

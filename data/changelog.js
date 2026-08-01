@@ -1,9 +1,21 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T10:27:33.663Z",
+  "generatedAt": "2026-08-01T10:54:32.961Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "将设置中心样式改为按需加载",
+      "details": [
+        "首屏样式体积减少约四成，缩短完整样式表对首次绘制的阻塞",
+        "设置中心在打开前并行加载专用样式和控制脚本，首页、搜索、收藏及 iOS 样式保持原有加载方式"
+      ],
+      "tags": [
+        "optimize"
+      ]
+    },
+    {
+      "hash": "74600fe",
       "date": "2026-08-01",
       "summary": "改善冷启动首屏反馈与启动完成时机",
       "details": [

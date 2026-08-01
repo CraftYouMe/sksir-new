@@ -101,6 +101,7 @@ async function runPool(items, worker, concurrency) {
 async function verifyPublicAssets() {
   const checks = [
     ["css/style.css", "text/css"],
+    ["css/settings.css", "text/css"],
     ["js/main.js", "application/javascript"],
     ["data/sites.js", "application/javascript"],
     ["font/MiSans-UI.woff2", "font/woff2"],

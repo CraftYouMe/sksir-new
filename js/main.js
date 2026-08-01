@@ -164,7 +164,7 @@ var navSitesLoadPromise = null;
 var navStatusLoadPromise = null;
 var settingsLoadPromise = null;
 var wallpaperSettingsLoadPromise = null;
-var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/";
+var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.2/";
 
 function getVersionedAssetUrl(src) {
     if (!src || !/^(?:\.\/|\/(?!\/))/.test(src)) return src;
@@ -234,10 +234,17 @@ function loadDeferredStylesheet(id, href) {
 }
 
 function ensureSettingsResourcesLoaded() {
-    if (window.SksirSettingsReady) return Promise.resolve(true);
+    var settingsStyles = document.getElementById("settings-styles") ||
+        document.querySelector("link[href*='css/settings.css']");
+    if (window.SksirSettingsReady && settingsStyles) return Promise.resolve(true);
     if (settingsLoadPromise) return settingsLoadPromise;
 
-    settingsLoadPromise = loadDeferredScript("settings-controller", "./js/settings.js")
+    settingsLoadPromise = Promise.all([
+        loadDeferredStylesheet("settings-styles", "./css/settings.css"),
+        window.SksirSettingsReady
+            ? Promise.resolve()
+            : loadDeferredScript("settings-controller", "./js/settings.js")
+    ])
         .then(function () {
             if (!window.SksirSettingsReady) {
                 throw new Error("Settings controller did not initialize");
