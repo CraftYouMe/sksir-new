@@ -296,7 +296,7 @@
 
     var targetRow = rows[rowIndex];
     for (var itemIndex = 0; itemIndex < targetRow.items.length; itemIndex += 1) {
-      if (pointerX < targetRow.items[itemIndex].centerX) {
+      if (pointerX <= targetRow.items[itemIndex].centerX) {
         return targetRow.items[itemIndex].entry;
       }
     }
@@ -332,6 +332,8 @@
     var pointerY = 0;
     var grabOffsetX = 0;
     var grabOffsetY = 0;
+    var cardProbeOffsetX = 0;
+    var cardProbeOffsetY = 0;
     var moveFrame = 0;
     var dragging = false;
     var pressTimer = 0;
@@ -367,7 +369,9 @@
           return entry !== card && window.getComputedStyle(entry).display !== "none";
         }
       );
-      var before = getCardDropTarget(cards, pointerX, pointerY);
+      var probeX = pointerX + cardProbeOffsetX;
+      var probeY = pointerY + cardProbeOffsetY;
+      var before = getCardDropTarget(cards, probeX, probeY);
       var fallback = container.querySelector(".bookmark-add-card");
       var insertionPoint = before || fallback;
       if (placeholder.nextSibling === insertionPoint || (!insertionPoint && !placeholder.nextSibling)) {
@@ -391,6 +395,8 @@
       var rect = card.getBoundingClientRect();
       grabOffsetX = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
       grabOffsetY = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+      cardProbeOffsetX = rect.width / 2 - grabOffsetX;
+      cardProbeOffsetY = rect.height / 2 - grabOffsetY;
       card.classList.add("is-dragging");
       card.setAttribute("aria-grabbed", "true");
       container.classList.add("is-reordering");
