@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#131922">
   <title>Sksir UI 设计规范</title>
-  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.18">
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.19">
   <style>
     html, body { margin: 0; min-height: 100%; }
     body { overflow-x: hidden; }
@@ -22,6 +22,7 @@
     .test-title { margin:0 0 var(--space-4); font-size:var(--font-lg); }
     .test-subtitle { margin:var(--space-5) 0 var(--space-3); color:var(--color-text-secondary); font-size:var(--font-sm); }
     .test-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-3); }
+    .test-cards.bookmark-card-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
     .test-card-row { display:flex; min-width:0; align-items:center; gap:var(--space-3); }
     .test-token-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--space-3); }
     .test-token { min-height:80px; padding:var(--space-3); border-radius:var(--radius-sm); background:rgba(255,255,255,.07); font-size:var(--font-sm); }
@@ -32,7 +33,7 @@
     .test-variant-head strong { font-size:var(--font-sm); }
     .test-variant-head span { color:var(--color-text-muted); font-size:var(--font-xs); }
     code { color:var(--color-primary); font-size:var(--font-xs); }
-    @media(max-width:760px) { .test-shell{width:min(100% - 24px,var(--page-max-width));padding-top:38px}.test-grid{grid-template-columns:1fr}.test-section--wide{grid-column:auto}.test-cards{grid-template-columns:1fr 1fr}.test-token-grid{grid-template-columns:1fr 1fr} }
+    @media(max-width:760px) { .test-shell{width:min(100% - 24px,var(--page-max-width));padding-top:38px}.test-grid{grid-template-columns:1fr}.test-section--wide{grid-column:auto}.test-cards,.test-cards.bookmark-card-grid{grid-template-columns:1fr 1fr}.test-token-grid{grid-template-columns:1fr 1fr} }
     @media(max-width:420px) { .test-cards{grid-template-columns:1fr}.test-cards.bookmark-card-grid{grid-template-columns:1fr 1fr;gap:6px} }
   </style>
 </head>
@@ -89,12 +90,22 @@
         <h2 class="test-title">导航卡片与收藏卡片</h2>
         <div class="test-variant" style="margin-bottom:var(--space-4)"><div class="test-variant-head"><strong>Quick Launch</strong><span>首页搜索框上方快捷入口</span></div><div class="ds-quick-launch"><button class="ds-quick-launch__item" aria-label="打开 BiliBili"><img src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""></button><button class="ds-quick-launch__item" aria-label="打开 GitHub"><img src="assets/oss/2026.07.30.6/icon/github.png" alt=""></button><button class="ds-quick-launch__item ds-quick-launch__item--add" aria-label="添加快捷入口"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"></path></svg></button></div></div>
         <div class="test-cards bookmark-card-grid">
-          <article class="ds-card bookmark-card-preview"><a href="#"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""><span class="quick-info"><span class="quick-title">BiliBili</span><span class="quick-desc">彩色 favicon · 视频弹幕社区</span></span></a></article>
-          <article class="ds-card bookmark-card-preview"><a href="#"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><span class="quick-info"><span class="quick-title">GitHub</span><span class="quick-desc">黑白 favicon · 代码托管平台</span></span></a></article>
-          <article class="ds-card bookmark-card-preview"><a href="#"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><span class="quick-info"><span class="quick-title">ChatGPT</span><span class="quick-desc">透明边距 favicon · AI 对话助手</span></span></a></article>
-          <button class="ds-card bookmark-add-preview" type="button" aria-label="添加收藏"><span aria-hidden="true">+</span></button>
+          <a class="ds-management-card" href="#"><span class="ds-management-card__icon"><img src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""></span><span class="ds-management-card__body"><strong class="ds-management-card__title">BiliBili</strong><span class="ds-management-card__meta">视频弹幕社区</span></span></a>
+          <a class="ds-management-card" href="#"><span class="ds-management-card__icon"><img src="assets/oss/2026.07.30.6/icon/github.png" alt=""></span><span class="ds-management-card__body"><strong class="ds-management-card__title">GitHub</strong><span class="ds-management-card__meta">代码托管平台</span></span></a>
+          <a class="ds-management-card" href="#"><span class="ds-management-card__icon"><img src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""></span><span class="ds-management-card__body"><strong class="ds-management-card__title">ChatGPT</strong><span class="ds-management-card__meta">AI 对话助手</span></span></a>
+          <button class="ds-management-card ds-management-card--add" type="button"><span>＋</span><strong>添加收藏</strong><small>保存新的常用网站</small></button>
         </div>
-        <p class="test-subtitle">收藏卡片采用约 68px 高的横向信息布局；添加卡片与普通卡片使用相同尺寸和网格边界，仅以虚线和加号区分。生产布局为桌面四列、移动端两列。</p>
+        <p class="test-subtitle">收藏卡片统一采用管理卡片的高度、图标容器、文字层级与交互状态；生产布局仍为桌面四列、移动端两列。</p>
+      </section>
+
+      <section class="ds-glass ds-panel test-section--wide">
+        <h2 class="test-title">管理型卡片</h2>
+        <p class="test-subtitle">用于搜索引擎、壁纸等可选择和排序的管理场景，不替代轻量收藏卡片。</p>
+        <div class="ds-management-grid">
+          <button class="ds-management-card is-selected" type="button"><span class="ds-management-card__icon"><i class="ds-search__engine-icon" aria-hidden="true"></i></span><span class="ds-management-card__body"><strong class="ds-management-card__title">必应</strong><span class="ds-management-card__meta">cn.bing.com</span></span><span class="ds-management-card__badge">默认</span></button>
+          <button class="ds-management-card" type="button"><span class="ds-management-card__icon"><img src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""></span><span class="ds-management-card__body"><strong class="ds-management-card__title">BiliBili</strong><span class="ds-management-card__meta">search.bilibili.com</span></span></button>
+          <button class="ds-management-card ds-management-card--add" type="button"><span>＋</span><strong>自定义搜索引擎</strong><small>添加新的搜索服务</small></button>
+        </div>
       </section>
 
       <section class="ds-glass ds-panel">

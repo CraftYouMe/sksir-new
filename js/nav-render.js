@@ -192,9 +192,13 @@
     setBooleanDataAttr(link, "data-favorite-check", item.favoriteCheck);
     setBooleanDataAttr(link, "data-skip-check", item.skipCheck);
 
-    if (item.icon) link.appendChild(createIcon(item.icon, item.name));
+    if (item.icon) {
+      var iconFrame = createDiv("quick-icon");
+      iconFrame.appendChild(createIcon(item.icon, item.name));
+      link.appendChild(iconFrame);
+    }
     var info = createDiv("quick-info");
-    var title = document.createElement("span");
+    var title = document.createElement("strong");
     title.className = "quick-title";
     title.textContent = item.name;
     info.appendChild(title);

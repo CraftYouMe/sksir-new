@@ -1,9 +1,22 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T14:39:22.111Z",
+  "generatedAt": "2026-08-01T14:52:33.931Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "统一收藏卡片与管理卡片视觉",
+      "details": [
+        "收藏卡片采用设计测试页管理卡片的 76px 高度、13px 圆角、玻璃背景与 hover 状态",
+        "新增 46px 图标容器并将 favicon 控制为 27px，标题和描述同步管理卡片的文字层级",
+        "新增卡片同步显示加号、添加收藏和说明文字，同时保持桌面四列与移动端两列布局"
+      ],
+      "tags": [
+        "new"
+      ]
+    },
+    {
+      "hash": "388ef8f",
       "date": "2026-08-01",
       "summary": "统一添加收藏卡片尺寸",
       "details": [

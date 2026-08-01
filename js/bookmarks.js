@@ -102,8 +102,14 @@
     button.title = "添加到 " + tab.title;
     var icon = document.createElement("span");
     icon.setAttribute("aria-hidden", "true");
-    icon.textContent = "+";
+    icon.textContent = "＋";
     button.appendChild(icon);
+    var title = document.createElement("strong");
+    title.textContent = "添加收藏";
+    button.appendChild(title);
+    var description = document.createElement("small");
+    description.textContent = "保存新的常用网站";
+    button.appendChild(description);
     button.addEventListener("click", function (event) {
       event.preventDefault();
       event.stopPropagation();
