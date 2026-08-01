@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.14") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.14") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.14") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.15") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.15") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.15") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.14") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.15") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -3457,7 +3457,23 @@ body.onsearch .close_sou {
 }
 
 .quick,
-.quicks,
+.quicks {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
+    min-height: 64px;
+    border-radius: 12px;
+    border: 1px solid rgba(179, 195, 214, 0.12);
+    background: rgba(18, 24, 32, 0.34);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: none;
+    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease,
+        filter 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .quickjl {
     position: relative;
     isolation: isolate;
@@ -3469,8 +3485,7 @@ body.onsearch .close_sou {
     min-height: 48px;
     border-radius: 8px;
     border: 1px solid rgba(179, 195, 214, 0.14);
-    background:
-        rgba(18, 24, 32, 0.46);
+    background: rgba(18, 24, 32, 0.46);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 18px rgba(0, 0, 0, 0.14);
     transform: none;
     transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease,
@@ -3533,9 +3548,9 @@ body.onsearch .close_sou {
 
 .quick a,
 .quicks a {
-    height: auto;
-    margin: 5px 0 2px 0;
-    padding: 0 14px 0 10px;
+    min-height: 62px;
+    margin: 0;
+    padding: 8px 14px 8px 12px;
     justify-content: flex-start;
     text-align: left;
 }
@@ -3581,12 +3596,30 @@ body.onsearch .close_sou {
     transition: filter 0.18s ease, opacity 0.18s ease;
 }
 
+.quick .quick-info,
+.quicks .quick-info {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+}
+
+.quick .quick-title,
+.quicks .quick-title {
+    overflow: hidden;
+    color: rgba(244, 248, 252, 0.94);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .quick .quick-desc,
 .quicks .quick-desc {
-    width: calc(100% - 24px);
-    max-width: calc(100% - 24px);
-    margin: 0 auto 5px auto;
-    padding: 0 2px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
     color: rgba(214, 225, 238, 0.56);
     font-size: 10px;
@@ -4652,6 +4685,29 @@ html.ios-standalone .bg-all {
     font-weight: 640;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* 收藏中心使用更宽的横向信息卡片，避免回到图标启动器式密集网格。 */
+.mark .quick,
+.mark .quicks {
+    width: 23%;
+    min-width: 23%;
+    max-width: 23%;
+    margin: 0 1% 2%;
+}
+
+@media (max-width: 720px) {
+    .mark .quick,
+    .mark .quicks {
+        width: calc(50% - 6px);
+        min-width: calc(50% - 6px);
+        max-width: calc(50% - 6px);
+        margin: 0 3px 6px;
+    }
+
+    .mark .quick-desc {
+        display: block;
+    }
 }
 
 .bookmark-quick-context-menu {

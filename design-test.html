@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#131922">
   <title>Sksir UI 设计规范</title>
-  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.14">
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.15">
   <style>
     html, body { margin: 0; min-height: 100%; }
     body { overflow-x: hidden; }
@@ -33,7 +33,7 @@
     .test-variant-head span { color:var(--color-text-muted); font-size:var(--font-xs); }
     code { color:var(--color-primary); font-size:var(--font-xs); }
     @media(max-width:760px) { .test-shell{width:min(100% - 24px,var(--page-max-width));padding-top:38px}.test-grid{grid-template-columns:1fr}.test-section--wide{grid-column:auto}.test-cards{grid-template-columns:1fr 1fr}.test-token-grid{grid-template-columns:1fr 1fr} }
-    @media(max-width:420px) { .test-cards{grid-template-columns:1fr} }
+    @media(max-width:420px) { .test-cards{grid-template-columns:1fr}.test-cards.bookmark-card-grid{grid-template-columns:1fr 1fr;gap:6px} }
   </style>
 </head>
 <body class="ds-page">
@@ -81,19 +81,19 @@
 
       <section class="ds-glass ds-panel">
         <h2 class="test-title">输入框与 Loading</h2>
-        <label class="ds-field"><input type="text" placeholder="输入收藏名称"></label>
-        <div class="test-loading"><span class="ds-loader" role="status" aria-label="加载中"><i aria-hidden="true"></i></span><span class="ds-muted">正在加载收藏数据…</span></div>
+        <div class="ds-stack"><label class="ds-field"><input type="text" placeholder="输入收藏名称"></label><div class="ds-select"><button class="ds-select__trigger" type="button" aria-haspopup="listbox" aria-expanded="false">常用</button><ul class="ds-select__menu" role="listbox" aria-label="收藏分类"><li><button class="ds-select__option" type="button" role="option" aria-selected="true">常用</button></li><li><button class="ds-select__option" type="button" role="option" aria-selected="false">设计</button></li><li><button class="ds-select__option" type="button" role="option" aria-selected="false">开发</button></li></ul></div></div>
+        <div class="test-loading"><span class="ds-loader-spectrum" role="status" aria-label="频谱加载中"><i></i><i></i><i></i><i></i><i></i></span><span class="ds-muted">正在加载收藏数据…</span></div>
       </section>
 
       <section class="ds-glass ds-panel test-section--wide">
         <h2 class="test-title">导航卡片与收藏卡片</h2>
         <div class="test-variant" style="margin-bottom:var(--space-4)"><div class="test-variant-head"><strong>Quick Launch</strong><span>首页搜索框上方快捷入口</span></div><div class="ds-quick-launch"><button class="ds-quick-launch__item" aria-label="打开 BiliBili"><img src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""></button><button class="ds-quick-launch__item" aria-label="打开 GitHub"><img src="assets/oss/2026.07.30.6/icon/github.png" alt=""></button><button class="ds-quick-launch__item ds-quick-launch__item--add" aria-label="添加快捷入口">＋</button></div></div>
-        <div class="test-cards">
-          <article class="ds-card"><div class="ds-card__heading"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""><h3 class="ds-card__title">BiliBili</h3><span class="ds-badge">常用</span></div><p class="ds-card__meta">彩色 favicon · 视频弹幕社区</p></article>
-          <article class="ds-card"><div class="ds-card__heading"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><h3 class="ds-card__title">GitHub</h3></div><p class="ds-card__meta">黑白 favicon · 代码托管平台</p></article>
-          <article class="ds-card"><div class="ds-card__heading"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><h3 class="ds-card__title">ChatGPT</h3></div><p class="ds-card__meta">透明边距 favicon · AI 对话助手</p></article>
+        <div class="test-cards bookmark-card-grid">
+          <article class="ds-card"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""><div class="ds-card__body"><div class="ds-card__heading"><h3 class="ds-card__title">BiliBili</h3><span class="ds-badge">常用</span></div><p class="ds-card__meta">彩色 favicon · 视频弹幕社区</p></div></article>
+          <article class="ds-card"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><div class="ds-card__body"><div class="ds-card__heading"><h3 class="ds-card__title">GitHub</h3></div><p class="ds-card__meta">黑白 favicon · 代码托管平台</p></div></article>
+          <article class="ds-card"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><div class="ds-card__body"><div class="ds-card__heading"><h3 class="ds-card__title">ChatGPT</h3></div><p class="ds-card__meta">透明边距 favicon · AI 对话助手</p></div></article>
         </div>
-        <p class="test-subtitle">收藏卡片采用 26px 轻量 favicon，不使用明显外框；名称位于第一行，描述独立为第二行，整体更接近浏览器收藏夹。</p>
+        <p class="test-subtitle">收藏卡片采用约 68px 高的横向信息布局：26px 轻量 favicon 占左列，名称与描述在右侧上下排列；生产布局为桌面四列、移动端两列。</p>
       </section>
 
       <section class="ds-glass ds-panel">
@@ -106,6 +106,15 @@
         <h2 class="test-title">弹窗</h2>
         <p class="ds-muted">桌面端居中显示，窄屏自动切换为 Bottom Sheet。</p>
         <button class="ds-button ds-button--primary" id="open-modal" type="button">打开测试弹窗</button>
+      </section>
+
+      <section class="ds-glass ds-panel test-section--wide">
+        <h2 class="test-title">反馈与浮层组件</h2>
+        <div class="test-cards">
+          <div class="test-variant"><div class="test-variant-head"><strong>Status Notice</strong><span>网络 / 更新状态</span></div><div class="ds-row"><span class="ds-notice ds-notice--success">网络已恢复</span><span class="ds-notice ds-notice--warning">当前处于离线状态</span></div></div>
+          <div class="test-variant"><div class="test-variant-head"><strong>Empty State</strong><span>收藏 / 壁纸空状态</span></div><div class="ds-empty"><strong>这里还没有内容</strong><span>添加后将在此处显示</span></div></div>
+          <div class="test-variant"><div class="test-variant-head"><strong>Context Menu</strong><span>收藏 / 搜索引擎操作</span></div><div class="ds-context-menu"><button type="button">编辑</button><button type="button">设为默认</button><button class="danger" type="button">删除</button></div></div>
+        </div>
       </section>
     </div>
   </main>
@@ -130,6 +139,30 @@
         document.querySelectorAll('.ds-tab').forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
       }));
       document.querySelectorAll('.ds-switch').forEach((toggle) => toggle.addEventListener('click', () => toggle.setAttribute('aria-checked', String(toggle.getAttribute('aria-checked') !== 'true'))));
+      document.querySelectorAll('.ds-select').forEach((select) => {
+        const trigger = select.querySelector('.ds-select__trigger');
+        const options = [...select.querySelectorAll('.ds-select__option')];
+        const close = () => { select.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false'); };
+        trigger.addEventListener('click', () => {
+          const opening = !select.classList.contains('is-open');
+          document.querySelectorAll('.ds-select.is-open').forEach((item) => item.classList.remove('is-open'));
+          select.classList.toggle('is-open', opening);
+          trigger.setAttribute('aria-expanded', String(opening));
+          if (opening) options.find((option) => option.getAttribute('aria-selected') === 'true')?.focus();
+        });
+        options.forEach((option) => option.addEventListener('click', () => {
+          options.forEach((item) => item.setAttribute('aria-selected', String(item === option)));
+          trigger.textContent = option.textContent;
+          close();
+          trigger.focus();
+        }));
+        select.addEventListener('keydown', (event) => { if (event.key === 'Escape') { close(); trigger.focus(); } });
+      });
+      document.addEventListener('click', (event) => {
+        document.querySelectorAll('.ds-select.is-open').forEach((select) => {
+          if (!select.contains(event.target)) { select.classList.remove('is-open'); select.querySelector('.ds-select__trigger').setAttribute('aria-expanded', 'false'); }
+        });
+      });
     })();
   </script>
 </body>

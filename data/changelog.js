@@ -1,9 +1,22 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T14:09:39.483Z",
+  "generatedAt": "2026-08-01T14:20:47.266Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "重构收藏中心横向信息卡片",
+      "details": [
+        "收藏卡片改为左侧 favicon、右侧标题与描述的双列信息结构，卡片统一为约 68px 高",
+        "降低卡片背景和阴影视觉重量，并调整桌面与移动端网格宽度，避免标题描述被旧密集布局挤压",
+        "移动端继续显示描述信息，Quick Launch 保持原有独立样式"
+      ],
+      "tags": [
+        "improve"
+      ]
+    },
+    {
+      "hash": "9bd54fa",
       "date": "2026-08-01",
       "summary": "改善收藏中心 favicon 信息层级",
       "details": [

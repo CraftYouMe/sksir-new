@@ -193,15 +193,19 @@
     setBooleanDataAttr(link, "data-skip-check", item.skipCheck);
 
     if (item.icon) link.appendChild(createIcon(item.icon, item.name));
-    appendText(link, item.icon ? " " + item.name : item.name);
-
-    card.appendChild(link);
+    var info = createDiv("quick-info");
+    var title = document.createElement("span");
+    title.className = "quick-title";
+    title.textContent = item.name;
+    info.appendChild(title);
     if (item.desc) {
       var desc = document.createElement("span");
       desc.className = "quick-desc";
       desc.textContent = item.desc;
-      card.appendChild(desc);
+      info.appendChild(desc);
     }
+    link.appendChild(info);
+    card.appendChild(link);
     return card;
   }
 
