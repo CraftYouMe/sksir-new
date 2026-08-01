@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#131922">
   <title>Sksir UI 设计规范</title>
-  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.19">
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.20">
   <style>
     html, body { margin: 0; min-height: 100%; }
     body { overflow-x: hidden; }
@@ -59,14 +59,17 @@
 
       <section class="ds-glass ds-panel test-section--wide">
         <h2 class="test-title">搜索框组件族</h2>
+        <div class="ds-bookmark-head-demo"><span><strong class="ds-bookmark-head-demo__title">收藏中心</strong><small class="ds-bookmark-head-demo__subtitle">管理常用网站与快捷入口</small></span><span class="ds-muted">面板标题层级</span></div>
         <div class="ds-stack">
           <div class="test-variant"><div class="test-variant-head"><strong>Hero Search</strong><span>首页首屏</span></div><div class="ds-search-wrap"><div class="ds-search"><button class="ds-search__engine" type="button" aria-label="选择搜索引擎" title="当前搜索引擎：必应"><i class="ds-search__engine-icon" aria-hidden="true"></i></button><input type="search" aria-label="搜索内容" placeholder="搜索网站、工具或内容"><button class="ds-search__action" type="button" aria-label="执行搜索"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button></div></div><span class="ds-muted">沿用主页原有搜索态：浅色输入面、搜索引擎标识与分隔线、无额外底色的搜索按钮。</span></div>
           <div class="test-variant"><div class="test-variant-head"><strong>Compact Search</strong><span>收藏中心 / 面板工具栏</span></div><label class="ds-search-compact"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg><input type="search" placeholder="搜索全部收藏" aria-label="搜索全部收藏"></label><span class="ds-muted">固定 38px 高，不扩展、不切换浅色搜索态。</span></div>
         </div>
-        <p class="test-subtitle">分类导航</p>
+        <p class="test-subtitle">一级分类导航</p>
         <div class="ds-tabs" role="tablist">
           <button class="ds-tab" role="tab" aria-selected="true">常用</button><button class="ds-tab" role="tab" aria-selected="false">设计</button><button class="ds-tab" role="tab" aria-selected="false">开发</button><button class="ds-tab" role="tab" aria-selected="false">影音</button><button class="ds-tab" role="tab" aria-selected="false">工具</button>
         </div>
+        <p class="test-subtitle">二级内容筛选</p>
+        <div class="ds-filter-row" aria-label="内容分类"><button class="ds-filter-pill" type="button" aria-pressed="true">全部</button><button class="ds-filter-pill" type="button" aria-pressed="false">社区</button><button class="ds-filter-pill" type="button" aria-pressed="false">工具</button><button class="ds-filter-pill" type="button" aria-pressed="false">资源</button></div>
       </section>
 
       <section class="ds-glass ds-panel">
@@ -77,7 +80,7 @@
 
       <section class="ds-glass ds-panel">
         <h2 class="test-title">导航组件族</h2>
-        <div class="test-variant"><div class="test-variant-head"><strong>Sidebar Navigation</strong><span>设置中心一级导航</span></div><nav class="ds-side-nav" aria-label="设置示例"><button class="ds-side-nav__item" aria-current="page"><span class="ds-side-nav__icon">⌕</span>搜索</button><button class="ds-side-nav__item"><span class="ds-side-nav__icon">◫</span>外观</button><button class="ds-side-nav__item"><span class="ds-side-nav__icon">ⓘ</span>关于</button></nav></div>
+        <div class="test-variant"><div class="test-variant-head"><strong>Sidebar Navigation</strong><span>设置中心一级导航</span></div><nav class="ds-side-nav" aria-label="设置示例"><button class="ds-side-nav__item" aria-current="page"><span class="ds-side-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg></span>搜索</button><button class="ds-side-nav__item"><span class="ds-side-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16"></path><circle cx="7" cy="7" r=".7"></circle></svg></span>外观</button><button class="ds-side-nav__item"><span class="ds-side-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 11v5M12 8h.01"></path></svg></span>关于</button></nav></div>
       </section>
 
       <section class="ds-glass ds-panel">

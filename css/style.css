@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.19") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.19") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.19") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.20") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.20") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.20") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.19") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.20") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -1285,14 +1285,17 @@ body:not(.onsearch) .all-search:hover {
 
 .bookmark-title {
     color: var(--text-primary);
-    font-size: 1.12rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 720;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
 }
 
 .bookmark-subtitle {
-    margin-top: 3px;
+    margin-top: 4px;
     color: var(--text-muted);
-    font-size: 0.76rem;
+    font-size: 0.75rem;
+    line-height: 1.3;
 }
 
 .bookmark-head-actions {
@@ -1412,13 +1415,13 @@ body:not(.onsearch) .all-search:hover {
 
 .mark .tab,
 .set .tabs {
-    height: 40px;
-    min-height: 40px;
+    height: 44px;
+    min-height: 44px;
     width: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     gap: 14px;
     padding: 0 12px;
     box-sizing: border-box;
@@ -1453,9 +1456,9 @@ body:not(.onsearch) .all-search:hover {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: rgba(232, 239, 247, 0.70);
+    font-size: 0.875rem;
+    font-weight: 560;
+    color: rgba(232, 239, 247, 0.62);
     border: 0;
     border-radius: 8px;
     background: transparent;
@@ -1502,6 +1505,7 @@ body:not(.onsearch) .all-search:hover {
     background: transparent;
     border-color: transparent;
     box-shadow: none;
+    font-size: 0.9rem;
     font-weight: 700;
     transform: none;
 }
@@ -3183,6 +3187,7 @@ body.onsearch .close_sou {
     border-radius: 10px;
     background: rgba(123, 221, 204, 0.90);
     color: #10231f;
+    font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
     transition: background-color 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
@@ -3252,7 +3257,7 @@ body.onsearch .close_sou {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: 0 28px 14px 28px;
+    margin: 0 28px 12px 28px;
     box-sizing: border-box;
 }
 
@@ -3268,14 +3273,14 @@ body.onsearch .close_sou {
     width: max-content;
     max-width: calc(100% - 56px);
     min-width: 0;
-    min-height: 34px;
+    min-height: 32px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 6px;
-    background: rgba(18, 24, 32, 0.48);
-    border-radius: 10px;
-    margin-bottom: 14px;
+    gap: 4px;
+    background: rgba(18, 24, 32, 0.34);
+    border-radius: 9px;
+    margin-bottom: 12px;
     margin-top: 0;
     padding: 4px;
     box-sizing: border-box;
@@ -3348,13 +3353,13 @@ body.onsearch .close_sou {
 
 .category-item {
     flex: 0 0 auto;
-    height: 26px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.88rem;
-    color: rgba(232, 239, 247, 0.72);
-    padding: 0 13px;
+    font-size: 0.75rem;
+    color: rgba(232, 239, 247, 0.58);
+    padding: 0 11px;
     margin-right: 0;
     border-radius: 999px;
     cursor: pointer;
@@ -3363,7 +3368,7 @@ body.onsearch .close_sou {
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     box-shadow: none;
     letter-spacing: 0;
-    font-weight: 600;
+    font-weight: 560;
     position: relative;
     z-index: 1;
     overflow: hidden;
@@ -3422,7 +3427,7 @@ body.onsearch .close_sou {
     color: #f7fbff;
     background: transparent;
     border-color: transparent;
-    font-weight: 700;
+    font-weight: 650;
     box-shadow: none;
     transform: none !important;
     animation: none;
@@ -3484,7 +3489,7 @@ body.onsearch .close_sou {
     overflow: hidden;
     min-height: 48px;
     border-radius: 8px;
-    border: 1px solid rgba(179, 195, 214, 0.14);
+    border: 1px solid rgba(179, 195, 214, 0.1);
     background: rgba(18, 24, 32, 0.46);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 18px rgba(0, 0, 0, 0.14);
     transform: none;
@@ -4293,8 +4298,8 @@ html.ios-standalone .bg-all {
     }
 
     .category-item {
-        font-size: 0.82rem;
-        padding: 0 11px;
+        font-size: 0.74rem;
+        padding: 0 10px;
         height: 24px;
         border-radius: 999px;
         min-width: 44px;
@@ -4493,7 +4498,8 @@ html.ios-standalone .bg-all {
         height: 40px;
         min-height: 40px;
         padding: 0 8px;
-        font-size: 0.84rem;
+        font-size: 0.82rem;
+        font-weight: 560;
         line-height: 40px;
     }
 
@@ -4577,7 +4583,7 @@ html.ios-standalone .bg-all {
     backdrop-filter: blur(18px);
     color: #fff;
     font-size: 0.88rem;
-    font-weight: 700;
+    font-weight: 650;
     pointer-events: none;
     will-change: transform;
 }
