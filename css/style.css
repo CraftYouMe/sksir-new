@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.9") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.9") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.9") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.10") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.10") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.10") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.9") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.10") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -502,7 +502,7 @@ html.perf-lite.is-booting::after {
     border-color: var(--glass-border-strong);
     background: var(--glass-surface-hover);
     z-index: 5;
-    transform: translate3d(0, -3px, 0) scale(1.12);
+    transform: translateZ(0) scale(1.08);
 }
 
 .quick-launch-item:hover .quick-launch-label,
@@ -702,33 +702,55 @@ html.perf-lite.is-booting::after {
 
 .quick-launch-item img {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
     object-fit: contain;
     opacity: 0;
     pointer-events: none;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     transform: scale(0.88);
-    transition: opacity 160ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: opacity 160ms ease, filter 180ms ease,
+        transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .quick-launch-icon-fallback {
     display: grid;
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
     place-items: center;
-    border-radius: 6px;
-    background: rgba(155, 231, 215, 0.11);
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
     color: rgba(235, 252, 248, 0.92);
     font-size: 0.7rem;
     font-weight: 720;
     line-height: 1;
+    opacity: 0.95;
     pointer-events: none;
-    transition: opacity 140ms ease, transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: opacity 140ms ease, filter 180ms ease,
+        transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .quick-launch-item.is-icon-ready img {
-    opacity: 1;
+    opacity: 0.95;
     transform: scale(1);
+}
+
+@media (hover: hover) {
+    .quick-launch-item:hover img,
+    .quick-launch-item:hover .quick-launch-icon-fallback {
+        filter: brightness(1.1);
+        opacity: 1;
+    }
 }
 
 .quick-launch-item.is-icon-ready .quick-launch-icon-fallback {
@@ -3471,15 +3493,14 @@ body.onsearch .close_sou {
             0 13px 26px rgba(0, 0, 0, 0.24),
             0 0 18px rgba(155, 231, 215, 0.10);
         filter: brightness(1.04);
-        transform: translateY(-2px);
+        transform: none;
     }
 
     .quick:hover .iconcss,
     .quicks:hover .iconcss,
     .quickjl:hover .iconcss {
-        border-color: rgba(255, 255, 255, 0.22);
-        background-color: rgba(255, 255, 255, 0.13);
-        transform: scale(1.06);
+        filter: brightness(1.1);
+        opacity: 1;
     }
 }
 
@@ -3536,12 +3557,13 @@ body.onsearch .close_sou {
     padding: 4px;
     box-sizing: border-box;
     border: 1px solid rgba(255, 255, 255, 0.13);
-    border-radius: 9px;
-    background-color: rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 4px 10px rgba(0, 0, 0, 0.10);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    opacity: 0.95;
     object-fit: contain;
-    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-        border-color 0.18s ease, background-color 0.18s ease;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: filter 0.18s ease, opacity 0.18s ease;
 }
 
 .quick .quick-desc,

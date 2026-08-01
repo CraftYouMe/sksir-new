@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#131922">
+  <title>Sksir UI 设计规范</title>
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.10">
+  <style>
+    html, body { margin: 0; min-height: 100%; }
+    body { overflow-x: hidden; }
+    .test-bg { position: fixed; z-index: -1; inset: 0; background: radial-gradient(circle at 12% 15%, rgba(99,215,193,.34), transparent 31%), radial-gradient(circle at 88% 20%, rgba(241,210,119,.22), transparent 28%), radial-gradient(circle at 65% 90%, rgba(112,126,255,.24), transparent 34%), linear-gradient(145deg,#19222e,#10151d 60%,#18202a); }
+    .test-bg::after { content:""; position:absolute; inset:0; background: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size: 36px 36px; mask-image: linear-gradient(to bottom,#0008,transparent 80%); }
+    .test-shell { width: min(var(--page-max-width), calc(100% - 40px)); margin: 0 auto; padding: 72px 0 calc(72px + env(safe-area-inset-bottom,0px)); }
+    .test-hero { margin-bottom: var(--space-8); }
+    .test-kicker { margin:0 0 var(--space-2); color:var(--color-primary); font-size:var(--font-sm); letter-spacing:.12em; text-transform:uppercase; }
+    h1 { margin:0; font-size:clamp(30px,5vw,52px); line-height:1.12; }
+    .test-lead { max-width:660px; margin:var(--space-3) 0 0; color:var(--color-text-secondary); }
+    .test-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-5); }
+    .test-section--wide { grid-column:1/-1; }
+    .test-title { margin:0 0 var(--space-4); font-size:var(--font-lg); }
+    .test-subtitle { margin:var(--space-5) 0 var(--space-3); color:var(--color-text-secondary); font-size:var(--font-sm); }
+    .test-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-3); }
+    .test-card-row { display:flex; min-width:0; align-items:center; gap:var(--space-3); }
+    .test-token-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--space-3); }
+    .test-token { min-height:80px; padding:var(--space-3); border-radius:var(--radius-sm); background:rgba(255,255,255,.07); font-size:var(--font-sm); }
+    .test-swatch { width:100%; height:30px; margin-bottom:var(--space-2); border-radius:8px; }
+    .test-loading { display:flex; align-items:center; gap:var(--space-4); min-height:70px; }
+    code { color:var(--color-primary); font-size:var(--font-xs); }
+    @media(max-width:760px) { .test-shell{width:min(100% - 24px,var(--page-max-width));padding-top:38px}.test-grid{grid-template-columns:1fr}.test-section--wide{grid-column:auto}.test-cards{grid-template-columns:1fr 1fr}.test-token-grid{grid-template-columns:1fr 1fr} }
+    @media(max-width:420px) { .test-cards{grid-template-columns:1fr} }
+  </style>
+</head>
+<body class="ds-page">
+  <div class="test-bg" aria-hidden="true"></div>
+  <main class="test-shell">
+    <header class="test-hero">
+      <p class="test-kicker">sksir.top · design system</p>
+      <h1>UI 设计规范测试台</h1>
+      <p class="test-lead">从首页、收藏中心和设置中心的成熟样式中提炼，用于验证视觉变量、核心组件、交互状态与移动端布局。组件采用 <code>ds-</code> 命名空间，可按需复用，不影响正式页面。</p>
+    </header>
+
+    <div class="test-grid">
+      <section class="ds-glass ds-panel test-section--wide">
+        <h2 class="test-title">设计变量</h2>
+        <div class="test-token-grid">
+          <div class="test-token"><div class="test-swatch" style="background:var(--color-primary)"></div>主色<br><code>--color-primary</code></div>
+          <div class="test-token"><div class="test-swatch" style="background:var(--glass-surface-hover)"></div>Hover 透明度<br><code>--opacity-hover</code></div>
+          <div class="test-token" style="border-radius:var(--radius-lg)">圆角<br><code>12 / 16 / 22 / 28px</code></div>
+          <div class="test-token" style="box-shadow:var(--shadow-soft)">柔和阴影<br><code>--shadow-soft</code></div>
+        </div>
+      </section>
+
+      <section class="ds-glass ds-panel test-section--wide">
+        <h2 class="test-title">搜索框与 Tab 分类</h2>
+        <div class="ds-search"><button class="ds-search__engine" type="button" aria-label="选择搜索引擎" title="当前搜索引擎：必应">B</button><input type="search" aria-label="搜索内容" placeholder="搜索网站、工具或内容"><button class="ds-search__action" type="button" aria-label="执行搜索"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button></div>
+        <p class="test-subtitle">分类导航</p>
+        <div class="ds-tabs" role="tablist">
+          <button class="ds-tab" role="tab" aria-selected="true">常用</button><button class="ds-tab" role="tab" aria-selected="false">设计</button><button class="ds-tab" role="tab" aria-selected="false">开发</button><button class="ds-tab" role="tab" aria-selected="false">影音</button><button class="ds-tab" role="tab" aria-selected="false">工具</button>
+        </div>
+      </section>
+
+      <section class="ds-glass ds-panel">
+        <h2 class="test-title">按钮与状态</h2>
+        <div class="ds-row"><button class="ds-button ds-button--primary">主要按钮</button><button class="ds-button">次要按钮</button><button class="ds-button ds-button--danger">危险按钮</button><button class="ds-button" disabled>禁用按钮</button><button class="ds-icon-button" aria-label="收藏">☆</button><button class="ds-icon-button" aria-label="设置">⚙</button></div>
+        <p class="test-subtitle">悬停、按下与禁用状态均由共享样式定义。</p>
+      </section>
+
+      <section class="ds-glass ds-panel">
+        <h2 class="test-title">输入框与 Loading</h2>
+        <label class="ds-field"><input type="text" placeholder="输入收藏名称"></label>
+        <div class="test-loading"><span class="ds-loader" role="status" aria-label="加载中"></span><span class="ds-muted">正在加载收藏数据…</span></div>
+      </section>
+
+      <section class="ds-glass ds-panel test-section--wide">
+        <h2 class="test-title">导航卡片与收藏卡片</h2>
+        <div class="test-cards">
+          <article class="ds-card"><div class="test-card-row"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""><div class="ds-card__body"><h3 class="ds-card__title">BiliBili</h3><p class="ds-card__meta">彩色 favicon</p></div><span class="ds-badge">常用</span></div></article>
+          <article class="ds-card"><div class="test-card-row"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><div class="ds-card__body"><h3 class="ds-card__title">GitHub</h3><p class="ds-card__meta">黑白 favicon</p></div></div></article>
+          <article class="ds-card"><div class="test-card-row"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><div class="ds-card__body"><h3 class="ds-card__title">ChatGPT</h3><p class="ds-card__meta">透明边距 favicon</p></div></div></article>
+        </div>
+        <p class="test-subtitle">28px 圆形轻玻璃容器；无独立投影，只在卡片 hover 时轻微增强亮度。</p>
+      </section>
+
+      <section class="ds-glass ds-panel">
+        <h2 class="test-title">设置列表项</h2>
+        <div class="ds-list"><div class="ds-list-item"><span class="ds-card__icon">☼</span><div class="ds-list-item__content"><h3 class="ds-list-item__title">深色外观</h3><p class="ds-list-item__description">跟随壁纸保持沉浸感</p></div><button class="ds-switch" role="switch" aria-checked="true" aria-label="切换深色外观"></button></div>
+        <div class="ds-list-item"><span class="ds-card__icon">↗</span><div class="ds-list-item__content"><h3 class="ds-list-item__title">新窗口打开</h3><p class="ds-list-item__description">保留当前导航页面</p></div><span class="ds-muted">›</span></div></div>
+      </section>
+
+      <section class="ds-glass ds-panel">
+        <h2 class="test-title">弹窗</h2>
+        <p class="ds-muted">桌面端居中显示，窄屏自动切换为 Bottom Sheet。</p>
+        <button class="ds-button ds-button--primary" id="open-modal" type="button">打开测试弹窗</button>
+      </section>
+    </div>
+  </main>
+
+  <dialog class="ds-modal" id="test-modal" aria-labelledby="modal-title">
+    <span class="ds-modal__handle" aria-hidden="true"></span>
+    <div class="ds-modal__body">
+      <div class="ds-row" style="justify-content:space-between"><h2 id="modal-title" style="margin:0;font-size:var(--font-xl)">新增收藏</h2><button class="ds-icon-button" id="close-modal" type="button" aria-label="关闭">×</button></div>
+      <p class="ds-muted">页面状态和滚动位置将被保留。</p>
+      <div class="ds-stack"><label class="ds-field"><input type="text" placeholder="收藏名称"></label><label class="ds-field"><input type="url" placeholder="https://example.com"></label></div>
+      <div class="ds-modal__actions"><button class="ds-button" id="cancel-modal" type="button">取消</button><button class="ds-button ds-button--primary" type="button">保存</button></div>
+    </div>
+  </dialog>
+  <script>
+    (() => {
+      const modal = document.querySelector('#test-modal');
+      document.querySelector('#open-modal').addEventListener('click', () => modal.showModal());
+      document.querySelector('#close-modal').addEventListener('click', () => modal.close());
+      document.querySelector('#cancel-modal').addEventListener('click', () => modal.close());
+      modal.addEventListener('click', (event) => { if (event.target === modal) modal.close(); });
+      document.querySelectorAll('.ds-tab').forEach((tab) => tab.addEventListener('click', () => {
+        document.querySelectorAll('.ds-tab').forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
+      }));
+      document.querySelectorAll('.ds-switch').forEach((toggle) => toggle.addEventListener('click', () => toggle.setAttribute('aria-checked', String(toggle.getAttribute('aria-checked') !== 'true'))));
+    })();
+  </script>
+</body>
+</html>
