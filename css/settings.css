@@ -903,13 +903,13 @@
 .settings-primary-item {
     display: flex;
     width: 100%;
-    height: 42px;
-    padding: 0 13px;
+    height: 46px;
+    padding: 0 10px;
     align-items: center;
-    gap: 11px;
+    gap: 10px;
     box-sizing: border-box;
     border: 1px solid transparent;
-    border-radius: 10px;
+    border-radius: 11px;
     background: transparent;
     color: rgba(232, 239, 247, 0.68);
     font: inherit;
@@ -918,17 +918,44 @@
 
 .settings-primary-item:hover,
 .settings-primary-item.is-active {
-    background: rgba(130, 154, 184, 0.18);
     color: #fff;
 }
 
+.settings-primary-item:hover {
+    background: rgba(255, 255, 255, 0.055);
+}
+
 .settings-primary-item.is-active {
-    border: 1px solid rgba(179, 195, 214, 0.18);
+    border-color: rgba(155, 231, 215, 0.20);
+    background: linear-gradient(90deg, rgba(155, 231, 215, 0.13), rgba(155, 231, 215, 0.055));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
     font-weight: 680;
 }
 
 .settings-primary-item.is-active i {
     color: #9be7d7;
+}
+
+.settings-primary-item > i,
+.settings-primary-item > .settings-primary-icon {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    padding: 6px;
+    flex: 0 0 30px;
+    place-items: center;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.035);
+    color: rgba(232, 239, 247, 0.58);
+}
+
+.settings-primary-item.is-active > i,
+.settings-primary-item.is-active > .settings-primary-icon {
+    color: var(--color-primary);
+    border-color: rgba(155, 231, 215, 0.18);
+    background: rgba(155, 231, 215, 0.10);
 }
 
 .settings-primary-icon {
@@ -948,15 +975,15 @@
 
 .set .tabs .tab-items {
     display: flex;
-    flex: 0 0 44px;
+    flex: 0 0 46px;
     width: 100%;
     min-width: 0;
-    height: 44px;
-    padding: 0 13px;
+    height: 46px;
+    padding: 0 10px;
     justify-content: flex-start;
     gap: 11px;
     border: 1px solid transparent;
-    border-radius: 10px;
+    border-radius: 11px;
     color: rgba(232, 239, 247, 0.70);
     font-size: 0.9rem;
     font-weight: 560;
@@ -964,7 +991,14 @@
 }
 
 .set .tabs .tab-items i {
-    width: 20px;
+    display: grid;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.035);
     color: rgba(232, 239, 247, 0.58);
     font-size: 1rem;
     text-align: center;
@@ -976,19 +1010,21 @@
 
 .set .tabs .tab-items:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.055);
 }
 
 .set .tabs .tab-items.actives {
     color: #fff;
-    border-color: rgba(255, 255, 255, 0.10);
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: inset 4px 0 0 rgba(155, 231, 215, 0.92);
+    border-color: rgba(155, 231, 215, 0.20);
+    background: linear-gradient(90deg, rgba(155, 231, 215, 0.13), rgba(155, 231, 215, 0.055));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
     font-weight: 700;
 }
 
 .set .tabs .tab-items.actives i {
-    color: #9be7d7;
+    color: var(--color-primary);
+    border-color: rgba(155, 231, 215, 0.18);
+    background: rgba(155, 231, 215, 0.10);
 }
 
 .set .productss {
@@ -1077,7 +1113,7 @@
     gap: 20px;
     box-sizing: border-box;
     border: 1px solid rgba(179, 195, 214, 0.12);
-    border-radius: 14px;
+    border-radius: var(--radius-control);
     background: rgba(18, 24, 32, 0.34);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
     transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
@@ -2079,8 +2115,8 @@
     box-sizing: border-box;
     margin: 0;
     border: 1px solid rgba(255, 255, 255, 0.11);
-    border-radius: 13px;
-    background: rgba(255, 255, 255, 0.065);
+    border-radius: var(--radius-card);
+    background: var(--surface-card);
     color: #fff;
     text-align: left;
     cursor: grab;
@@ -2089,7 +2125,7 @@
 
 .set .se-engine-card:hover {
     border-color: rgba(255, 255, 255, 0.20);
-    background: rgba(255, 255, 255, 0.095);
+    background: var(--surface-card-hover);
 }
 
 .set .se-engine-card.is-default {
@@ -2350,13 +2386,13 @@
 .set .quick-launch-custom-fields input {
     width: 100%;
     min-width: 0;
-    height: 44px;
+    height: var(--control-height);
     padding: 0 12px;
     box-sizing: border-box;
     outline: 0;
     border: 1px solid rgba(255, 255, 255, 0.13);
     border-radius: 12px;
-    background: rgba(8, 12, 18, 0.34);
+    background: var(--surface-control);
     color: #fff;
     font-size: 16px;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);

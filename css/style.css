@@ -9,6 +9,10 @@
     --text-primary: rgba(255, 255, 255, 0.96);
     --text-secondary: rgba(255, 255, 255, 0.72);
     --text-muted: rgba(255, 255, 255, 0.52);
+    --color-primary: #9be7d7;
+    --color-primary-strong: #7bddcc;
+    --color-accent: #f1d277;
+    --color-danger: #ff8f94;
     --glass-surface: rgba(18, 24, 32, 0.34);
     --glass-surface-strong: rgba(18, 24, 32, 0.62);
     --glass-surface-hover: rgba(255, 255, 255, 0.17);
@@ -19,6 +23,12 @@
     --shadow-panel: 0 24px 70px rgba(0, 0, 0, 0.28);
     --radius-control: 14px;
     --radius-panel: 22px;
+    --radius-card: 13px;
+    --radius-modal: 22px;
+    --surface-card: rgba(255, 255, 255, 0.065);
+    --surface-card-hover: rgba(255, 255, 255, 0.095);
+    --surface-control: rgba(8, 12, 18, 0.34);
+    --control-height: 44px;
     --space-unit: 8px;
     --motion-fast: 180ms;
     --motion-normal: 260ms;
@@ -52,15 +62,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.22") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.22") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.22") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.23") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.23") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.23") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.22") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.23") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -1219,6 +1229,7 @@ body:not(.onsearch) .all-search:hover {
     isolation: isolate;
     overflow: hidden;
     background: transparent;
+    border-color: rgba(255, 255, 255, 0.08);
     animation: none;
     width: min(1080px, calc(100vw - 64px));
     height: min(680px, calc(100vh - 96px));
@@ -1277,27 +1288,11 @@ body:not(.onsearch) .all-search:hover {
 .bookmark-head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     width: 100%;
-    min-height: 76px;
-    padding: 12px 18px 10px 22px;
-    gap: 18px;
+    min-height: 54px;
+    padding: 8px 14px 6px;
     box-sizing: border-box;
-}
-
-.bookmark-title {
-    color: var(--text-primary);
-    font-size: 1.75rem;
-    font-weight: 730;
-    line-height: 1.2;
-    letter-spacing: -0.015em;
-}
-
-.bookmark-subtitle {
-    margin-top: 4px;
-    color: rgba(214, 225, 238, 0.46);
-    font-size: 0.72rem;
-    line-height: 1.3;
 }
 
 .bookmark-head-actions {
@@ -1434,6 +1429,15 @@ body:not(.onsearch) .all-search:hover {
     overflow: visible;
 }
 
+.mark .tab {
+    height: 44px;
+    min-height: 44px;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+    gap: 18px;
+    padding: 0 18px;
+}
+
 /* 只有没有分类行的 mainCont 才加顶部间距 */
 .products .mainCont:not(:has(.category-row)) {
     margin-top: 6px;
@@ -1467,6 +1471,15 @@ body:not(.onsearch) .all-search:hover {
     box-shadow: none;
     transform: none;
     transition: color 0.18s ease;
+}
+
+.mark .tab .tab-item {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 88px;
+    padding: 0 18px;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .mark .tab .tab-item::after,
@@ -1510,6 +1523,11 @@ body:not(.onsearch) .all-search:hover {
     font-size: 0.85rem;
     font-weight: 700;
     transform: none;
+}
+
+.mark .tab .tab-item.active {
+    font-size: 1.04rem;
+    font-weight: 720;
 }
 
 .mark .tab .tab-item.active::after,
@@ -3472,9 +3490,9 @@ body.onsearch .close_sou {
     box-sizing: border-box;
     overflow: hidden;
     min-height: 76px;
-    border-radius: 13px;
+    border-radius: var(--radius-card);
     border: 1px solid rgba(255, 255, 255, 0.11);
-    background: rgba(255, 255, 255, 0.065);
+    background: var(--surface-card);
     box-shadow: none;
     transform: none;
     transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease,
@@ -3503,7 +3521,7 @@ body.onsearch .close_sou {
     .quick:hover,
     .quicks:hover {
         border-color: rgba(255, 255, 255, 0.20);
-        background: rgba(255, 255, 255, 0.095);
+        background: var(--surface-card-hover);
         box-shadow: none;
         filter: none;
         transform: none;
@@ -5325,5 +5343,75 @@ html.ios-standalone .bg-all {
         width: min(150px, calc(100vw - 205px));
         min-width: 72px;
         padding: 0 10px;
+    }
+}
+
+/* 收藏中心轻量层级：一级导航主导，分类栏与收藏入口降低容器感。 */
+.mark .category-row {
+    border-color: rgba(179, 195, 214, 0.07);
+    background: rgba(18, 24, 32, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.mark .category-row:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.mark .quick,
+.mark .quicks {
+    border-color: rgba(255, 255, 255, 0.075);
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.mark .quick .quick-icon,
+.mark .quicks .quick-icon {
+    border-color: rgba(255, 255, 255, 0.05);
+    background: rgba(8, 12, 18, 0.12);
+}
+
+@media (hover: hover) {
+    .mark .quick:hover,
+    .mark .quicks:hover {
+        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.075);
+    }
+}
+
+@media (max-width: 720px) {
+    .bookmark-head {
+        min-height: 54px;
+        padding: 8px 10px 6px;
+    }
+
+    .mark .tab {
+        flex-basis: 42px;
+        height: 42px;
+        min-height: 42px;
+        max-height: 42px;
+        gap: 8px;
+    }
+
+    .mark .tab .tab-item {
+        flex-basis: auto;
+        width: auto;
+        min-width: 76px;
+        height: 42px;
+        min-height: 42px;
+        padding: 0 14px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        line-height: 42px;
+    }
+
+    .mark .tab .tab-item.active {
+        font-size: 0.96rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .bookmark-head > .bookmark-head-actions {
+        min-width: 0;
+        flex: 1 1 auto;
     }
 }
