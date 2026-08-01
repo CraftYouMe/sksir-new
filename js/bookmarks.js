@@ -253,14 +253,6 @@
     });
     if (!positions.length) return null;
 
-    var hovered = positions.find(function (position) {
-      return pointerX >= position.rect.left &&
-        pointerX <= position.rect.right &&
-        pointerY >= position.rect.top &&
-        pointerY <= position.rect.bottom;
-    });
-    if (hovered) return hovered.entry;
-
     var rows = [];
     positions.forEach(function (position) {
       var row = rows[rows.length - 1];
@@ -312,6 +304,24 @@
     return nextRow && nextRow.items.length ? nextRow.items[0].entry : null;
   }
 
+  function animateCardReorder(container, previousRects, draggingCard) {
+    container.querySelectorAll(bookmarkCardSelector).forEach(function (entry) {
+      var previous = previousRects.get(entry);
+      if (!previous || entry === draggingCard || typeof entry.animate !== "function") return;
+      var current = entry.getBoundingClientRect();
+      var deltaX = previous.left - current.left;
+      var deltaY = previous.top - current.top;
+      if (!deltaX && !deltaY) return;
+      if (typeof entry.getAnimations === "function") {
+        entry.getAnimations().forEach(function (animation) { animation.cancel(); });
+      }
+      entry.animate([
+        { transform: "translate3d(" + deltaX + "px," + deltaY + "px,0)" },
+        { transform: "translate3d(0,0,0)" }
+      ], { duration: 150, easing: "cubic-bezier(.2,.8,.2,1)" });
+    });
+  }
+
   function bindCardDrag(card, panel) {
     if (!card || card.dataset.bookmarkCardDragBound === "1") return;
     card.dataset.bookmarkCardDragBound = "1";
@@ -328,8 +338,7 @@
     var coarsePointer = false;
     var ghost = null;
     var placeholder = null;
-    var placeholderPositioned = false;
-    var dropBefore = null;
+    var originalNextCard = null;
 
     function updatePointer(event) {
       var points = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : null;
@@ -355,30 +364,21 @@
       var cards = Array.prototype.filter.call(
         container.querySelectorAll(bookmarkCardSelector),
         function (entry) {
-          return window.getComputedStyle(entry).display !== "none";
+          return entry !== card && window.getComputedStyle(entry).display !== "none";
         }
       );
       var before = getCardDropTarget(cards, pointerX, pointerY);
-      var targetRect = before && before.getBoundingClientRect();
-      var containerRect = container.getBoundingClientRect();
-      dropBefore = before;
-      if (!targetRect) {
-        placeholder.hidden = true;
+      var fallback = container.querySelector(".bookmark-add-card");
+      var insertionPoint = before || fallback;
+      if (placeholder.nextSibling === insertionPoint || (!insertionPoint && !placeholder.nextSibling)) {
         return;
       }
-      var nextTransform = "translate3d(" +
-        (targetRect.left - containerRect.left + container.scrollLeft) + "px," +
-        (targetRect.top - containerRect.top + container.scrollTop) + "px,0)";
-      placeholder.style.width = targetRect.width + "px";
-      placeholder.style.height = targetRect.height + "px";
-      placeholder.style.transform = nextTransform;
-      placeholder.hidden = false;
-      if (!placeholderPositioned) {
-        placeholder.style.transition = "none";
-        void placeholder.offsetWidth;
-        placeholder.style.transition = "transform 90ms cubic-bezier(0.22, 1, 0.36, 1)";
-        placeholderPositioned = true;
-      }
+      var previousRects = new Map();
+      cards.forEach(function (entry) {
+        previousRects.set(entry, entry.getBoundingClientRect());
+      });
+      container.insertBefore(placeholder, insertionPoint);
+      animateCardReorder(container, previousRects, card);
     }
 
     function schedulePosition(event) {
@@ -398,9 +398,15 @@
       placeholder = document.createElement("span");
       placeholder.className = "bookmark-card-placeholder";
       placeholder.setAttribute("aria-hidden", "true");
-      placeholder.hidden = true;
-      placeholder.style.transition = "none";
-      container.appendChild(placeholder);
+      placeholder.textContent = "放到这里";
+      var cardStyle = window.getComputedStyle(card);
+      placeholder.style.width = rect.width + "px";
+      placeholder.style.minWidth = rect.width + "px";
+      placeholder.style.maxWidth = rect.width + "px";
+      placeholder.style.height = rect.height + "px";
+      placeholder.style.margin = cardStyle.margin;
+      originalNextCard = card.nextElementSibling;
+      container.insertBefore(placeholder, card);
 
       ghost = document.createElement("div");
       ghost.className = "bookmark-card-drag-ghost";
@@ -461,10 +467,17 @@
       moveFrame = 0;
       updatePosition();
 
-      container.insertBefore(card, dropBefore || container.querySelector(".bookmark-add-card"));
+      var cancelled = event.type === "pointercancel";
+      if (cancelled) {
+        container.insertBefore(card, originalNextCard && originalNextCard.parentNode === container
+          ? originalNextCard
+          : container.querySelector(".bookmark-add-card"));
+      } else {
+        container.insertBefore(card, placeholder);
+      }
       placeholder.remove();
       placeholder = null;
-      dropBefore = null;
+      originalNextCard = null;
       card.classList.remove("is-dragging");
       card.removeAttribute("aria-grabbed");
       container.classList.remove("is-reordering");
@@ -478,9 +491,11 @@
       }
       dragging = false;
       suppressCardClickUntil = Date.now() + 420;
-      saveCardOrder(panel);
-      card.classList.add("just-dropped");
-      setTimeout(function () { card.classList.remove("just-dropped"); }, 280);
+      if (!cancelled) {
+        saveCardOrder(panel);
+        card.classList.add("just-dropped");
+        setTimeout(function () { card.classList.remove("just-dropped"); }, 280);
+      }
       event.preventDefault();
     }
 
