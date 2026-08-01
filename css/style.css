@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.11") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.11") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.11") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.12") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.12") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.12") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.11") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.12") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -3548,19 +3548,17 @@ body.onsearch .close_sou {
 .quick .iconcss,
 .quicks .iconcss,
 .quickjl .iconcss {
-    flex: 0 0 28px;
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    padding: 4px;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    padding: 3px;
     box-sizing: border-box;
-    border: 1px solid rgba(255, 255, 255, 0.13);
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    opacity: 0.95;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.04);
+    opacity: 0.92;
     object-fit: contain;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
     transition: filter 0.18s ease, opacity 0.18s ease;
 }
 

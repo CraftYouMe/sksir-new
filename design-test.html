@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#131922">
   <title>Sksir UI 设计规范</title>
-  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.10">
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.12">
   <style>
     html, body { margin: 0; min-height: 100%; }
     body { overflow-x: hidden; }
@@ -27,6 +27,10 @@
     .test-token { min-height:80px; padding:var(--space-3); border-radius:var(--radius-sm); background:rgba(255,255,255,.07); font-size:var(--font-sm); }
     .test-swatch { width:100%; height:30px; margin-bottom:var(--space-2); border-radius:8px; }
     .test-loading { display:flex; align-items:center; gap:var(--space-4); min-height:70px; }
+    .test-variant { display:grid; gap:var(--space-3); padding:var(--space-4); border:1px solid rgba(255,255,255,.09); border-radius:var(--radius-md); background:rgba(8,12,18,.18); }
+    .test-variant-head { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-3); }
+    .test-variant-head strong { font-size:var(--font-sm); }
+    .test-variant-head span { color:var(--color-text-muted); font-size:var(--font-xs); }
     code { color:var(--color-primary); font-size:var(--font-xs); }
     @media(max-width:760px) { .test-shell{width:min(100% - 24px,var(--page-max-width));padding-top:38px}.test-grid{grid-template-columns:1fr}.test-section--wide{grid-column:auto}.test-cards{grid-template-columns:1fr 1fr}.test-token-grid{grid-template-columns:1fr 1fr} }
     @media(max-width:420px) { .test-cards{grid-template-columns:1fr} }
@@ -53,8 +57,11 @@
       </section>
 
       <section class="ds-glass ds-panel test-section--wide">
-        <h2 class="test-title">搜索框与 Tab 分类</h2>
-        <div class="ds-search"><button class="ds-search__engine" type="button" aria-label="选择搜索引擎" title="当前搜索引擎：必应">B</button><input type="search" aria-label="搜索内容" placeholder="搜索网站、工具或内容"><button class="ds-search__action" type="button" aria-label="执行搜索"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button></div>
+        <h2 class="test-title">搜索框组件族</h2>
+        <div class="ds-stack">
+          <div class="test-variant"><div class="test-variant-head"><strong>Hero Search</strong><span>首页首屏</span></div><div class="ds-search-wrap"><div class="ds-search"><button class="ds-search__engine" type="button" aria-label="选择搜索引擎" title="选择搜索引擎"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M4 12h16M12 4a13 13 0 0 1 0 16M12 4a13 13 0 0 0 0 16"></path></svg></button><input type="search" aria-label="搜索内容" placeholder="搜索网站、工具或内容"><button class="ds-search__action" type="button" aria-label="执行搜索"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button></div></div><span class="ds-muted">深色玻璃保持连续，桌面悬停轻微展开，聚焦时以青色描边提示搜索状态。</span></div>
+          <div class="test-variant"><div class="test-variant-head"><strong>Compact Search</strong><span>收藏中心 / 面板工具栏</span></div><label class="ds-search-compact"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg><input type="search" placeholder="搜索全部收藏" aria-label="搜索全部收藏"></label><span class="ds-muted">固定 38px 高，不扩展、不切换浅色搜索态。</span></div>
+        </div>
         <p class="test-subtitle">分类导航</p>
         <div class="ds-tabs" role="tablist">
           <button class="ds-tab" role="tab" aria-selected="true">常用</button><button class="ds-tab" role="tab" aria-selected="false">设计</button><button class="ds-tab" role="tab" aria-selected="false">开发</button><button class="ds-tab" role="tab" aria-selected="false">影音</button><button class="ds-tab" role="tab" aria-selected="false">工具</button>
@@ -68,6 +75,11 @@
       </section>
 
       <section class="ds-glass ds-panel">
+        <h2 class="test-title">导航组件族</h2>
+        <div class="test-variant"><div class="test-variant-head"><strong>Sidebar Navigation</strong><span>设置中心一级导航</span></div><nav class="ds-side-nav" aria-label="设置示例"><button class="ds-side-nav__item" aria-current="page"><span class="ds-side-nav__icon">⌕</span>搜索</button><button class="ds-side-nav__item"><span class="ds-side-nav__icon">◫</span>外观</button><button class="ds-side-nav__item"><span class="ds-side-nav__icon">ⓘ</span>关于</button></nav></div>
+      </section>
+
+      <section class="ds-glass ds-panel">
         <h2 class="test-title">输入框与 Loading</h2>
         <label class="ds-field"><input type="text" placeholder="输入收藏名称"></label>
         <div class="test-loading"><span class="ds-loader" role="status" aria-label="加载中"></span><span class="ds-muted">正在加载收藏数据…</span></div>
@@ -75,12 +87,13 @@
 
       <section class="ds-glass ds-panel test-section--wide">
         <h2 class="test-title">导航卡片与收藏卡片</h2>
+        <div class="test-variant" style="margin-bottom:var(--space-4)"><div class="test-variant-head"><strong>Quick Launch</strong><span>首页搜索框上方快捷入口</span></div><div class="ds-quick-launch"><button class="ds-quick-launch__item" aria-label="打开 BiliBili"><img src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""></button><button class="ds-quick-launch__item" aria-label="打开 GitHub"><img src="assets/oss/2026.07.30.6/icon/github.png" alt=""></button><button class="ds-quick-launch__item ds-quick-launch__item--add" aria-label="添加快捷入口">＋</button></div></div>
         <div class="test-cards">
-          <article class="ds-card"><div class="test-card-row"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""><div class="ds-card__body"><h3 class="ds-card__title">BiliBili</h3><p class="ds-card__meta">彩色 favicon</p></div><span class="ds-badge">常用</span></div></article>
-          <article class="ds-card"><div class="test-card-row"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><div class="ds-card__body"><h3 class="ds-card__title">GitHub</h3><p class="ds-card__meta">黑白 favicon</p></div></div></article>
-          <article class="ds-card"><div class="test-card-row"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><div class="ds-card__body"><h3 class="ds-card__title">ChatGPT</h3><p class="ds-card__meta">透明边距 favicon</p></div></div></article>
+          <article class="ds-card"><div class="ds-card__heading"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""><h3 class="ds-card__title">BiliBili</h3><span class="ds-badge">常用</span></div><p class="ds-card__meta">彩色 favicon · 视频弹幕社区</p></article>
+          <article class="ds-card"><div class="ds-card__heading"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><h3 class="ds-card__title">GitHub</h3></div><p class="ds-card__meta">黑白 favicon · 代码托管平台</p></article>
+          <article class="ds-card"><div class="ds-card__heading"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><h3 class="ds-card__title">ChatGPT</h3></div><p class="ds-card__meta">透明边距 favicon · AI 对话助手</p></article>
         </div>
-        <p class="test-subtitle">28px 圆形轻玻璃容器；无独立投影，只在卡片 hover 时轻微增强亮度。</p>
+        <p class="test-subtitle">26px 弱圆角轻玻璃边界；名称位于第一行，描述独立为第二行，favicon 仅承担识别辅助。</p>
       </section>
 
       <section class="ds-glass ds-panel">
