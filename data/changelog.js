@@ -1,9 +1,23 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T14:33:19.903Z",
+  "generatedAt": "2026-08-01T14:39:22.111Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "统一添加收藏卡片尺寸",
+      "details": [
+        "新增卡片与普通收藏卡片统一为桌面四列、移动端两列及 68px 高度",
+        "统一卡片圆角和外边距，移除导致中间屏幕宽度错位的旧三列规则",
+        "设计测试页新增同尺寸添加卡片示例"
+      ],
+      "tags": [
+        "new",
+        "improve"
+      ]
+    },
+    {
+      "hash": "bd4cb9a",
       "date": "2026-08-01",
       "summary": "修正收藏描述实际左对齐",
       "details": [

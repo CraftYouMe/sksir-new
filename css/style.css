@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.17") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.17") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.17") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.18") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.18") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.18") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.17") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.18") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -4819,15 +4819,15 @@ html.ios-standalone .bg-all {
 .bookmark-add-card {
     position: relative;
     display: grid;
-    width: 18%;
-    min-width: 18%;
-    max-width: 18%;
-    min-height: 48px;
+    width: 23%;
+    min-width: 23%;
+    max-width: 23%;
+    min-height: 68px;
     margin: 0 1% 2%;
     place-items: center;
     box-sizing: border-box;
     border: 1px dashed rgba(155, 231, 215, 0.32);
-    border-radius: 8px;
+    border-radius: 12px;
     background: rgba(155, 231, 215, 0.055);
     color: rgba(216, 246, 239, 0.78);
     cursor: pointer;
@@ -5050,14 +5050,6 @@ html.ios-standalone .bg-all {
     font-weight: 680;
 }
 
-@media (max-width: 900px) {
-    .bookmark-add-card {
-        width: 31.33%;
-        min-width: 31.33%;
-        max-width: 31.33%;
-    }
-}
-
 @media (max-width: 720px) {
     .bookmark-tab-placeholder {
         flex: 0 0 58px;
@@ -5066,9 +5058,10 @@ html.ios-standalone .bg-all {
     }
 
     .bookmark-add-card {
-        width: 48%;
-        min-width: 48%;
-        max-width: 48%;
+        width: calc(50% - 6px);
+        min-width: calc(50% - 6px);
+        max-width: calc(50% - 6px);
+        margin: 0 3px 6px;
     }
 
     .bookmark-custom-remove {
