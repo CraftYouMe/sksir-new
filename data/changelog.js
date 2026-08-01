@@ -1,9 +1,33 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T16:52:51.295Z",
+  "generatedAt": "2026-08-01T18:03:11.838Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-02",
+      "summary": "统一设置中心布局并开放收藏显示行数",
+      "details": [
+        "设置中心改为与收藏中心一致的悬浮分类工具栏和连续内容流，移动端同步适配",
+        "收藏中心支持选择显示一至六行快捷卡片，测速、设置与关闭操作保持统一",
+        "设计测试页同步本轮组件结构与视觉规范"
+      ],
+      "tags": [
+        "new"
+      ]
+    },
+    {
+      "hash": "dcd44e9",
+      "date": "2026-08-02",
+      "summary": "精简已经完成并由现有实现取代的 favicon 优化说明与导航优化计划",
+      "details": [],
+      "tags": [
+        "new",
+        "improve",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "a8a2a56",
       "date": "2026-08-02",
       "summary": "修正收藏导航交互与卡片密度",
       "details": [

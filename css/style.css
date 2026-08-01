@@ -63,15 +63,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.02.4") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.02.4") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.02.4") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.02.9") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.02.9") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.02.9") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.02.4") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.02.9") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -5846,5 +5846,360 @@ html.ios-standalone .bg-all {
         top: 12px;
         min-height: 32px;
         padding: 0;
+    }
+}
+
+/* 桌面收藏中心按实际卡片数量收缩，内容过多时只滚动卡片列表。 */
+@media (min-width: 721px) {
+    .mark {
+        height: auto;
+        min-height: 0;
+        max-height: min(680px, calc(100vh - 96px));
+    }
+
+    .mark .products,
+    .mark .products .mainCont.selected {
+        height: auto;
+        max-height: min(680px, calc(100vh - 96px));
+    }
+
+    .mark .products .quick-all,
+    .mark .products .quick-alls,
+    .mark .products .quick-jl {
+        height: auto;
+        max-height: min(560px, calc(100vh - 190px));
+        flex: 0 1 auto;
+    }
+}
+
+@media (min-width: 721px) {
+    .mark {
+        height: min(var(--bookmark-panel-height), calc(100vh - 96px));
+        min-height: min(190px, calc(100vh - 96px));
+        max-height: min(790px, calc(100vh - 96px));
+    }
+
+    .mark .products,
+    .mark .products .mainCont.selected {
+        height: 100%;
+        max-height: none;
+    }
+
+    .mark .products .quick-all,
+    .mark .products .quick-alls,
+    .mark .products .quick-jl {
+        height: auto;
+        max-height: none;
+        flex: 1 1 auto;
+    }
+}
+
+/* 收藏中心桌面可见行数：默认四行，超出部分在卡片区滚动。 */
+:root {
+    --bookmark-panel-height: 550px;
+}
+
+html[data-bookmark-rows="1"] { --bookmark-panel-height: 190px; }
+html[data-bookmark-rows="2"] { --bookmark-panel-height: 310px; }
+html[data-bookmark-rows="3"] { --bookmark-panel-height: 430px; }
+html[data-bookmark-rows="4"] { --bookmark-panel-height: 550px; }
+html[data-bookmark-rows="5"] { --bookmark-panel-height: 670px; }
+html[data-bookmark-rows="6"] { --bookmark-panel-height: 790px; }
+
+@media (min-width: 721px) {
+    .mark {
+        height: min(var(--bookmark-panel-height), calc(100vh - 96px));
+        min-height: min(190px, calc(100vh - 96px));
+        max-height: min(790px, calc(100vh - 96px));
+    }
+
+    .mark .products,
+    .mark .products .mainCont.selected {
+        height: 100%;
+        max-height: none;
+    }
+
+    .mark .products .quick-all,
+    .mark .products .quick-alls,
+    .mark .products .quick-jl {
+        height: auto;
+        max-height: none;
+        flex: 1 1 auto;
+    }
+}
+
+/* 收藏中心：Tab 与工具按钮组成一条独立悬浮工具栏 */
+.mark {
+    overflow: visible;
+}
+
+.mark .bookmark-navline {
+    position: absolute;
+    top: -64px;
+    left: 50%;
+    z-index: 20;
+    display: flex;
+    width: min(920px, calc(100% - 72px));
+    min-height: 52px;
+    margin: 0;
+    padding: 5px 7px;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(218, 234, 248, 0.28);
+    border-radius: 999px;
+    background:
+        linear-gradient(110deg, rgba(255, 255, 255, 0.1), transparent 46%),
+        rgba(12, 19, 29, 0.72);
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    transform: translateX(-50%);
+}
+
+.mark .bookmark-navline > .tab {
+    position: static;
+    display: flex;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+    padding: 0;
+    gap: 4px;
+    overflow-x: auto;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.mark .bookmark-navline > .tab .tab-item {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 72px;
+    height: 42px;
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 999px;
+}
+
+.mark .bookmark-navline > .tab .tab-item.active {
+    border-color: rgba(218, 234, 248, 0.22);
+    background: rgba(255, 255, 255, 0.11);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.mark .bookmark-navline > .bookmark-head {
+    position: static;
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 34px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.mark .bookmark-navline .bookmark-head-actions {
+    gap: 6px;
+}
+
+.mark .bookmark-navline .bookmark-search,
+.mark .bookmark-navline .status-check-btn,
+.mark .bookmark-navline #menu.bookmark-settings,
+.mark .bookmark-navline .bookmark-close {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-color: rgba(218, 234, 248, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.mark .bookmark-navline .bookmark-search:hover,
+.mark .bookmark-navline .status-check-btn:hover,
+.mark .bookmark-navline #menu.bookmark-settings:hover,
+.mark .bookmark-navline .bookmark-close:hover {
+    border-color: rgba(218, 234, 248, 0.34);
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.mark .bookmark-navline .bookmark-search.is-expanded {
+    width: min(220px, 26vw);
+    flex-basis: min(220px, 26vw);
+}
+
+/* 新增卡片必须与普通收藏卡片保持相同占位尺寸 */
+.mark .quick,
+.mark .quicks,
+.mark .bookmark-add-card {
+    width: 18%;
+    min-width: 18%;
+    max-width: 18%;
+    min-height: 76px;
+    margin: 0 1% 2%;
+    border-radius: var(--radius-card);
+}
+
+@media (max-width: 720px) {
+    .mark .bookmark-navline {
+        top: -58px;
+        width: calc(100% - 16px);
+        min-height: 50px;
+        padding: 4px 5px;
+        gap: 5px;
+    }
+
+    .mark .bookmark-navline > .tab {
+        flex: 1 1 auto;
+        width: auto;
+        height: 40px;
+        min-height: 40px;
+        max-height: 40px;
+        padding: 0;
+        gap: 2px;
+    }
+
+    .mark .bookmark-navline > .tab .tab-item {
+        min-width: 62px;
+        height: 40px;
+        min-height: 40px;
+        padding: 0 11px;
+        font-size: 0.86rem;
+    }
+
+    .mark .bookmark-navline > .bookmark-head {
+        position: static;
+        min-height: 32px;
+    }
+
+    .mark .bookmark-navline .bookmark-head-actions {
+        gap: 4px;
+    }
+
+    .mark .bookmark-navline .bookmark-search,
+    .mark .bookmark-navline .status-check-btn,
+    .mark .bookmark-navline #menu.bookmark-settings,
+    .mark .bookmark-navline .bookmark-close {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+
+    .mark .bookmark-navline .bookmark-search.is-expanded {
+        width: min(168px, calc(100vw - 224px));
+        flex-basis: min(168px, calc(100vw - 224px));
+    }
+
+    .mark .quick,
+    .mark .quicks,
+    .mark .bookmark-add-card {
+        width: calc(50% - 6px);
+        min-width: calc(50% - 6px);
+        max-width: calc(50% - 6px);
+        margin: 0 3px 8px;
+    }
+}
+
+/* 悬浮工具栏可以越界，收藏内容仍在面板圆角内裁切并独立滚动。 */
+.mark .products {
+    min-height: 0;
+    padding-top: 12px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-radius: inherit;
+}
+
+.mark .products .mainCont.selected {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.mark .products .category-tools,
+.mark .products .passcode {
+    flex: 0 0 auto;
+}
+
+.mark .products .quick-all,
+.mark .products .quick-alls,
+.mark .products .quick-jl {
+    width: calc(100% - 40px);
+    height: auto;
+    min-height: 0;
+    margin: 0 20px 16px;
+    padding-bottom: 4px;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(220, 233, 244, 0.32) transparent;
+}
+
+.mark .products .quick-all::-webkit-scrollbar,
+.mark .products .quick-alls::-webkit-scrollbar,
+.mark .products .quick-jl::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mark .products .quick-all::-webkit-scrollbar-thumb,
+.mark .products .quick-alls::-webkit-scrollbar-thumb,
+.mark .products .quick-jl::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(220, 233, 244, 0.32);
+}
+
+@media (max-width: 720px) {
+    /* 移动端面板接近满屏，工具栏改为面板内顶部悬浮，避免负定位超出视口。 */
+    .mark .bookmark-navline {
+        top: 8px;
+        width: calc(100% - 16px);
+    }
+
+    .mark .products {
+        padding-top: 68px;
+    }
+
+    .mark .products .quick-all,
+    .mark .products .quick-alls,
+    .mark .products .quick-jl {
+        width: calc(100% - 20px);
+        margin: 0 10px 10px;
+        padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (min-width: 721px) {
+    .mark {
+        height: min(var(--bookmark-panel-height), calc(100vh - 96px));
+        min-height: min(190px, calc(100vh - 96px));
+        max-height: min(790px, calc(100vh - 96px));
+    }
+
+    .mark .products,
+    .mark .products .mainCont.selected {
+        height: 100%;
+        max-height: none;
+    }
+
+    .mark .products .quick-all,
+    .mark .products .quick-alls,
+    .mark .products .quick-jl {
+        height: auto;
+        max-height: none;
+        flex: 1 1 auto;
     }
 }

@@ -312,3 +312,175 @@
 @media (prefers-reduced-motion: reduce) {
     .ds-page *, .ds-page *::before, .ds-page *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Synchronized floating navigation shared by bookmarks and settings. */
+.ds-bookmark-navline,
+.ds-settings-nav {
+    display:flex;
+    width:min(920px,calc(100% - 40px));
+    min-width:0;
+    min-height:52px;
+    margin-inline:auto;
+    padding:5px 7px;
+    align-items:center;
+    gap:8px;
+    box-sizing:border-box;
+    border:1px solid rgba(218,234,248,.28);
+    border-radius:999px;
+    background:linear-gradient(110deg,rgba(255,255,255,.1),transparent 46%),rgba(12,19,29,.72);
+    box-shadow:0 14px 34px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.1);
+    backdrop-filter:blur(22px) saturate(135%);
+    -webkit-backdrop-filter:blur(22px) saturate(135%);
+}
+
+.ds-bookmark-navline .ds-tabs {
+    height:42px;
+    min-height:42px;
+    gap:4px;
+    border:0;
+}
+
+.ds-bookmark-navline .ds-tab,
+.ds-settings-tab {
+    min-width:72px;
+    height:42px;
+    padding:0 14px;
+    border:1px solid transparent;
+    border-radius:999px;
+    color:rgba(232,239,247,.62);
+    background:transparent;
+    font:inherit;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.ds-bookmark-navline .ds-tab[aria-selected="true"],
+.ds-settings-tab[aria-selected="true"] {
+    border-color:rgba(218,234,248,.22);
+    color:var(--color-text);
+    background:rgba(255,255,255,.11);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.ds-bookmark-toolbar {
+    gap:6px;
+}
+
+.ds-bookmark-toolbar .ds-toolbar-icon,
+.ds-bookmark-toolbar .ds-toolbar-search,
+.ds-settings-nav > .ds-toolbar-icon {
+    width:34px;
+    min-width:34px;
+    height:34px;
+    flex:0 0 34px;
+    border-color:rgba(218,234,248,.22);
+    background:rgba(255,255,255,.08);
+    color:var(--color-text);
+}
+
+.ds-bookmark-toolbar .ds-toolbar-icon:hover,
+.ds-settings-nav > .ds-toolbar-icon:hover {
+    border-color:rgba(218,234,248,.34);
+    background:rgba(255,255,255,.14);
+}
+
+.ds-toolbar-speed svg {
+    width:19px;
+    height:19px;
+    stroke-width:2;
+}
+
+.ds-settings-demo {
+    display:grid;
+    padding-top:8px;
+    gap:12px;
+}
+
+.ds-settings-nav {
+    position:relative;
+    z-index:2;
+}
+
+.ds-settings-nav .ds-settings-tab {
+    flex:1 1 0;
+}
+
+.ds-settings-waterfall {
+    display:grid;
+    margin-top:-2px;
+    padding:16px;
+    gap:10px;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:var(--radius-lg);
+    background:rgba(8,12,18,.22);
+}
+
+.ds-settings-waterfall article {
+    display:grid;
+    min-height:64px;
+    padding:14px 16px;
+    align-content:center;
+    gap:4px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:var(--radius-md);
+    background:rgba(255,255,255,.035);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
+}
+
+.ds-settings-waterfall article span {
+    color:var(--color-text-muted);
+    font-size:var(--font-xs);
+}
+
+.ds-row-select {
+    min-width:92px;
+    height:38px;
+    padding:0 28px 0 12px;
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:10px;
+    background:rgba(18,26,36,.82);
+    color:var(--color-text);
+    color-scheme:dark;
+    font:inherit;
+    font-size:16px;
+}
+
+@media (max-width:640px) {
+    .ds-bookmark-navline,
+    .ds-settings-nav {
+        width:100%;
+        min-height:50px;
+        padding:4px 5px;
+        gap:4px;
+    }
+
+    .ds-bookmark-navline .ds-tabs {
+        min-width:0;
+        overflow-x:auto;
+    }
+
+    .ds-bookmark-navline .ds-tab,
+    .ds-settings-tab {
+        min-width:62px;
+        height:40px;
+        padding:0 10px;
+        font-size:.82rem;
+    }
+
+    .ds-bookmark-toolbar .ds-toolbar-icon,
+    .ds-bookmark-toolbar .ds-toolbar-search,
+    .ds-settings-nav > .ds-toolbar-icon {
+        width:32px;
+        min-width:32px;
+        height:32px;
+        flex-basis:32px;
+    }
+
+    .ds-settings-nav {
+        overflow-x:auto;
+    }
+
+    .ds-settings-nav .ds-settings-tab {
+        flex:0 0 64px;
+    }
+}

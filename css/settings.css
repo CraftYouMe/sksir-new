@@ -382,6 +382,260 @@
     }
 }
 
+/* ==========================================================================
+   Unified settings waterfall
+   The primary groups share the bookmark center's floating toolbar language.
+   ========================================================================== */
+
+.set {
+    width: min(1080px, calc(100vw - 64px));
+    max-width: 1080px;
+    height: min(680px, calc(100vh - 96px));
+    max-height: 680px;
+    min-height: 520px;
+    margin-top: 0;
+    overflow: visible;
+    isolation: isolate;
+}
+
+.set .settings-head {
+    position: absolute;
+    top: -64px;
+    left: 50%;
+    z-index: 22;
+    width: min(920px, calc(100% - 72px));
+    min-height: 52px;
+    padding: 9px 10px;
+    border: 0;
+    background: transparent;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+
+.set .settings-head > div {
+    display: none;
+}
+
+.set .settings-close {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    margin-left: auto;
+    padding: 0 0 2px;
+    border: 1px solid rgba(218, 234, 248, 0.22);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    pointer-events: auto;
+}
+
+.set .settings-shell {
+    display: block;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.set .settings-sidebar {
+    position: absolute;
+    top: -64px;
+    left: 50%;
+    z-index: 21;
+    display: flex;
+    width: min(920px, calc(100% - 72px));
+    height: 52px;
+    min-height: 52px;
+    margin: 0 !important;
+    padding: 5px 48px 5px 7px;
+    flex-direction: row;
+    align-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid rgba(218, 234, 248, 0.28);
+    border-radius: 999px;
+    background:
+        linear-gradient(110deg, rgba(255, 255, 255, 0.1), transparent 46%),
+        rgba(12, 19, 29, 0.72);
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    backdrop-filter: blur(22px) saturate(135%);
+    transform: translateX(-50%);
+}
+
+.set .settings-primary {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.set .settings-primary-item {
+    position: relative;
+    display: flex;
+    width: auto;
+    min-width: 108px;
+    height: 42px;
+    padding: 0 16px;
+    flex: 0 1 150px;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 999px;
+    text-align: center;
+}
+
+.set .settings-primary-item > i,
+.set .settings-primary-item > .settings-primary-icon {
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    flex-basis: 24px;
+    border-radius: 7px;
+}
+
+.set .settings-primary-item.is-active {
+    border-color: rgba(218, 234, 248, 0.22);
+    background: rgba(255, 255, 255, 0.11);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.set .productss {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 20px clamp(18px, 2.5vw, 30px) 24px;
+    flex-direction: column;
+    gap: 16px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-color: rgba(220, 233, 244, 0.28) transparent;
+}
+
+.set .settings-page-tabs {
+    display: none;
+}
+
+.set .productss .mainConts,
+.set .productss .mainConts.selected {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-width: none;
+    padding: 18px;
+    flex: 0 0 auto;
+    align-content: flex-start;
+    overflow: visible;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: var(--radius-card);
+    background: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    animation: none;
+}
+
+@media (max-width: 720px) {
+    .set {
+        width: calc(100vw - 16px);
+        height: calc(var(--app-height, 100vh) - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        max-height: none;
+        min-height: 0;
+    }
+
+    .set .settings-head,
+    .set .settings-sidebar {
+        top: 8px;
+        width: calc(100% - 16px);
+    }
+
+    .set .settings-head {
+        min-height: 50px;
+        padding: 8px 7px;
+    }
+
+    .set .settings-sidebar {
+        height: 50px;
+        min-height: 50px;
+        padding: 4px 44px 4px 5px;
+    }
+
+    .set .settings-primary {
+        gap: 2px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .set .settings-primary::-webkit-scrollbar {
+        display: none;
+    }
+
+    .set .settings-primary-item {
+        min-width: 70px;
+        height: 40px;
+        padding: 0 10px;
+        flex: 1 0 70px;
+        gap: 5px;
+        font-size: 0.8rem;
+    }
+
+    .set .settings-primary-item > i,
+    .set .settings-primary-item > .settings-primary-icon {
+        display: none;
+    }
+
+    .set .settings-close {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+    }
+
+    .set .productss {
+        padding: 70px 10px calc(14px + env(safe-area-inset-bottom, 0px));
+        gap: 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .set .productss .mainConts,
+    .set .productss .mainConts.selected {
+        padding: 14px 10px;
+        border-radius: 14px;
+    }
+}
+
+.bookmark-row-count-control {
+    flex: 0 0 auto;
+}
+
+#bookmark-visible-rows {
+    min-width: 96px;
+    height: 38px;
+    padding: 0 30px 0 12px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    background-color: rgba(18, 26, 36, 0.82);
+    color: var(--text-primary);
+    color-scheme: dark;
+    font: inherit;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#bookmark-visible-rows:focus-visible {
+    border-color: rgba(155, 231, 215, 0.58);
+    outline: 2px solid rgba(155, 231, 215, 0.14);
+    outline-offset: 1px;
+}
+
 /* Wallpaper center: keep these final overrides after the legacy settings rules. */
 .set .wallpaper-center,
 .set .wallpaper-center .set_blocks_content,
@@ -4076,7 +4330,7 @@
     html.ios-safari .changelog-timeline,
     html.ios-safari .changelog-day,
     html.ios-safari .changelog-entry,
-    html.ios-safari .changelog-card,
+html.ios-safari .changelog-card,
     html.ios-standalone .changelog-panel-head,
     html.ios-standalone .changelog-timeline,
     html.ios-standalone .changelog-day,
@@ -4085,5 +4339,225 @@
         block-size: auto;
         min-block-size: 0;
         flex: none;
+    }
+}
+
+/* Final cascade: bookmark-style settings toolbar and continuous group flow. */
+.set {
+    width: min(1080px, calc(100vw - 64px));
+    max-width: 1080px;
+    height: min(680px, calc(100vh - 96px));
+    max-height: 680px;
+    min-height: 520px;
+    margin-top: 0;
+    overflow: visible;
+    isolation: isolate;
+}
+
+.set .settings-head {
+    position: absolute;
+    top: -64px;
+    left: 50%;
+    z-index: 22;
+    width: min(920px, calc(100% - 72px));
+    min-height: 52px;
+    padding: 9px 10px;
+    border: 0;
+    background: transparent;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+
+.set .settings-head > div {
+    display: none;
+}
+
+.set .settings-close {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    margin-left: auto;
+    padding: 0 0 2px;
+    border: 1px solid rgba(218, 234, 248, 0.22);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    pointer-events: auto;
+}
+
+.set .settings-shell {
+    display: block;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.set .settings-sidebar {
+    position: absolute;
+    top: -64px;
+    left: 50%;
+    z-index: 21;
+    display: flex;
+    width: min(920px, calc(100% - 72px));
+    height: 52px;
+    min-height: 52px;
+    margin: 0 !important;
+    padding: 5px 48px 5px 7px;
+    flex-direction: row;
+    align-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid rgba(218, 234, 248, 0.28);
+    border-radius: 999px;
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0.1), transparent 46%), rgba(12, 19, 29, 0.72);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    backdrop-filter: blur(22px) saturate(135%);
+    transform: translateX(-50%);
+}
+
+.set .settings-primary {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.set .settings-primary-item {
+    width: auto;
+    min-width: 108px;
+    height: 42px;
+    padding: 0 16px;
+    flex: 0 1 150px;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 999px;
+    text-align: center;
+}
+
+.set .settings-primary-item > i,
+.set .settings-primary-item > .settings-primary-icon {
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    flex-basis: 24px;
+    border-radius: 7px;
+}
+
+.set .settings-primary-item.is-active {
+    border-color: rgba(218, 234, 248, 0.22);
+    background: rgba(255, 255, 255, 0.11);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.set .productss {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 20px clamp(18px, 2.5vw, 30px) 24px;
+    flex-direction: column;
+    gap: 16px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-color: rgba(220, 233, 244, 0.28) transparent;
+}
+
+.set .settings-page-tabs {
+    display: none;
+}
+
+.set .productss .mainConts,
+.set .productss .mainConts.selected {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-width: none;
+    padding: 18px;
+    flex: 0 0 auto;
+    align-content: flex-start;
+    overflow: visible;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: var(--radius-card);
+    background: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    animation: none;
+}
+
+@media (max-width: 720px) {
+    .set {
+        width: calc(100vw - 16px);
+        height: calc(var(--app-height, 100vh) - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        max-height: none;
+        min-height: 0;
+    }
+
+    .set .settings-head,
+    .set .settings-sidebar {
+        top: 8px;
+        width: calc(100% - 16px);
+    }
+
+    .set .settings-head {
+        min-height: 50px;
+        padding: 8px 7px;
+    }
+
+    .set .settings-sidebar {
+        height: 50px;
+        min-height: 50px;
+        padding: 4px 44px 4px 5px;
+    }
+
+    .set .settings-primary {
+        gap: 2px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .set .settings-primary::-webkit-scrollbar {
+        display: none;
+    }
+
+    .set .settings-primary-item {
+        min-width: 70px;
+        height: 40px;
+        padding: 0 10px;
+        flex: 1 0 70px;
+        gap: 5px;
+        font-size: 0.8rem;
+    }
+
+    .set .settings-primary-item > i,
+    .set .settings-primary-item > .settings-primary-icon {
+        display: none;
+    }
+
+    .set .settings-close {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+    }
+
+    .set .productss {
+        padding: 70px 10px calc(14px + env(safe-area-inset-bottom, 0px));
+        gap: 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .set .productss .mainConts,
+    .set .productss .mainConts.selected {
+        padding: 14px 10px;
+        border-radius: 14px;
     }
 }

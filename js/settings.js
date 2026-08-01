@@ -1,4 +1,23 @@
 (function () {
+  var bookmarkRowsKey = "sksir-bookmark-visible-rows";
+
+  function normalizeBookmarkRows(value) {
+    var rows = parseInt(value, 10);
+    return rows >= 1 && rows <= 6 ? rows : 4;
+  }
+
+  function applyBookmarkRows(value, persist) {
+    var rows = normalizeBookmarkRows(value);
+    document.documentElement.setAttribute("data-bookmark-rows", String(rows));
+    var control = document.getElementById("bookmark-visible-rows");
+    if (control) control.value = String(rows);
+    if (persist) {
+      try {
+        localStorage.setItem(bookmarkRowsKey, String(rows));
+      } catch (error) {}
+    }
+  }
+
   function organize() {
     var dataHost = document.getElementById("settings-data-host");
     if (!dataHost || document.getElementById("settings-data-tools")) return;
@@ -201,16 +220,22 @@
   }
 
   function showSettingsPage(page) {
-    document.querySelectorAll("[data-settings-panel]").forEach(function (panel) {
-      var selected = panel.getAttribute("data-settings-panel") === page;
-      panel.classList.toggle("selected", selected);
-      panel.style.display = selected ? "flex" : "none";
+    var targetGroup = Object.keys(settingsGroups).find(function (group) {
+      return settingsGroups[group].tabs.some(function (tab) {
+        return tab.page === page;
+      });
     });
-    var content = document.querySelector(".set .productss");
-    if (content) content.scrollTop = 0;
+    if (targetGroup) showSettingsGroup(targetGroup);
     if (page === "changelog") loadChangelog();
     if (page === "bookmarks") prepareBookmarkSettings();
     if (page === "background") prepareWallpaperSettings();
+    var panel = document.querySelector('[data-settings-panel="' + page + '"]');
+    var content = document.querySelector(".set .productss");
+    if (panel && content) {
+      requestAnimationFrame(function () {
+        content.scrollTo({ top: Math.max(0, panel.offsetTop - 8), behavior: "smooth" });
+      });
+    }
   }
 
   function prepareWallpaperSettings() {
@@ -253,8 +278,21 @@
     document.querySelectorAll("[data-settings-group]").forEach(function (item) {
       item.classList.toggle("is-active", item.getAttribute("data-settings-group") === group);
     });
-    renderSettingsTabs(config);
-    showSettingsPage(config.tabs[0].page);
+    var pages = config.tabs.map(function (tab) { return tab.page; });
+    var tabList = document.getElementById("settings-page-tabs");
+    if (tabList) tabList.replaceChildren();
+    document.querySelectorAll("[data-settings-panel]").forEach(function (panel) {
+      var selected = pages.indexOf(panel.getAttribute("data-settings-panel")) !== -1;
+      panel.classList.toggle("selected", selected);
+      panel.style.display = selected ? "flex" : "none";
+    });
+    var content = document.querySelector(".set .productss");
+    if (content) content.scrollTop = 0;
+    pages.forEach(function (page) {
+      if (page === "changelog") loadChangelog();
+      if (page === "bookmarks") prepareBookmarkSettings();
+      if (page === "background") prepareWallpaperSettings();
+    });
   }
 
   function exportData() {
@@ -417,11 +455,6 @@
     }
     var pageItem = event.target.closest("[data-settings-page]");
     if (pageItem) {
-      document.querySelectorAll("[data-settings-page]").forEach(function (item) {
-        var active = item === pageItem;
-        item.classList.toggle("is-active", active);
-        item.setAttribute("aria-selected", active ? "true" : "false");
-      });
       showSettingsPage(pageItem.getAttribute("data-settings-page"));
       return;
     }
@@ -523,6 +556,10 @@
   });
 
   document.addEventListener("change", function (event) {
+    if (event.target.id === "bookmark-visible-rows") {
+      applyBookmarkRows(event.target.value, true);
+      return;
+    }
     if (event.target.id === "settings-data-import-file") {
       importData(event.target.files && event.target.files[0]);
       event.target.value = "";
@@ -531,6 +568,11 @@
 
   function initializeSettings() {
     organize();
+    var storedRows = 4;
+    try {
+      storedRows = localStorage.getItem(bookmarkRowsKey);
+    } catch (error) {}
+    applyBookmarkRows(storedRows, false);
     showSettingsGroup("search");
     window.SksirSettingsReady = true;
   }
