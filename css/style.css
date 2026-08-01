@@ -27,6 +27,7 @@
     --radius-modal: 22px;
     --surface-card: rgba(255, 255, 255, 0.065);
     --surface-card-hover: rgba(255, 255, 255, 0.095);
+    --surface-card-selected: rgba(155, 231, 215, 0.09);
     --surface-control: rgba(8, 12, 18, 0.34);
     --control-height: 44px;
     --space-unit: 8px;
@@ -62,15 +63,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.24") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.24") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.24") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.02.1") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.02.1") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.02.1") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.24") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.02.1") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -3556,6 +3557,13 @@ body.onsearch .close_sou {
     transform: none;
 }
 
+.quick:focus-within,
+.quicks:focus-within,
+.quickjl:focus-within {
+    outline: 2px solid rgba(255, 255, 255, 0.78);
+    outline-offset: 2px;
+}
+
 .quick a,
 .quicks a,
 .quickjl a {
@@ -3615,25 +3623,25 @@ body.onsearch .close_sou {
 .quick .quick-icon,
 .quicks .quick-icon {
     display: grid;
-    flex: 0 0 46px;
-    width: 46px;
-    height: 46px;
-    min-width: 46px;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     place-items: center;
     box-sizing: border-box;
     border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 12px;
-    background: rgba(8, 12, 18, 0.18);
+    border-radius: 11px;
+    background: rgba(8, 12, 18, 0.32);
     box-shadow: none;
 }
 
 .quick .iconcss,
 .quicks .iconcss {
     display: block;
-    flex: 0 0 27px;
-    width: 27px;
-    height: 27px;
-    min-width: 27px;
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -5346,6 +5354,89 @@ html.ios-standalone .bg-all {
     }
 }
 
+/* 收藏主导航与工具按钮共享同一行。 */
+.mark .bookmark-head {
+    position: absolute;
+    top: 6px;
+    right: 14px;
+    z-index: 8;
+    width: max-content;
+    max-width: calc(100% - 28px);
+    min-height: 32px;
+    padding: 0;
+    pointer-events: none;
+}
+
+.mark .bookmark-head-actions,
+.mark .bookmark-head-actions > * {
+    pointer-events: auto;
+}
+
+.mark .bookmark-search {
+    flex-shrink: 0;
+}
+
+.mark .tab {
+    flex: 0 0 44px;
+    padding-right: 142px;
+}
+
+.bookmark-search-toggle svg,
+#menu.bookmark-settings svg,
+.bookmark-close svg {
+    display: block;
+    width: 17px;
+    height: 17px;
+    margin: auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: none;
+}
+
+#menu.bookmark-settings:hover svg,
+#menu.bookmark-settings:active svg {
+    transform: none;
+}
+
+.bookmark-search-toggle:hover,
+#menu.bookmark-settings:hover,
+.bookmark-close:hover {
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.mark .quick-alls {
+    width: calc(100% - 40px);
+    height: auto;
+    margin: 10px 20px;
+    flex: 1 1 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+    .mark .bookmark-head {
+        top: 5px;
+        right: 10px;
+        min-height: 32px;
+        padding: 0;
+        max-width: calc(100% - 20px);
+    }
+
+    .mark .tab {
+        flex-basis: 42px;
+        padding-right: 126px;
+    }
+
+    .mark .quick-alls {
+        width: calc(100% - 20px);
+        height: auto;
+        margin: 8px 10px;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+}
+
 /* 收藏中心轻量层级：一级导航主导，分类栏与收藏入口降低容器感。 */
 .mark .category-row {
     border-color: rgba(179, 195, 214, 0.07);
@@ -5439,6 +5530,10 @@ html.ios-standalone .bg-all {
 
 .bookmark-search.is-expanded {
     width: min(220px, 30vw);
+    background: rgba(18, 24, 32, 0.94);
+    -webkit-backdrop-filter: blur(18px) saturate(1.08);
+    backdrop-filter: blur(18px) saturate(1.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
 }
 
 .bookmark-search-toggle {

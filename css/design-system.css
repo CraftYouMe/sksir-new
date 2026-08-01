@@ -144,7 +144,9 @@
 .ds-search-compact input::placeholder { color: var(--color-text-muted); }
 .ds-search-compact:hover { border-color: var(--glass-border-strong); background: rgba(255,255,255,.1); }
 .ds-search-compact:focus-within { border-color: rgba(155,231,215,.58); background: rgba(255,255,255,.12); box-shadow: 0 0 0 3px rgba(155,231,215,.12); color: var(--color-primary); }
-.ds-bookmark-toolbar { display:flex; min-height:44px; align-items:center; justify-content:flex-end; gap:7px; }
+.ds-bookmark-navline { display:flex; min-width:0; align-items:center; border-bottom:1px solid rgba(255,255,255,.1); }
+.ds-bookmark-navline .ds-tabs { min-width:0; flex:1; border-bottom:0; }
+.ds-bookmark-toolbar { display:flex; min-height:44px; flex:0 0 auto; align-items:center; justify-content:flex-end; gap:7px; }
 .ds-toolbar-icon { display:grid; width:32px; height:32px; padding:0; flex:0 0 32px; place-items:center; border:1px solid var(--glass-border); border-radius:50%; color:var(--color-text-secondary); background:rgba(255,255,255,.08); cursor:pointer; }
 .ds-toolbar-icon:hover { border-color:var(--glass-border-strong); color:var(--color-text); background:var(--glass-surface-hover); }
 .ds-toolbar-icon svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
@@ -189,8 +191,8 @@
 .ds-management-card:hover { border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.095); }
 .ds-management-card.is-selected { border-color:rgba(155,231,215,.72); background:rgba(155,231,215,.09); }
 .bookmark-card-grid .ds-management-card__icon { border-color:rgba(255,255,255,.05); background:rgba(8,12,18,.12); }
-.ds-management-card__icon { display:grid; width:46px; height:46px; flex:0 0 46px; place-items:center; border:1px solid rgba(255,255,255,.11); border-radius:12px; color:var(--color-primary); background:rgba(8,12,18,.32); }
-.ds-management-card__icon img { width:27px; height:27px; object-fit:contain; }
+.ds-management-card__icon { display:grid; width:36px; height:36px; flex:0 0 36px; place-items:center; border:1px solid rgba(255,255,255,.11); border-radius:11px; color:var(--color-primary); background:rgba(8,12,18,.32); }
+.ds-management-card__icon img { width:24px; height:24px; object-fit:contain; }
 .ds-management-card__body { min-width:0; flex:1; }
 .ds-management-card__title,
 .ds-management-card__meta { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
