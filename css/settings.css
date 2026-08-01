@@ -921,6 +921,13 @@
     color: #fff;
 }
 
+.settings-primary-item:focus-visible,
+.set .tabs .tab-items:focus-visible,
+.settings-page-tab:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.78);
+    outline-offset: 2px;
+}
+
 .settings-primary-item:hover {
     background: rgba(255, 255, 255, 0.055);
 }
@@ -2130,7 +2137,7 @@
 
 .set .se-engine-card.is-default {
     border-color: rgba(155, 231, 215, 0.72);
-    background: rgba(155, 231, 215, 0.09);
+    background: var(--surface-card-selected);
     box-shadow: none;
 }
 
@@ -2306,7 +2313,7 @@
     padding: 0 18px;
     box-sizing: border-box;
     border: 1px solid transparent;
-    border-radius: 9px;
+    border-radius: 11px;
     transition: background-color 0.14s ease, border-color 0.14s ease;
 }
 
@@ -2316,6 +2323,12 @@
     background: rgba(123, 221, 204, 0.88);
     color: #10231f;
     font-weight: 680;
+}
+
+.set button:focus-visible,
+.set [role="button"]:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.78);
+    outline-offset: 2px;
 }
 
 .set .secondary,
