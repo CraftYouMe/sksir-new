@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#131922">
   <title>Sksir UI 设计规范</title>
-  <link rel="stylesheet" href="css/design-system.css?v=2026.08.02.3">
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.02.4">
   <style>
     html, body { margin: 0; min-height: 100%; }
     body { overflow-x: hidden; }
@@ -22,7 +22,7 @@
     .test-title { margin:0 0 var(--space-4); font-size:var(--font-lg); }
     .test-subtitle { margin:var(--space-5) 0 var(--space-3); color:var(--color-text-secondary); font-size:var(--font-sm); }
     .test-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-3); }
-    .test-cards.bookmark-card-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .test-cards.bookmark-card-grid { grid-template-columns:repeat(5,minmax(0,1fr)); }
     .test-card-row { display:flex; min-width:0; align-items:center; gap:var(--space-3); }
     .test-token-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--space-3); }
     .test-token { min-height:80px; padding:var(--space-3); border-radius:var(--radius-sm); background:rgba(255,255,255,.07); font-size:var(--font-sm); }
@@ -101,6 +101,7 @@
           <a class="ds-management-card" href="#"><span class="ds-management-card__icon"><img src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""></span><span class="ds-management-card__body"><strong class="ds-management-card__title">BiliBili</strong><span class="ds-management-card__meta">视频弹幕社区</span></span></a>
           <a class="ds-management-card" href="#"><span class="ds-management-card__icon"><img src="assets/oss/2026.07.30.6/icon/github.png" alt=""></span><span class="ds-management-card__body"><strong class="ds-management-card__title">GitHub</strong><span class="ds-management-card__meta">代码托管平台</span></span></a>
           <a class="ds-management-card" href="#"><span class="ds-management-card__icon"><img src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""></span><span class="ds-management-card__body"><strong class="ds-management-card__title">ChatGPT</strong><span class="ds-management-card__meta">AI 对话助手</span></span></a>
+          <a class="ds-management-card" href="#"><span class="ds-management-card__icon"><img src="assets/oss/2026.07.30.6/favicon/64/deepseek.webp" alt=""></span><span class="ds-management-card__body"><strong class="ds-management-card__title">DeepSeek</strong><span class="ds-management-card__meta">国产 AI 助手</span></span></a>
           <button class="ds-management-card ds-management-card--add" type="button" aria-label="添加收藏"><span>＋</span></button>
         </div>
         <p class="test-subtitle">收藏卡片保持 76px 横向结构，并进一步降低卡片、favicon 容器与添加入口的视觉重量。</p>
