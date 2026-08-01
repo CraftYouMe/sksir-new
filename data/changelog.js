@@ -1,9 +1,22 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T15:17:13.402Z",
+  "generatedAt": "2026-08-01T15:28:41.171Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "精修收藏中心层级与空间",
+      "details": [
+        "收紧标题区域、一级标签和筛选栏间距，提高收藏内容区域占比",
+        "收藏卡片保持横向管理样式并调整为 76px，减弱 favicon 容器背景和边框",
+        "收藏中心背景增加 12% 轻微暗色遮罩，提高文字和卡片在壁纸上的稳定性"
+      ],
+      "tags": [
+        "improve"
+      ]
+    },
+    {
+      "hash": "5cdafda",
       "date": "2026-08-01",
       "summary": "改善收藏中心整体页面层级",
       "details": [

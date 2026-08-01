@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.21") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.21") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.21") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.22") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.22") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.22") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.21") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.22") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -1242,7 +1242,9 @@ body:not(.onsearch) .all-search:hover {
     inset: 0;
     z-index: 0;
     border-radius: inherit;
-    background: var(--main-background-color);
+    background:
+        linear-gradient(rgba(7, 11, 16, 0.12), rgba(7, 11, 16, 0.12)),
+        var(--main-background-color);
     opacity: 1;
     transform: none;
     transition: none;
@@ -1277,8 +1279,8 @@ body:not(.onsearch) .all-search:hover {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    min-height: 82px;
-    padding: 16px 18px 12px 22px;
+    min-height: 76px;
+    padding: 12px 18px 10px 22px;
     gap: 18px;
     box-sizing: border-box;
 }
@@ -1415,13 +1417,13 @@ body:not(.onsearch) .all-search:hover {
 
 .mark .tab,
 .set .tabs {
-    height: 38px;
-    min-height: 38px;
+    height: 36px;
+    min-height: 36px;
     width: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     gap: 10px;
     padding: 0 12px;
     box-sizing: border-box;
@@ -3257,7 +3259,7 @@ body.onsearch .close_sou {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: 0 28px 10px 28px;
+    margin: 0 28px 6px 28px;
     box-sizing: border-box;
 }
 
@@ -3280,7 +3282,7 @@ body.onsearch .close_sou {
     gap: 4px;
     background: rgba(18, 24, 32, 0.34);
     border-radius: 9px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     margin-top: 0;
     padding: 4px;
     box-sizing: border-box;
@@ -3469,7 +3471,7 @@ body.onsearch .close_sou {
     justify-content: center;
     box-sizing: border-box;
     overflow: hidden;
-    min-height: 72px;
+    min-height: 76px;
     border-radius: 13px;
     border: 1px solid rgba(255, 255, 255, 0.11);
     background: rgba(255, 255, 255, 0.065);
@@ -3560,9 +3562,9 @@ body.onsearch .close_sou {
 
 .quick a,
 .quicks a {
-    min-height: 70px;
+    min-height: 74px;
     margin: 0;
-    padding: 8px 12px;
+    padding: 10px 12px;
     gap: 10px;
     justify-content: flex-start;
     text-align: left;
@@ -3601,9 +3603,9 @@ body.onsearch .close_sou {
     min-width: 46px;
     place-items: center;
     box-sizing: border-box;
-    border: 1px solid rgba(255, 255, 255, 0.11);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 12px;
-    background: rgba(8, 12, 18, 0.32);
+    background: rgba(8, 12, 18, 0.18);
     box-shadow: none;
 }
 
@@ -4446,8 +4448,8 @@ html.ios-standalone .bg-all {
     }
 
     .bookmark-head {
-        min-height: 74px;
-        padding: 12px 10px 10px 14px;
+        min-height: 70px;
+        padding: 10px 10px 8px 14px;
         gap: 10px;
     }
 
@@ -4847,7 +4849,7 @@ html.ios-standalone .bg-all {
     width: 23%;
     min-width: 23%;
     max-width: 23%;
-    min-height: 72px;
+    min-height: 76px;
     margin: 0 1% 2%;
     place-content: center;
     place-items: center;

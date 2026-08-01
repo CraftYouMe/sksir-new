@@ -61,7 +61,7 @@
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.21") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.22") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -69,7 +69,7 @@
 
 @font-face {
     font-family: "Sksir Icons";
-    src: url("../font/iconfont.woff2?v=2026.08.01.21") format("woff2");
+    src: url("../font/iconfont.woff2?v=2026.08.01.22") format("woff2");
     font-display: block;
 }
 
@@ -179,10 +179,11 @@
 
 .ds-management-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
 .ds-management-card { position:relative; display:flex; min-width:0; min-height:76px; padding:10px 12px; align-items:center; gap:10px; border:1px solid rgba(255,255,255,.11); border-radius:13px; color:var(--color-text); background:rgba(255,255,255,.065); text-align:left; text-decoration:none; cursor:pointer; transition:border-color var(--motion-fast),background var(--motion-fast); }
-.bookmark-card-grid .ds-management-card { min-height:72px; padding:8px 12px; }
+.bookmark-card-grid .ds-management-card { min-height:76px; padding:10px 12px; }
 .bookmark-card-grid .ds-management-card--add > span { font-size:2rem; font-weight:320; }
 .ds-management-card:hover { border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.095); }
 .ds-management-card.is-selected { border-color:rgba(155,231,215,.72); background:rgba(155,231,215,.09); }
+.bookmark-card-grid .ds-management-card__icon { border-color:rgba(255,255,255,.07); background:rgba(8,12,18,.18); }
 .ds-management-card__icon { display:grid; width:46px; height:46px; flex:0 0 46px; place-items:center; border:1px solid rgba(255,255,255,.11); border-radius:12px; color:var(--color-primary); background:rgba(8,12,18,.32); }
 .ds-management-card__icon img { width:27px; height:27px; object-fit:contain; }
 .ds-management-card__body { min-width:0; flex:1; }
@@ -206,7 +207,7 @@
 .ds-quick-launch__item--add:hover { border-style:dashed; border-color:rgba(155,231,215,.55); background:rgba(155,231,215,.1); color:#dffff8; transform:translateY(-2px); }
 .ds-quick-launch__item--add:active { transform:translateY(0) scale(.96); }
 
-.ds-tabs { display:flex; gap:10px; min-height:38px; overflow-x:auto; border-bottom:1px solid rgba(255,255,255,.1); scrollbar-width:none; }
+.ds-tabs { display:flex; gap:10px; min-height:36px; overflow-x:auto; border-bottom:1px solid rgba(255,255,255,.1); scrollbar-width:none; }
 .ds-tabs::-webkit-scrollbar { display: none; }
 .ds-tab { position:relative; flex:0 0 auto; min-width:max-content; padding:0 12px; border:0; color:rgba(232,239,247,.62); background:transparent; cursor:pointer; font-size:.82rem; font-weight:560; }
 .ds-tab::after { content:""; position:absolute; right:12px; bottom:-1px; left:12px; height:3px; border-radius:3px 3px 0 0; background:var(--color-primary); transform:scaleX(0); transition:transform 200ms ease; }
