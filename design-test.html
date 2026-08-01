@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#131922">
   <title>Sksir UI 设计规范</title>
-  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.13">
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.14">
   <style>
     html, body { margin: 0; min-height: 100%; }
     body { overflow-x: hidden; }
@@ -82,7 +82,7 @@
       <section class="ds-glass ds-panel">
         <h2 class="test-title">输入框与 Loading</h2>
         <label class="ds-field"><input type="text" placeholder="输入收藏名称"></label>
-        <div class="test-loading"><span class="ds-loader" role="status" aria-label="加载中"></span><span class="ds-muted">正在加载收藏数据…</span></div>
+        <div class="test-loading"><span class="ds-loader" role="status" aria-label="加载中"><i aria-hidden="true"></i></span><span class="ds-muted">正在加载收藏数据…</span></div>
       </section>
 
       <section class="ds-glass ds-panel test-section--wide">
@@ -93,7 +93,7 @@
           <article class="ds-card"><div class="ds-card__heading"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><h3 class="ds-card__title">GitHub</h3></div><p class="ds-card__meta">黑白 favicon · 代码托管平台</p></article>
           <article class="ds-card"><div class="ds-card__heading"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><h3 class="ds-card__title">ChatGPT</h3></div><p class="ds-card__meta">透明边距 favicon · AI 对话助手</p></article>
         </div>
-        <p class="test-subtitle">收藏卡片采用 30px 紧凑版 Quick Launch 图标，内部 favicon 保持约 20px；名称位于第一行，描述独立为第二行。</p>
+        <p class="test-subtitle">收藏卡片采用 26px 轻量 favicon，不使用明显外框；名称位于第一行，描述独立为第二行，整体更接近浏览器收藏夹。</p>
       </section>
 
       <section class="ds-glass ds-panel">

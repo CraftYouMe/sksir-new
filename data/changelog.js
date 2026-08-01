@@ -1,9 +1,21 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T14:02:45.002Z",
+  "generatedAt": "2026-08-01T14:09:39.483Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "改善收藏中心 favicon 信息层级",
+      "details": [
+        "收藏卡片改用 26px 轻量 favicon，去除明显外框和阴影，避免卡片里面套卡片",
+        "网站名称与图标保持左对齐首行，描述独立为第二行，并收紧纵向留白提高信息密度"
+      ],
+      "tags": [
+        "optimize"
+      ]
+    },
+    {
+      "hash": "e59f0db",
       "date": "2026-08-01",
       "summary": "统一收藏图标为 Quick Launch 紧凑玻璃样式",
       "details": [

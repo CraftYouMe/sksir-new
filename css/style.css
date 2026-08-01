@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.13") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.13") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.13") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.14") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.14") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.14") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.13") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.14") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -3534,8 +3534,10 @@ body.onsearch .close_sou {
 .quick a,
 .quicks a {
     height: auto;
-    margin: 6px 0 3px 0;
-    padding: 0 16px 0 10px;
+    margin: 5px 0 2px 0;
+    padding: 0 14px 0 10px;
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .quickjl a {
@@ -3545,8 +3547,6 @@ body.onsearch .close_sou {
     padding: 0 12px;
 }
 
-.quick .iconcss,
-.quicks .iconcss,
 .quickjl .iconcss {
     flex: 0 0 30px;
     width: 30px;
@@ -3564,11 +3564,28 @@ body.onsearch .close_sou {
         border-color 0.18s ease, background-color 0.18s ease;
 }
 
+.quick .iconcss,
+.quicks .iconcss {
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    padding: 2px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.035);
+    box-shadow: none;
+    opacity: 0.94;
+    object-fit: contain;
+    transition: filter 0.18s ease, opacity 0.18s ease;
+}
+
 .quick .quick-desc,
 .quicks .quick-desc {
     width: calc(100% - 24px);
     max-width: calc(100% - 24px);
-    margin: 0 auto 6px auto;
+    margin: 0 auto 5px auto;
     padding: 0 2px;
     box-sizing: border-box;
     color: rgba(214, 225, 238, 0.56);
