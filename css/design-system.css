@@ -61,7 +61,7 @@
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.16") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.17") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -69,7 +69,7 @@
 
 @font-face {
     font-family: "Sksir Icons";
-    src: url("../font/iconfont.woff2?v=2026.08.01.16") format("woff2");
+    src: url("../font/iconfont.woff2?v=2026.08.01.17") format("woff2");
     font-display: block;
 }
 
@@ -173,9 +173,9 @@
 .ds-card__title { margin:0; overflow:hidden; font-size:var(--font-md); font-weight:var(--weight-semibold); text-overflow:ellipsis; white-space:nowrap; }
 .ds-card__meta { margin:2px 0 0; overflow:hidden; color:var(--color-text-muted); font-size:var(--font-sm); text-overflow:ellipsis; white-space:nowrap; }
 .bookmark-card-preview > a { display:flex; width:100%; min-width:0; min-height:66px; padding:8px 14px 8px 12px; align-items:center; gap:10px; box-sizing:border-box; overflow:hidden; color:rgba(244,248,252,.92); text-decoration:none; }
-.bookmark-card-preview .quick-info { display:flex; min-width:0; flex:1; flex-direction:column; justify-content:center; gap:4px; text-align:left; }
-.bookmark-card-preview .quick-title { overflow:hidden; color:rgba(244,248,252,.94); font-size:.94rem; font-weight:650; line-height:1.2; text-overflow:ellipsis; white-space:nowrap; }
-.bookmark-card-preview .quick-desc { width:100%; margin:0; overflow:hidden; color:rgba(214,225,238,.56); font-size:.76rem; line-height:1.25; text-align:left; text-overflow:ellipsis; white-space:nowrap; opacity:1; }
+.bookmark-card-preview .quick-info { display:flex; min-width:0; flex:1; flex-direction:column; align-items:flex-start; justify-content:center; gap:4px; text-align:left; }
+.bookmark-card-preview .quick-title { width:100%; align-self:stretch; overflow:hidden; color:rgba(244,248,252,.94); font-size:.94rem; font-weight:650; line-height:1.2; text-align:left; text-overflow:ellipsis; white-space:nowrap; }
+.bookmark-card-preview .quick-desc { width:100%; margin:0; align-self:stretch; overflow:hidden; color:rgba(214,225,238,.56); font-size:.76rem; line-height:1.25; text-align:left; text-overflow:ellipsis; white-space:nowrap; opacity:1; }
 .ds-badge { display: inline-flex; min-height: 24px; padding: 2px 9px; align-items: center; border: 1px solid rgba(155,231,215,.2); border-radius: var(--radius-pill); color: var(--color-primary); background: rgba(155,231,215,.1); font-size: var(--font-xs); }
 
 .ds-quick-launch { display: flex; align-items: flex-start; justify-content: center; gap: 10px; }

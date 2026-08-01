@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.16") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.16") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.16") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.17") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.17") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.17") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.16") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.17") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -4704,6 +4704,21 @@ html.ios-standalone .bg-all {
     margin: 0 1% 2%;
 }
 
+.mark .quick .quick-info,
+.mark .quicks .quick-info {
+    align-items: flex-start;
+    text-align: left;
+}
+
+.mark .quick .quick-title,
+.mark .quicks .quick-title,
+.mark .quick .quick-desc,
+.mark .quicks .quick-desc {
+    width: 100%;
+    align-self: stretch;
+    text-align: left !important;
+}
+
 @media (max-width: 720px) {
     .mark .quick,
     .mark .quicks {
@@ -4713,8 +4728,10 @@ html.ios-standalone .bg-all {
         margin: 0 3px 6px;
     }
 
-    .mark .quick-desc {
+    .mark .quick .quick-desc,
+    .mark .quicks .quick-desc {
         display: block;
+        text-align: left !important;
     }
 }
 
