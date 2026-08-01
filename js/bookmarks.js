@@ -259,7 +259,13 @@
         centerY: rect.top + rect.height / 2
       };
     }).filter(function (position) {
-      return position.rect.width > 0 && position.rect.height > 0;
+      if (position.rect.width <= 0 || position.rect.height <= 0) return false;
+      var insetX = Math.min(8, position.rect.width * 0.08);
+      var insetY = Math.min(6, position.rect.height * 0.10);
+      return pointerX >= position.rect.left + insetX &&
+        pointerX <= position.rect.left + position.rect.width - insetX &&
+        pointerY >= position.rect.top + insetY &&
+        pointerY <= position.rect.top + position.rect.height - insetY;
     });
     if (!positions.length) return null;
     var closest = positions.reduce(function (best, position) {
@@ -358,6 +364,7 @@
         return;
       }
       var target = getCardDropTarget(container, cards, probeX, probeY);
+      if (!target) return;
       var insertionPoint = getCardSwapInsertionPoint(container, placeholder, target, card);
       if (placeholder.nextSibling === insertionPoint || (!insertionPoint && !placeholder.nextSibling)) {
         return;
