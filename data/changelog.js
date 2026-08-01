@@ -1,9 +1,21 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T13:54:57.764Z",
+  "generatedAt": "2026-08-01T14:02:45.002Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "统一收藏图标为 Quick Launch 紧凑玻璃样式",
+      "details": [
+        "收藏卡片使用 30px 紧凑玻璃图标容器，内部 favicon 保持约 20px，与测试页 Quick Launch 风格一致",
+        "同步收紧卡片首行间距和描述底距，增强图标层次但不增加卡片总体高度"
+      ],
+      "tags": [
+        "improve"
+      ]
+    },
+    {
+      "hash": "86807c7",
       "date": "2026-08-01",
       "summary": "完善 UI 组件族并降低收藏 favicon 视觉权重",
       "details": [

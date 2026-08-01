@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.12") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.12") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.12") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.13") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.13") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.13") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.12") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.13") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -3534,8 +3534,8 @@ body.onsearch .close_sou {
 .quick a,
 .quicks a {
     height: auto;
-    margin: 8px 0 4px 0;
-    padding: 0 20px 0 12px;
+    margin: 6px 0 3px 0;
+    padding: 0 16px 0 10px;
 }
 
 .quickjl a {
@@ -3548,25 +3548,27 @@ body.onsearch .close_sou {
 .quick .iconcss,
 .quicks .iconcss,
 .quickjl .iconcss {
-    flex: 0 0 26px;
-    width: 26px;
-    height: 26px;
-    min-width: 26px;
-    padding: 3px;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    padding: 4px;
     box-sizing: border-box;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 7px;
-    background: rgba(255, 255, 255, 0.04);
-    opacity: 0.92;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    background: var(--glass-surface-strong);
+    box-shadow: var(--glass-highlight), 0 5px 12px rgba(0, 0, 0, 0.12);
+    opacity: 0.96;
     object-fit: contain;
-    transition: filter 0.18s ease, opacity 0.18s ease;
+    transition: filter 0.18s ease, opacity 0.18s ease,
+        border-color 0.18s ease, background-color 0.18s ease;
 }
 
 .quick .quick-desc,
 .quicks .quick-desc {
     width: calc(100% - 24px);
     max-width: calc(100% - 24px);
-    margin: 0 auto 7px auto;
+    margin: 0 auto 6px auto;
     padding: 0 2px;
     box-sizing: border-box;
     color: rgba(214, 225, 238, 0.56);
