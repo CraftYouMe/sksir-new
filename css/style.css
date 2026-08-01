@@ -52,15 +52,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.20") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.20") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.20") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.21") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.21") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.21") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.20") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.21") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -1277,24 +1277,24 @@ body:not(.onsearch) .all-search:hover {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    min-height: 72px;
-    padding: 14px 18px 10px 22px;
+    min-height: 82px;
+    padding: 16px 18px 12px 22px;
     gap: 18px;
     box-sizing: border-box;
 }
 
 .bookmark-title {
     color: var(--text-primary);
-    font-size: 1.25rem;
-    font-weight: 720;
+    font-size: 1.75rem;
+    font-weight: 730;
     line-height: 1.2;
     letter-spacing: -0.015em;
 }
 
 .bookmark-subtitle {
     margin-top: 4px;
-    color: var(--text-muted);
-    font-size: 0.75rem;
+    color: rgba(214, 225, 238, 0.46);
+    font-size: 0.72rem;
     line-height: 1.3;
 }
 
@@ -1307,8 +1307,8 @@ body:not(.onsearch) .all-search:hover {
 .bookmark-search {
     display: flex;
     align-items: center;
-    width: min(280px, 34vw);
-    height: 38px;
+    width: min(240px, 30vw);
+    height: 36px;
     padding: 0 12px;
     gap: 8px;
     border: 1px solid var(--glass-border);
@@ -1415,14 +1415,14 @@ body:not(.onsearch) .all-search:hover {
 
 .mark .tab,
 .set .tabs {
-    height: 44px;
-    min-height: 44px;
+    height: 38px;
+    min-height: 38px;
     width: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-bottom: 12px;
-    gap: 14px;
+    margin-bottom: 10px;
+    gap: 10px;
     padding: 0 12px;
     box-sizing: border-box;
     border: 0;
@@ -1456,7 +1456,7 @@ body:not(.onsearch) .all-search:hover {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: 0.875rem;
+    font-size: 0.82rem;
     font-weight: 560;
     color: rgba(232, 239, 247, 0.62);
     border: 0;
@@ -1505,7 +1505,7 @@ body:not(.onsearch) .all-search:hover {
     background: transparent;
     border-color: transparent;
     box-shadow: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
     transform: none;
 }
@@ -3257,7 +3257,7 @@ body.onsearch .close_sou {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: 0 28px 12px 28px;
+    margin: 0 28px 10px 28px;
     box-sizing: border-box;
 }
 
@@ -3280,7 +3280,7 @@ body.onsearch .close_sou {
     gap: 4px;
     background: rgba(18, 24, 32, 0.34);
     border-radius: 9px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     margin-top: 0;
     padding: 4px;
     box-sizing: border-box;
@@ -3469,7 +3469,7 @@ body.onsearch .close_sou {
     justify-content: center;
     box-sizing: border-box;
     overflow: hidden;
-    min-height: 76px;
+    min-height: 72px;
     border-radius: 13px;
     border: 1px solid rgba(255, 255, 255, 0.11);
     background: rgba(255, 255, 255, 0.065);
@@ -3560,9 +3560,9 @@ body.onsearch .close_sou {
 
 .quick a,
 .quicks a {
-    min-height: 74px;
+    min-height: 70px;
     margin: 0;
-    padding: 10px 12px;
+    padding: 8px 12px;
     gap: 10px;
     justify-content: flex-start;
     text-align: left;
@@ -4446,8 +4446,8 @@ html.ios-standalone .bg-all {
     }
 
     .bookmark-head {
-        min-height: 66px;
-        padding: 10px 10px 8px 14px;
+        min-height: 74px;
+        padding: 12px 10px 10px 14px;
         gap: 10px;
     }
 
@@ -4473,10 +4473,10 @@ html.ios-standalone .bg-all {
     }
 
     .mark .tab {
-        flex: 0 0 40px;
-        height: 40px;
-        min-height: 40px;
-        max-height: 40px;
+        flex: 0 0 36px;
+        height: 36px;
+        min-height: 36px;
+        max-height: 36px;
         justify-content: flex-start;
         margin-bottom: 8px;
         padding: 0 8px;
@@ -4495,12 +4495,12 @@ html.ios-standalone .bg-all {
         flex: 0 0 58px;
         width: 58px;
         min-width: 58px;
-        height: 40px;
-        min-height: 40px;
+        height: 36px;
+        min-height: 36px;
         padding: 0 8px;
         font-size: 0.82rem;
         font-weight: 560;
-        line-height: 40px;
+        line-height: 36px;
     }
 
     .mark .products {
@@ -4520,7 +4520,7 @@ html.ios-standalone .bg-all {
 
 @media (max-width: 420px) {
     .bookmark-title {
-        font-size: 1rem;
+        font-size: 1.35rem;
     }
 
     .quick-desc {
@@ -4847,11 +4847,11 @@ html.ios-standalone .bg-all {
     width: 23%;
     min-width: 23%;
     max-width: 23%;
-    min-height: 76px;
+    min-height: 72px;
     margin: 0 1% 2%;
     place-content: center;
     place-items: center;
-    gap: 3px;
+    gap: 0;
     box-sizing: border-box;
     border: 1px dashed rgba(155, 231, 215, 0.32);
     border-radius: 13px;
@@ -4864,22 +4864,9 @@ html.ios-standalone .bg-all {
 
 .bookmark-add-card span {
     color: rgba(155, 231, 215, 0.92);
-    font-size: 20px;
-    font-weight: 420;
+    font-size: 2rem;
+    font-weight: 320;
     line-height: 1;
-}
-
-.bookmark-add-card strong {
-    color: rgba(244, 248, 252, 0.9);
-    font-size: 0.84rem;
-    font-weight: 650;
-    line-height: 1.2;
-}
-
-.bookmark-add-card small {
-    color: rgba(214, 225, 238, 0.5);
-    font-size: 11px;
-    line-height: 1.2;
 }
 
 .bookmark-add-card:hover {
