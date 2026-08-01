@@ -239,10 +239,21 @@
     return readJson(cardSortingEnabledKey, !isPhoneBookmarkViewport()) === true;
   }
 
-  function getCardDropSlot(slots, pointerX, pointerY) {
-    var positions = slots.map(function (rect, index) {
+  function getCardLayoutRect(container, entry) {
+    var containerRect = container.getBoundingClientRect();
+    return {
+      left: containerRect.left + container.clientLeft + entry.offsetLeft - container.scrollLeft,
+      top: containerRect.top + container.clientTop + entry.offsetTop - container.scrollTop,
+      width: entry.offsetWidth,
+      height: entry.offsetHeight
+    };
+  }
+
+  function getCardDropTarget(container, cards, pointerX, pointerY) {
+    var positions = cards.map(function (entry) {
+      var rect = getCardLayoutRect(container, entry);
       return {
-        index: index,
+        entry: entry,
         rect: rect,
         centerX: rect.left + rect.width / 2,
         centerY: rect.top + rect.height / 2
@@ -256,10 +267,22 @@
       var normalizedY = (pointerY - position.centerY) / Math.max(1, position.rect.height);
       var distance = normalizedX * normalizedX + normalizedY * normalizedY;
       return !best || distance < best.distance
-        ? { index: position.index, distance: distance }
+        ? { entry: position.entry, distance: distance }
         : best;
     }, null);
-    return closest ? closest.index : 0;
+    return closest && closest.entry;
+  }
+
+  function getCardSwapInsertionPoint(container, placeholder, target, draggingCard) {
+    var addCard = container.querySelector(":scope > .bookmark-add-card");
+    if (!target) return addCard;
+    var targetFollowsPlaceholder = !!(placeholder.compareDocumentPosition(target) & 4);
+    if (!targetFollowsPlaceholder) return target;
+    var next = target.nextElementSibling;
+    while (next && (next === placeholder || next === draggingCard)) {
+      next = next.nextElementSibling;
+    }
+    return next && next !== addCard ? next : addCard;
   }
 
   function animateCardReorder(container, previousRects, draggingCard) {
@@ -299,9 +322,6 @@
     var ghost = null;
     var placeholder = null;
     var originalNextCard = null;
-    var cardSlots = [];
-    var activeSlotIndex = -1;
-    var slotScrollTop = 0;
 
     function updatePointer(event) {
       var points = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : null;
@@ -337,15 +357,9 @@
           probeY >= placeholderRect.top && probeY <= placeholderRect.bottom) {
         return;
       }
-      var slotIndex = getCardDropSlot(
-        cardSlots,
-        probeX,
-        probeY + (products.scrollTop - slotScrollTop)
-      );
-      if (slotIndex === activeSlotIndex) return;
-      var insertionPoint = cards[slotIndex] || container.querySelector(".bookmark-add-card");
+      var target = getCardDropTarget(container, cards, probeX, probeY);
+      var insertionPoint = getCardSwapInsertionPoint(container, placeholder, target, card);
       if (placeholder.nextSibling === insertionPoint || (!insertionPoint && !placeholder.nextSibling)) {
-        activeSlotIndex = slotIndex;
         return;
       }
       var previousRects = new Map();
@@ -353,7 +367,6 @@
         previousRects.set(entry, entry.getBoundingClientRect());
       });
       container.insertBefore(placeholder, insertionPoint);
-      activeSlotIndex = slotIndex;
       animateCardReorder(container, previousRects, card);
     }
 
@@ -365,13 +378,6 @@
     function startDrag(event) {
       dragging = true;
       var rect = card.getBoundingClientRect();
-      var initialCards = Array.prototype.filter.call(
-        container.querySelectorAll(bookmarkCardSelector),
-        function (entry) { return window.getComputedStyle(entry).display !== "none"; }
-      );
-      cardSlots = initialCards.map(function (entry) { return entry.getBoundingClientRect(); });
-      activeSlotIndex = initialCards.indexOf(card);
-      slotScrollTop = products.scrollTop;
       grabOffsetX = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
       grabOffsetY = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
       cardProbeOffsetX = rect.width / 2 - grabOffsetX;
@@ -463,9 +469,6 @@
       placeholder.remove();
       placeholder = null;
       originalNextCard = null;
-      cardSlots = [];
-      activeSlotIndex = -1;
-      slotScrollTop = 0;
       card.classList.remove("is-dragging");
       card.removeAttribute("aria-grabbed");
       container.classList.remove("is-reordering");

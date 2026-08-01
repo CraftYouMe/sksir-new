@@ -17,31 +17,31 @@
         {
             name: "BiliBili",
             url: "https://BiliBili.com",
-            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.6/favicon/64/bilibili.webp",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.7/favicon/64/bilibili.webp",
             desc: "视频弹幕社区"
         },
         {
             name: "ChatGPT",
             url: "https://chat.openai.com/",
-            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.6/favicon/64/chatgpt.webp",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.7/favicon/64/chatgpt.webp",
             desc: "AI 对话助手"
         },
         {
             name: "DeepSeek",
             url: "https://www.deepseek.com/",
-            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.6/favicon/64/deepseek.webp",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.7/favicon/64/deepseek.webp",
             desc: "国产 AI 助手"
         },
         {
             name: "GitHub",
             url: "https://github.com/",
-            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.6/icon/github.png",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.7/icon/github.png",
             desc: "代码托管平台"
         },
         {
             name: "iLoveIMG",
             url: "https://www.iloveimg.com/zh-cn",
-            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.6/icon/iloveimg.png",
+            icon: "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.7/icon/iloveimg.png",
             desc: "图片批量处理"
         }
     ];
