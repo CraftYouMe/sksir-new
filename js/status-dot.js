@@ -71,6 +71,9 @@
 
   function setButtonText(button, text) {
     if (!isElement(button)) return;
+    var accessibleText = text || "检测状态";
+    button.setAttribute("aria-label", accessibleText);
+    button.title = accessibleText;
     var textNode = button.querySelector(".status-check-text");
     if (textNode) {
       textNode.textContent = text;

@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#131922">
   <title>Sksir UI 设计规范</title>
-  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.23">
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.24">
   <style>
     html, body { margin: 0; min-height: 100%; }
     body { overflow-x: hidden; }
@@ -62,6 +62,12 @@
         <div class="ds-stack">
           <div class="test-variant"><div class="test-variant-head"><strong>Hero Search</strong><span>首页首屏</span></div><div class="ds-search-wrap"><div class="ds-search"><button class="ds-search__engine" type="button" aria-label="选择搜索引擎" title="当前搜索引擎：必应"><i class="ds-search__engine-icon" aria-hidden="true"></i></button><input type="search" aria-label="搜索内容" placeholder="搜索网站、工具或内容"><button class="ds-search__action" type="button" aria-label="执行搜索"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button></div></div><span class="ds-muted">沿用主页原有搜索态：浅色输入面、搜索引擎标识与分隔线、无额外底色的搜索按钮。</span></div>
           <div class="test-variant"><div class="test-variant-head"><strong>Compact Search</strong><span>收藏中心 / 面板工具栏</span></div><label class="ds-search-compact"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg><input type="search" placeholder="搜索全部收藏" aria-label="搜索全部收藏"></label><span class="ds-muted">固定 38px 高，不扩展、不切换浅色搜索态。</span></div>
+        </div>
+        <p class="test-subtitle">收藏中心悬浮工具栏</p>
+        <div class="ds-bookmark-toolbar">
+          <div class="ds-toolbar-search is-expanded"><button class="ds-toolbar-icon" type="button" aria-label="搜索收藏"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button><input type="search" placeholder="搜索全部收藏" aria-label="搜索全部收藏"></div>
+          <button class="ds-toolbar-icon" type="button" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.25"></circle><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1A7 7 0 0 0 14.8 6L14.5 3h-5L9.2 6a7 7 0 0 0-1.7 1.1l-2.4-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.4-1A7 7 0 0 0 9.2 18l.3 3h5l.3-3a7 7 0 0 0 1.7-1.1l2.4 1 2-3.4-2-1.5a7 7 0 0 0 .1-1Z"></path></svg></button>
+          <button class="ds-toolbar-icon" type="button" aria-label="关闭">×</button>
         </div>
         <p class="test-subtitle">一级分类导航</p>
         <div class="ds-tabs" role="tablist">

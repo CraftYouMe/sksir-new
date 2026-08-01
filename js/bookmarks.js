@@ -890,6 +890,22 @@
     filterFrame = requestAnimationFrame(applyFilter);
   }
 
+  function setBookmarkSearchExpanded(search, expanded) {
+    if (!search) return;
+    var input = search.querySelector("#bookmark-search-input");
+    var toggle = search.querySelector(".bookmark-search-toggle");
+    search.classList.toggle("is-expanded", expanded);
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      toggle.setAttribute("aria-label", expanded ? "关闭收藏搜索" : "打开收藏搜索");
+    }
+    if (expanded && input) input.focus({ preventScroll: true });
+    if (!expanded && input && input.value) {
+      input.value = "";
+      scheduleFilter();
+    }
+  }
+
   function setItemDialog(open) {
     var dialog = document.getElementById("bookmark-item-dialog");
     if (!dialog) return;
@@ -1231,6 +1247,23 @@
   document.addEventListener("input", function (event) {
     if (event.target && event.target.id === "bookmark-search-input") scheduleFilter();
   });
+  document.addEventListener("click", function (event) {
+    var toggle = event.target && event.target.closest && event.target.closest(".bookmark-search-toggle");
+    if (!toggle) return;
+    event.preventDefault();
+    var search = toggle.closest(".bookmark-search");
+    setBookmarkSearchExpanded(search, !search.classList.contains("is-expanded"));
+  });
+  document.addEventListener("focusout", function (event) {
+    var search = event.target && event.target.closest && event.target.closest(".bookmark-search");
+    if (!search) return;
+    requestAnimationFrame(function () {
+      var input = search.querySelector("#bookmark-search-input");
+      if (!search.contains(document.activeElement) && input && !input.value.trim()) {
+        setBookmarkSearchExpanded(search, false);
+      }
+    });
+  });
   document.addEventListener("change", function (event) {
     if (!event.target) return;
     if (event.target.id === "bookmark-card-sort-enabled") {
@@ -1321,6 +1354,17 @@
   });
 
   document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      var search = document.querySelector(".bookmark-search.is-expanded");
+      var input = search && search.querySelector("#bookmark-search-input");
+      if (search && input) {
+        event.preventDefault();
+        setBookmarkSearchExpanded(search, false);
+        var toggle = search.querySelector(".bookmark-search-toggle");
+        if (toggle) toggle.focus({ preventScroll: true });
+        return;
+      }
+    }
     if (event.key !== "Escape") return;
     var quickContextMenu = document.getElementById("bookmark-quick-context-menu");
     if (quickContextMenu && !quickContextMenu.hidden) {

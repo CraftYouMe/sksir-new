@@ -144,6 +144,13 @@
 .ds-search-compact input::placeholder { color: var(--color-text-muted); }
 .ds-search-compact:hover { border-color: var(--glass-border-strong); background: rgba(255,255,255,.1); }
 .ds-search-compact:focus-within { border-color: rgba(155,231,215,.58); background: rgba(255,255,255,.12); box-shadow: 0 0 0 3px rgba(155,231,215,.12); color: var(--color-primary); }
+.ds-bookmark-toolbar { display:flex; min-height:44px; align-items:center; justify-content:flex-end; gap:7px; }
+.ds-toolbar-icon { display:grid; width:32px; height:32px; padding:0; flex:0 0 32px; place-items:center; border:1px solid var(--glass-border); border-radius:50%; color:var(--color-text-secondary); background:rgba(255,255,255,.08); cursor:pointer; }
+.ds-toolbar-icon:hover { border-color:var(--glass-border-strong); color:var(--color-text); background:var(--glass-surface-hover); }
+.ds-toolbar-icon svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.ds-toolbar-search { display:flex; width:32px; height:32px; align-items:center; overflow:hidden; border:1px solid var(--glass-border); border-radius:999px; background:rgba(255,255,255,.08); transition:width 240ms var(--motion-ease); }
+.ds-toolbar-search.is-expanded { width:min(220px,100%); }
+.ds-toolbar-search input { width:calc(100% - 38px); min-width:0; height:30px; padding:0 8px 0 0; border:0; outline:0; color:var(--color-text); background:transparent; font-size:16px; }
 
 .ds-select { position:relative; z-index:1; width:100%; }
 .ds-select.is-open { z-index:40; }

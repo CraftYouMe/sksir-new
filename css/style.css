@@ -62,15 +62,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.01.23") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.01.23") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.01.23") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.01.24") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.01.24") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.01.24") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.01.23") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.01.24") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -5413,5 +5413,109 @@ html.ios-standalone .bg-all {
     .bookmark-head > .bookmark-head-actions {
         min-width: 0;
         flex: 1 1 auto;
+    }
+}
+
+/* 收藏中心悬浮工具栏：搜索按需展开，操作入口统一为紧凑图标。 */
+.bookmark-head {
+    min-height: 44px;
+    padding: 6px 14px 2px;
+}
+
+.bookmark-head-actions {
+    gap: 7px;
+}
+
+.bookmark-search {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    transition: width 240ms var(--motion-ease), background-color 180ms ease,
+        border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.bookmark-search.is-expanded {
+    width: min(220px, 30vw);
+}
+
+.bookmark-search-toggle {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    flex: 0 0 30px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.bookmark-search input {
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: width 240ms var(--motion-ease), opacity 140ms ease;
+}
+
+.bookmark-search.is-expanded input {
+    width: calc(100% - 38px);
+    margin-right: 8px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#menu.bookmark-settings,
+.bookmark-close {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+}
+
+#menu.bookmark-settings svg {
+    width: 17px;
+    height: 17px;
+}
+
+.bookmark-close {
+    font-size: 1.15rem;
+}
+
+@media (max-width: 720px) {
+    .bookmark-head {
+        min-height: 44px;
+        padding: 6px 10px 2px;
+    }
+
+    .bookmark-search,
+    .bookmark-search.is-expanded {
+        min-width: 32px;
+    }
+
+    .bookmark-search.is-expanded {
+        width: min(200px, calc(100vw - 122px));
+    }
+
+    .bookmark-close {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .bookmark-search {
+        width: 32px;
+        min-width: 32px;
+        padding: 0;
+    }
+
+    .bookmark-search.is-expanded {
+        width: min(180px, calc(100vw - 118px));
     }
 }

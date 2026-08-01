@@ -63,6 +63,9 @@
     button.className = "status-check-btn";
     button.type = "button";
     button.title = "检测当前显示的网站状态";
+    button.setAttribute("aria-label", "检测当前显示的网站状态");
+
+    button.innerHTML = '<svg class="status-check-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M7.5 12h2.2l1.4-3.2 2 6.3 1.5-3.1h2"></path></svg>';
 
     var label = document.createElement("span");
     label.className = "status-check-text";

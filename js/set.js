@@ -465,20 +465,20 @@ function scheduleKeywordReminder(delay) {
  */
 var bg_img_preinstall = {
     "type": "1",
-    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.23/icon/background1.webp",
+    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.24/icon/background1.webp",
 };
 var bgImgStorageKey = "sksir-bg-img";
 
 var bg_img_pictures = [
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.23/icon/background1.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.23/icon/background-image2.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.23/icon/background-image3.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.23/icon/background-image4.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.23/icon/background-image5.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.23/icon/background-image6.webp'
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.24/icon/background1.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.24/icon/background-image2.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.24/icon/background-image3.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.24/icon/background-image4.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.24/icon/background-image5.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.24/icon/background-image6.webp'
 ];
 
-var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.23/wallpaper/responsive/";
+var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.24/wallpaper/responsive/";
 var bgImgMobileMedia = window.matchMedia
     ? window.matchMedia("(max-width: 720px)")
     : null;
@@ -1062,6 +1062,13 @@ function closeBox() {
     });
     var bookmarkSearch = document.getElementById("bookmark-search-input");
     if (bookmarkSearch) bookmarkSearch.value = "";
+    var bookmarkSearchWrap = document.querySelector(".bookmark-search");
+    var bookmarkSearchToggle = bookmarkSearchWrap && bookmarkSearchWrap.querySelector(".bookmark-search-toggle");
+    if (bookmarkSearchWrap) bookmarkSearchWrap.classList.remove("is-expanded");
+    if (bookmarkSearchToggle) {
+        bookmarkSearchToggle.setAttribute("aria-expanded", "false");
+        bookmarkSearchToggle.setAttribute("aria-label", "打开收藏搜索");
+    }
     var bookmarkEmpty = document.getElementById("bookmark-empty");
     if (bookmarkEmpty) bookmarkEmpty.hidden = true;
     setBackgroundFocusEffect(false);
