@@ -1,9 +1,21 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T13:42:45.848Z",
+  "generatedAt": "2026-08-01T13:46:38.221Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "修正首页快捷入口图标的双层容器",
+      "details": [
+        "首页快捷入口保留按钮自身的玻璃容器，内部 favicon 恢复为无背景图片，消除框中框观感",
+        "收藏中心继续使用 28px 圆形轻玻璃 favicon，按使用场景区分容器层级"
+      ],
+      "tags": [
+        "fix"
+      ]
+    },
+    {
+      "hash": "09644c1",
       "date": "2026-08-01",
       "summary": "新增设计规范测试页并优化 favicon 轻玻璃容器",
       "details": [
