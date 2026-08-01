@@ -3,6 +3,63 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        document.documentElement.classList.add("is-booting");
+    </script>
+    <style id="boot-critical-styles">
+        @keyframes bootLoaderSpin {
+            to { transform: translate3d(-50%, -50%, 0) rotate(360deg); }
+        }
+
+        html.is-booting::before,
+        html.is-booting::after {
+            content: "";
+            position: fixed;
+            pointer-events: none;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 260ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 260ms;
+        }
+
+        html.is-booting::before {
+            z-index: 999998;
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 48%, rgba(155, 231, 215, 0.12), transparent 22%),
+                radial-gradient(circle at 50% 55%, rgba(241, 210, 119, 0.10), transparent 26%),
+                linear-gradient(180deg, rgba(28, 34, 42, 0.96), rgba(16, 20, 26, 0.94)),
+                #10141a;
+        }
+
+        html.is-booting::after {
+            z-index: 999999;
+            top: 50%;
+            left: 50%;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: conic-gradient(from 90deg, rgba(155, 231, 215, 0.08), rgba(155, 231, 215, 0.95), rgba(241, 210, 119, 0.88), rgba(255, 255, 255, 0.16));
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+            transform: translate3d(-50%, -50%, 0);
+            animation: bootLoaderSpin 960ms linear infinite;
+        }
+
+        html.is-booting.is-first-screen-ready::before,
+        html.is-booting.is-first-screen-ready::after {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        html.perf-lite.is-booting::before,
+        html.perf-lite.is-booting::after {
+            transition-duration: 120ms;
+        }
+
+        html.perf-lite.is-booting::after {
+            animation: none;
+        }
+    </style>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta content="jsthon" name="yuanone" />
@@ -12,17 +69,15 @@
     />
     <meta content="远一,远一的导航,farone" name="keywords" />
     <title>导航酱 - 但行好事，莫问前程</title>
-    <link rel="icon" type="image/png" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/icon/apple-touch-icon.png">
-    <link rel="apple-touch-icon" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/icon/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/icon/apple-touch-icon.png">
     <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com" crossorigin>
-    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/css/style.css?v=2026.07.31.2" as="style">
-    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/font/iconfont.woff2?v=2026.07.31.2" as="font" type="font/woff2" crossorigin="anonymous">
-    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/font/MiSans-UI.woff2?v=2026.07.31.2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/css/style.css?v=2026.08.01.1" as="style">
+    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/font/iconfont.woff2?v=2026.08.01.1" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/font/MiSans-UI.woff2?v=2026.08.01.1" as="font" type="font/woff2" crossorigin="anonymous">
     <meta name="theme-color" content="#333333">
     <script>
         (function () {
-            document.documentElement.classList.add("is-booting");
-
             var performanceModeKey = "sksir-performance-mode";
 
             function getStoredPerformanceMode() {
@@ -249,16 +304,16 @@
         }());
     </script>
     <!-- 引入样式 -->
-    <link id="app-styles" rel="stylesheet" type="text/css" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/css/style.css?v=2026.07.31.2">
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/jquery-3.6.0.min.js"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/main.js?v=2026.07.31.2"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/storage.js?v=2026.07.31.2"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/quick-launch-data.js?v=2026.07.31.2"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/search-engines.js?v=2026.07.31.2"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/set.js?v=2026.07.31.2"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/quick-launch.js?v=2026.07.31.2"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/search-ui.js?v=2026.07.31.2"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.07.31.2/js/bootstrap.js?v=2026.07.31.2"></script>
+    <link id="app-styles" rel="stylesheet" type="text/css" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/css/style.css?v=2026.08.01.1">
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/jquery-3.6.0.min.js"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/main.js?v=2026.08.01.1"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/storage.js?v=2026.08.01.1"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/quick-launch-data.js?v=2026.08.01.1"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/search-engines.js?v=2026.08.01.1"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/set.js?v=2026.08.01.1"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/quick-launch.js?v=2026.08.01.1"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/search-ui.js?v=2026.08.01.1"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.01.1/js/bootstrap.js?v=2026.08.01.1"></script>
     <!-- 书签、设置、壁纸管理和状态检测资源由 main.js 在首屏后按需加载 -->
     <!-- IE Out -->
 </head>
@@ -971,7 +1026,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.07.31.2">v2026.07.31.2</span>
+                <span id="app-version" class="app-version" data-version="2026.08.01.1">v2026.08.01.1</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
             </div>
         </div>

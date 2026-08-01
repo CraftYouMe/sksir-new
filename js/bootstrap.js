@@ -66,26 +66,6 @@
         }
     }
 
-    function waitForBootWallpaper() {
-        var state = window.__sksirWallpaperState;
-        if (state && state.status !== "loading") return Promise.resolve();
-
-        return new Promise(function (resolve) {
-            var finished = false;
-            var timer = setTimeout(finish, 900);
-
-            function finish() {
-                if (finished) return;
-                finished = true;
-                clearTimeout(timer);
-                document.removeEventListener("sksir-wallpaper-ready", finish);
-                resolve();
-            }
-
-            document.addEventListener("sksir-wallpaper-ready", finish, { once: true });
-        });
-    }
-
     function markFirstScreenVisible(firstScreenTask) {
         runAfterFirstPaint(function () {
             var elapsed = window.performance && typeof window.performance.now === "function"
@@ -102,11 +82,7 @@
         var quickLaunchReady = typeof window.prepareQuickLaunchForBoot === "function"
             ? window.prepareQuickLaunchForBoot()
             : Promise.resolve();
-        var firstScreenReady = Promise.all([
-            quickLaunchReady,
-            waitForBootWallpaper()
-        ]);
-        markFirstScreenVisible(firstScreenReady);
+        markFirstScreenVisible(quickLaunchReady);
         scheduleNavSitesLoad();
         scheduleWelcomeToast();
         scheduleUpdateCheck();
