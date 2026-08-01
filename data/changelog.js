@@ -1,9 +1,22 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-01T14:20:47.266Z",
+  "generatedAt": "2026-08-01T14:27:35.853Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-01",
+      "summary": "统一收藏中心与设计测试卡片结构",
+      "details": [
+        "修正收藏描述仍继承居中旧样式的问题，标题和描述现在统一在图标右侧左对齐",
+        "生产卡片与设计测试页改用相同的 quick-info、quick-title 和 quick-desc 结构",
+        "统一 68px 卡片高度、26px 图标、10px 图文间距及标题描述字号，避免两套组件继续分化"
+      ],
+      "tags": [
+        "fix"
+      ]
+    },
+    {
+      "hash": "1ecef35",
       "date": "2026-08-01",
       "summary": "重构收藏中心横向信息卡片",
       "details": [

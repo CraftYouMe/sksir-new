@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#131922">
   <title>Sksir UI 设计规范</title>
-  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.15">
+  <link rel="stylesheet" href="css/design-system.css?v=2026.08.01.16">
   <style>
     html, body { margin: 0; min-height: 100%; }
     body { overflow-x: hidden; }
@@ -87,11 +87,11 @@
 
       <section class="ds-glass ds-panel test-section--wide">
         <h2 class="test-title">导航卡片与收藏卡片</h2>
-        <div class="test-variant" style="margin-bottom:var(--space-4)"><div class="test-variant-head"><strong>Quick Launch</strong><span>首页搜索框上方快捷入口</span></div><div class="ds-quick-launch"><button class="ds-quick-launch__item" aria-label="打开 BiliBili"><img src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""></button><button class="ds-quick-launch__item" aria-label="打开 GitHub"><img src="assets/oss/2026.07.30.6/icon/github.png" alt=""></button><button class="ds-quick-launch__item ds-quick-launch__item--add" aria-label="添加快捷入口">＋</button></div></div>
+        <div class="test-variant" style="margin-bottom:var(--space-4)"><div class="test-variant-head"><strong>Quick Launch</strong><span>首页搜索框上方快捷入口</span></div><div class="ds-quick-launch"><button class="ds-quick-launch__item" aria-label="打开 BiliBili"><img src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""></button><button class="ds-quick-launch__item" aria-label="打开 GitHub"><img src="assets/oss/2026.07.30.6/icon/github.png" alt=""></button><button class="ds-quick-launch__item ds-quick-launch__item--add" aria-label="添加快捷入口"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"></path></svg></button></div></div>
         <div class="test-cards bookmark-card-grid">
-          <article class="ds-card"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""><div class="ds-card__body"><div class="ds-card__heading"><h3 class="ds-card__title">BiliBili</h3><span class="ds-badge">常用</span></div><p class="ds-card__meta">彩色 favicon · 视频弹幕社区</p></div></article>
-          <article class="ds-card"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><div class="ds-card__body"><div class="ds-card__heading"><h3 class="ds-card__title">GitHub</h3></div><p class="ds-card__meta">黑白 favicon · 代码托管平台</p></div></article>
-          <article class="ds-card"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><div class="ds-card__body"><div class="ds-card__heading"><h3 class="ds-card__title">ChatGPT</h3></div><p class="ds-card__meta">透明边距 favicon · AI 对话助手</p></div></article>
+          <article class="ds-card bookmark-card-preview"><a href="#"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/bilibili.webp" alt=""><span class="quick-info"><span class="quick-title">BiliBili</span><span class="quick-desc">彩色 favicon · 视频弹幕社区</span></span></a></article>
+          <article class="ds-card bookmark-card-preview"><a href="#"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/icon/github.png" alt=""><span class="quick-info"><span class="quick-title">GitHub</span><span class="quick-desc">黑白 favicon · 代码托管平台</span></span></a></article>
+          <article class="ds-card bookmark-card-preview"><a href="#"><img class="ds-site-icon" src="assets/oss/2026.07.30.6/favicon/64/chatgpt.webp" alt=""><span class="quick-info"><span class="quick-title">ChatGPT</span><span class="quick-desc">透明边距 favicon · AI 对话助手</span></span></a></article>
         </div>
         <p class="test-subtitle">收藏卡片采用约 68px 高的横向信息布局：26px 轻量 favicon 占左列，名称与描述在右侧上下排列；生产布局为桌面四列、移动端两列。</p>
       </section>
