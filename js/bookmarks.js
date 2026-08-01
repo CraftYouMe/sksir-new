@@ -252,56 +252,26 @@
       return position.rect.width > 0 && position.rect.height > 0;
     });
     if (!positions.length) return null;
+    var closest = positions.reduce(function (best, position) {
+      var normalizedX = (pointerX - position.centerX) / Math.max(1, position.rect.width);
+      var normalizedY = (pointerY - position.centerY) / Math.max(1, position.rect.height);
+      var distance = normalizedX * normalizedX + normalizedY * normalizedY;
+      return !best || distance < best.distance
+        ? { entry: position.entry, distance: distance }
+        : best;
+    }, null);
+    return closest && closest.entry;
+  }
 
-    var rows = [];
-    positions.forEach(function (position) {
-      var row = rows[rows.length - 1];
-      var tolerance = Math.max(10, position.rect.height * 0.46);
-      if (!row || Math.abs(position.centerY - row.centerY) > tolerance) {
-        rows.push({
-          items: [position],
-          centerY: position.centerY,
-          top: position.rect.top,
-          bottom: position.rect.bottom
-        });
-        return;
-      }
-      row.items.push(position);
-      row.centerY = row.items.reduce(function (sum, item) {
-        return sum + item.centerY;
-      }, 0) / row.items.length;
-      row.top = Math.min(row.top, position.rect.top);
-      row.bottom = Math.max(row.bottom, position.rect.bottom);
-    });
-    rows.forEach(function (row) {
-      row.items.sort(function (left, right) {
-        return left.rect.left - right.rect.left;
-      });
-    });
-
-    var firstRow = rows[0];
-    var lastRow = rows[rows.length - 1];
-    var edgeTolerance = Math.max(12, (lastRow.bottom - lastRow.top) * 0.34);
-    if (pointerY < firstRow.top - edgeTolerance) return firstRow.items[0].entry;
-    if (pointerY > lastRow.bottom + edgeTolerance) return null;
-
-    var rowIndex = rows.length - 1;
-    for (var index = 0; index < rows.length - 1; index += 1) {
-      var boundary = (rows[index].centerY + rows[index + 1].centerY) / 2;
-      if (pointerY < boundary) {
-        rowIndex = index;
-        break;
-      }
+  function getCardSwapInsertionPoint(container, placeholder, target, draggingCard) {
+    if (!target) return container.querySelector(".bookmark-add-card");
+    var targetFollowsPlaceholder = !!(placeholder.compareDocumentPosition(target) & 4);
+    if (!targetFollowsPlaceholder) return target;
+    var next = target.nextElementSibling;
+    while (next && (next === placeholder || next === draggingCard)) {
+      next = next.nextElementSibling;
     }
-
-    var targetRow = rows[rowIndex];
-    for (var itemIndex = 0; itemIndex < targetRow.items.length; itemIndex += 1) {
-      if (pointerX <= targetRow.items[itemIndex].centerX) {
-        return targetRow.items[itemIndex].entry;
-      }
-    }
-    var nextRow = rows[rowIndex + 1];
-    return nextRow && nextRow.items.length ? nextRow.items[0].entry : null;
+    return next || container.querySelector(".bookmark-add-card");
   }
 
   function animateCardReorder(container, previousRects, draggingCard) {
@@ -371,9 +341,13 @@
       );
       var probeX = pointerX + cardProbeOffsetX;
       var probeY = pointerY + cardProbeOffsetY;
-      var before = getCardDropTarget(cards, probeX, probeY);
-      var fallback = container.querySelector(".bookmark-add-card");
-      var insertionPoint = before || fallback;
+      var placeholderRect = placeholder.getBoundingClientRect();
+      if (probeX >= placeholderRect.left && probeX <= placeholderRect.right &&
+          probeY >= placeholderRect.top && probeY <= placeholderRect.bottom) {
+        return;
+      }
+      var target = getCardDropTarget(cards, probeX, probeY);
+      var insertionPoint = getCardSwapInsertionPoint(container, placeholder, target, card);
       if (placeholder.nextSibling === insertionPoint || (!insertionPoint && !placeholder.nextSibling)) {
         return;
       }
