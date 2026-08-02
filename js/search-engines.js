@@ -198,7 +198,7 @@
       row.className = "se_list_div se-engine-card";
       row.setAttribute("data-engine-key", key);
       row.setAttribute("title", "点击设为默认，右键管理");
-      row.draggable = true;
+      row.draggable = false;
       row.addEventListener("click", function (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -228,6 +228,7 @@
       }
       details.append(name, domain);
       row.append(icon, details);
+      if (bindEngineDrag) bindEngineDrag(row);
       fragment.appendChild(row);
     });
     var addCard = document.createElement("button");
@@ -249,6 +250,8 @@
     document.body.appendChild(menu);
     return menu;
   }
+
+  var bindEngineDrag;
 
   if (document.addEventListener) {
   document.addEventListener("contextmenu", function (event) {
@@ -274,34 +277,220 @@
     if (menu) menu.hidden = true;
   });
 
-  var draggedEngineKey = "";
-  document.addEventListener("dragstart", function (event) {
-    var card = event.target.closest(".se-engine-card[data-engine-key]");
-    if (!card) return;
-    draggedEngineKey = card.getAttribute("data-engine-key");
-    suppressCardClick = true;
-    card.classList.add("is-dragging");
-  });
-  document.addEventListener("dragend", function (event) {
-    var card = event.target.closest(".se-engine-card");
-    if (card) card.classList.remove("is-dragging");
-    draggedEngineKey = "";
-    setTimeout(function () { suppressCardClick = false; }, 0);
-  });
-  document.addEventListener("dragover", function (event) {
-    if (draggedEngineKey && event.target.closest(".se-engine-card[data-engine-key]")) event.preventDefault();
-  });
-  document.addEventListener("drop", function (event) {
-    var target = event.target.closest(".se-engine-card[data-engine-key]");
-    if (!target || !draggedEngineKey) return;
-    event.preventDefault();
-    var keys = orderedKeys(getList()).filter(function (key) { return key !== draggedEngineKey; });
-    var targetIndex = keys.indexOf(target.getAttribute("data-engine-key"));
-    keys.splice(Math.max(0, targetIndex), 0, draggedEngineKey);
-    writeOrder(keys);
-    renderSettings();
-    renderPicker();
-  });
+  bindEngineDrag = function (item) {
+    var startX = 0;
+    var startY = 0;
+    var pointerX = 0;
+    var pointerY = 0;
+    var moveFrame = 0;
+    var dragging = false;
+    var ghost = null;
+    var placeholder = null;
+    var panel = null;
+    var ghostOffsetX = 0;
+    var ghostOffsetY = 0;
+    var dragDirection = 1;
+
+    function moveGhostImmediately(event) {
+      var points = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : null;
+      var point = points && points.length ? points[points.length - 1] : event;
+      if (point.clientX !== pointerX) {
+        dragDirection = point.clientX > pointerX ? 1 : -1;
+      }
+      pointerX = point.clientX;
+      pointerY = point.clientY;
+      if (ghost) {
+        ghost.style.visibility = "visible";
+        ghost.style.transform = "translate3d(" + (pointerX - ghostOffsetX) + "px," +
+          (pointerY - ghostOffsetY) + "px,0)";
+      }
+    }
+
+    function updateDragPosition() {
+      moveFrame = 0;
+      if (!dragging || !ghost || !placeholder || !panel) return;
+
+      var entries = Array.from(panel.querySelectorAll(".se-engine-card[data-engine-key]")).filter(function (entry) {
+        return entry !== item;
+      });
+      var rows = [];
+      entries.forEach(function (entry) {
+        var rect = entry.getBoundingClientRect();
+        var row = rows[rows.length - 1];
+        var rowTolerance = Math.max(4, rect.height * 0.24);
+        if (!row || Math.abs(rect.top - row.top) > rowTolerance) {
+          row = { top: rect.top, bottom: rect.bottom, items: [] };
+          rows.push(row);
+        }
+        row.bottom = Math.max(row.bottom, rect.bottom);
+        row.items.push({ entry: entry, rect: rect });
+      });
+
+      var before = null;
+      var forceEnd = false;
+      if (rows.length) {
+        var rowIndex = 0;
+        if (pointerY < rows[0].top) {
+          before = rows[0].items[0].entry;
+        } else if (pointerY > rows[rows.length - 1].bottom) {
+          rowIndex = rows.length - 1;
+          forceEnd = true;
+        } else {
+          for (var rowCursor = 0; rowCursor < rows.length; rowCursor += 1) {
+            var currentRow = rows[rowCursor];
+            if (pointerY <= currentRow.bottom) {
+              if (rowCursor > 0 && pointerY < currentRow.top) {
+                var previousRow = rows[rowCursor - 1];
+                rowIndex = pointerY < (previousRow.bottom + currentRow.top) / 2
+                  ? rowCursor - 1
+                  : rowCursor;
+              } else {
+                rowIndex = rowCursor;
+              }
+              break;
+            }
+          }
+        }
+
+        if (!before && !forceEnd) {
+          var rowItems = rows[rowIndex].items;
+          for (var itemIndex = 0; itemIndex < rowItems.length; itemIndex += 1) {
+            var itemRect = rowItems[itemIndex].rect;
+            var switchPoint = itemRect.left + itemRect.width *
+              (dragDirection > 0 ? 0.36 : 0.64);
+            var shouldInsertBefore = dragDirection > 0
+              ? pointerX < switchPoint
+              : pointerX <= switchPoint;
+            if (shouldInsertBefore) {
+              before = rowItems[itemIndex].entry;
+              break;
+            }
+          }
+          if (!before && rowIndex < rows.length - 1) {
+            before = rows[rowIndex + 1].items[0].entry;
+          }
+        }
+      }
+      var nextNode = before || panel.querySelector(".se-engine-add-card");
+      if (!nextNode || placeholder.nextSibling === nextNode) return;
+
+      panel.insertBefore(placeholder, nextNode);
+    }
+
+    function scheduleDragPosition(event) {
+      moveGhostImmediately(event);
+      if (!moveFrame) moveFrame = requestAnimationFrame(updateDragPosition);
+    }
+
+    function startDrag(event) {
+      dragging = true;
+      panel = item.parentNode;
+      var itemRect = item.getBoundingClientRect();
+      ghostOffsetX = event.clientX - itemRect.left;
+      ghostOffsetY = event.clientY - itemRect.top;
+      item.classList.add("is-dragging");
+      panel.classList.add("is-reordering");
+      item.setAttribute("aria-grabbed", "true");
+      suppressCardClick = true;
+
+      placeholder = document.createElement("div");
+      placeholder.className = "se-engine-drop-placeholder";
+      placeholder.setAttribute("aria-hidden", "true");
+      placeholder.style.width = itemRect.width + "px";
+      placeholder.style.height = itemRect.height + "px";
+      placeholder.style.minHeight = itemRect.height + "px";
+      panel.insertBefore(placeholder, item);
+
+      ghost = item.cloneNode(true);
+      ghost.removeAttribute("data-engine-key");
+      ghost.removeAttribute("draggable");
+      ghost.className = "se-engine-drag-ghost";
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.style.width = itemRect.width + "px";
+      ghost.style.height = itemRect.height + "px";
+      ghost.querySelectorAll(".se-default-badge, .se-hidden-badge").forEach(function (badge) {
+        badge.remove();
+      });
+      document.body.appendChild(ghost);
+      scheduleDragPosition(event);
+    }
+
+    item.addEventListener("pointerdown", function (event) {
+      if (event.button !== undefined && event.button !== 0) return;
+      startX = event.clientX;
+      startY = event.clientY;
+      dragging = false;
+      item.setPointerCapture(event.pointerId);
+    });
+
+    item.addEventListener("pointermove", function (event) {
+      if (!item.hasPointerCapture(event.pointerId)) return;
+      if (!dragging && Math.hypot(event.clientX - startX, event.clientY - startY) < 3) return;
+      if (!dragging) startDrag(event);
+      event.preventDefault();
+      scheduleDragPosition(event);
+    });
+
+    item.addEventListener("pointerrawupdate", function (event) {
+      if (!dragging || !item.hasPointerCapture(event.pointerId)) return;
+      moveGhostImmediately(event);
+    });
+
+    function finishDrag(event) {
+      if (item.hasPointerCapture(event.pointerId)) item.releasePointerCapture(event.pointerId);
+      if (moveFrame) {
+        cancelAnimationFrame(moveFrame);
+        moveFrame = 0;
+      }
+      if (!dragging) return;
+
+      panel.insertBefore(item, placeholder);
+      placeholder.remove();
+      placeholder = null;
+      item.classList.remove("is-dragging");
+      item.removeAttribute("aria-grabbed");
+      panel.classList.remove("is-reordering");
+      if (ghost) {
+        if (ghost.style.visibility === "visible") {
+          ghost.style.transition = "opacity 160ms ease";
+          ghost.style.opacity = "0";
+          setTimeout(function () {
+            if (ghost) ghost.remove();
+            ghost = null;
+          }, 170);
+        } else {
+          ghost.remove();
+          ghost = null;
+        }
+      }
+
+      var droppedKey = item.getAttribute("data-engine-key");
+      var keys = Array.from(panel.querySelectorAll(".se-engine-card[data-engine-key]")).map(function (card) {
+        return card.getAttribute("data-engine-key");
+      });
+      writeOrder(keys);
+      renderSettings();
+      renderPicker();
+      var droppedCard = Array.from(panel.querySelectorAll(".se-engine-card[data-engine-key]")).find(function (card) {
+        return card.getAttribute("data-engine-key") === droppedKey;
+      });
+      if (droppedCard) {
+        droppedCard.classList.add("se-engine-just-dropped");
+        setTimeout(function () { droppedCard.classList.remove("se-engine-just-dropped"); }, 260);
+      }
+      suppressCardClick = true;
+      setTimeout(function () { suppressCardClick = false; }, 400);
+      event.preventDefault();
+      dragging = false;
+      panel = null;
+    }
+
+    item.addEventListener("pointerup", finishDrag);
+    item.addEventListener("pointercancel", finishDrag);
+    item.addEventListener("dragstart", function (event) {
+      event.preventDefault();
+    });
+  };
   }
 
   function setDefaultEngine(value) {

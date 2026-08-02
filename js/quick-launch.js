@@ -755,8 +755,11 @@
         var service = api();
         if (!service) return;
         if (event.target.matches(".set-quick-launch")) {
-            service.write(service.enabledKey, event.target.value === "0");
+            service.write(service.enabledKey, event.target.checked);
             service.init();
+            if (typeof service.showMessage === "function") {
+                service.showMessage(event.target.checked ? "已开启快捷入口" : "已关闭快捷入口");
+            }
         }
         if (event.target.matches(".quick-launch-limit")) {
             var mobile = event.target.id === "quick-launch-mobile-limit";
@@ -765,15 +768,6 @@
             service.render();
         }
         if (event.target.matches("#quick-launch-library-tab")) service.renderLibraryItems();
-    });
-
-    document.addEventListener("input", function (event) {
-        if (event.target.matches(".set-quick-launch")) {
-            var enabledControl = document.getElementById("quick-launch-enabled-control");
-            var enabled = event.target.value === "0";
-            if (enabledControl) enabledControl.setAttribute("data-slider-value", enabled ? "enabled" : "disabled");
-            event.target.setAttribute("aria-valuetext", enabled ? "开启" : "关闭");
-        }
     });
 
     document.addEventListener("submit", function (event) {

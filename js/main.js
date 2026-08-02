@@ -164,10 +164,12 @@ var navSitesLoadPromise = null;
 var navStatusLoadPromise = null;
 var settingsLoadPromise = null;
 var wallpaperSettingsLoadPromise = null;
-var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/";
+var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/";
 
 function getVersionedAssetUrl(src) {
     if (!src || !/^(?:\.\/|\/(?!\/))/.test(src)) return src;
+    var hostname = window.location && window.location.hostname;
+    if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1") return src;
     var versionElement = document.getElementById("app-version");
     var version = getRunningAppVersion(versionElement);
     if (!version || version === "0.0.0.0") return src;

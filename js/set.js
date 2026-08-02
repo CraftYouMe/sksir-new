@@ -232,13 +232,10 @@ function initQuickLaunch() {
 function syncQuickLaunchSettingsControls() {
     var enabled = isQuickLaunchEnabled();
     var enabledRange = document.getElementById("quick-launch-enabled");
-    var enabledControl = document.getElementById("quick-launch-enabled-control");
 
     if (enabledRange) {
-        enabledRange.value = enabled ? "0" : "1";
-        enabledRange.setAttribute("aria-valuetext", enabled ? "开启" : "关闭");
+        enabledRange.checked = enabled;
     }
-    if (enabledControl) enabledControl.setAttribute("data-slider-value", enabled ? "enabled" : "disabled");
 }
 
 function renderQuickLaunchCustomList() {
@@ -370,6 +367,7 @@ function saveQuickLaunchCustomItem(entry) {
     }
     writeQuickLaunchStorage(quickLaunchEnabledKey, true);
     $("#quick-launch-enabled").prop("checked", true);
+    syncQuickLaunchSettingsControls();
     renderQuickLaunchCustomList();
     renderQuickLaunch();
     return { updated: !!existing };
@@ -465,20 +463,20 @@ function scheduleKeywordReminder(delay) {
  */
 var bg_img_preinstall = {
     "type": "1",
-    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background1.webp",
+    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/icon/background1.webp",
 };
 var bgImgStorageKey = "sksir-bg-img";
 
 var bg_img_pictures = [
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background1.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image2.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image3.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image4.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image5.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image6.webp'
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/icon/background1.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/icon/background-image2.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/icon/background-image3.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/icon/background-image4.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/icon/background-image5.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/icon/background-image6.webp'
 ];
 
-var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/wallpaper/responsive/";
+var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.12/wallpaper/responsive/";
 var bgImgMobileMedia = window.matchMedia
     ? window.matchMedia("(max-width: 720px)")
     : null;
@@ -976,6 +974,10 @@ function openSet() {
 function closeSet() {
     $("#menu").removeClass('on');
 
+    document.querySelectorAll(".set dialog[open]").forEach(function (dialog) {
+        dialog.close();
+    });
+
     closeBox();
     $("#content").removeClass('setting-open');
 
@@ -1230,7 +1232,7 @@ $(document).ready(function () {
         var bookmarksOpen = $('#content').hasClass('bookmarks-open');
         if (!settingOpen && !bookmarksOpen) return;
         var activePanel = settingOpen ? '.set' : '.mark';
-        if ($(event.target).closest(activePanel + ', .tool-all, #menu, #bookmark-quick-context-menu, .settings-confirm-dialog, .bookmark-item-dialog').length) return;
+        if ($(event.target).closest(activePanel + ', .tool-all, #menu, #bookmark-quick-context-menu, .se-engine-context-menu, .settings-confirm-dialog, .bookmark-item-dialog').length) return;
         event.preventDefault();
         event.stopPropagation();
         closeActiveSurface();

@@ -29,8 +29,7 @@
       '<div class="settings-data-summary">数据只在当前浏览器，支持导入和导出。</div>' +
       '<div class="settings-data-actions"><button type="button" id="settings-data-export" class="secondary">导出数据</button>' +
       '<button type="button" id="settings-data-import" class="secondary">导入数据</button>' +
-      '<input type="file" id="settings-data-import-file" accept="application/json,.json" hidden>' +
-      '<button type="button" id="settings-data-reset">重置本机数据</button></div></div>';
+      '<input type="file" id="settings-data-import-file" accept="application/json,.json" hidden></div></div>';
     dataHost.appendChild(card);
     var aboutVersion = document.getElementById("settings-about-version");
     if (aboutVersion) aboutVersion.textContent = version ? version.textContent : "";
@@ -45,15 +44,20 @@
     },
     appearance: {
       tabs: [
-        { page: "background", label: "背景" },
         { page: "performance", label: "动画" },
-        { page: "theme", label: "主题" }
+        { page: "theme", label: "主题" },
+        { page: "background", label: "背景" }
       ]
     },
     navigation: {
       tabs: [
         { page: "quick-launch", label: "快捷入口" },
         { page: "bookmarks", label: "收藏中心" }
+      ]
+    },
+    reset: {
+      tabs: [
+        { page: "reset", label: "重置与恢复" }
       ]
     },
     about: {
@@ -363,10 +367,31 @@
     return document.querySelector(".se_add_content input[name='" + name + "']");
   }
 
+  function setEngineEditorTitle(text) {
+    var title = document.getElementById("search-engine-editor-title");
+    if (title) title.textContent = text;
+  }
+
   function showEngineEditor(show) {
-    document.querySelector(".se_list").style.display = show ? "none" : "";
-    document.querySelector(".settings-engine-reset").style.display = show ? "none" : "";
-    document.querySelector(".se_add_content").style.display = show ? "" : "none";
+    var list = document.querySelector(".se_list");
+    var reset = document.querySelector(".settings-engine-reset");
+    var dialog = document.getElementById("search-engine-editor-dialog");
+    if (list) list.style.display = "";
+    if (reset) reset.style.display = "";
+    if (!dialog) return;
+
+    if (show) {
+      if (!dialog.open) dialog.showModal();
+      var firstInput = dialog.querySelector("input[name='title']");
+      if (firstInput) {
+        window.setTimeout(function () {
+          firstInput.focus({ preventScroll: true });
+        }, 0);
+      }
+      return;
+    }
+
+    if (dialog.open) dialog.close();
   }
 
   function confirmToast(message, action) {
@@ -399,9 +424,18 @@
     showEngineEditor(false);
   }
 
+  function nextEngineKey() {
+    var maxKey = 0;
+    Object.keys(getSeList()).forEach(function (key) {
+      var numericKey = parseInt(key, 10);
+      if (Number.isFinite(numericKey)) maxKey = Math.max(maxKey, numericKey);
+    });
+    return String(maxKey + 1);
+  }
+
   function saveEngine() {
     var originalKey = engineField("key_inhere").value;
-    var key = engineField("key").value;
+    var key = originalKey || nextEngineKey();
     var title = engineField("title").value.trim();
     var url = window.SksirSearchEngines.normalizeHttpUrl(engineField("url").value);
     var name = engineField("name").value.trim();
@@ -437,6 +471,7 @@
   function editEngine(key) {
     var engine = getSeList()[key];
     if (!engine) return;
+    setEngineEditorTitle("编辑自定义搜索引擎");
     engineField("key_inhere").value = key;
     engineField("key").value = key;
     engineField("title").value = engine.title;
@@ -509,8 +544,18 @@
       return;
     }
     if (event.target.closest(".set_se_list_add")) {
+      setEngineEditorTitle("添加自定义搜索引擎");
       document.querySelectorAll(".se_add_content input").forEach(function (input) { input.value = ""; });
       showEngineEditor(true);
+      return;
+    }
+    if (event.target.closest(".settings-dialog-close")) {
+      showEngineEditor(false);
+      return;
+    }
+    var engineDialog = event.target.closest("#search-engine-editor-dialog");
+    if (engineDialog && event.target === engineDialog) {
+      showEngineEditor(false);
       return;
     }
     if (event.target.closest(".se_add_save")) {
@@ -568,6 +613,12 @@
 
   function initializeSettings() {
     organize();
+    var engineDialog = document.getElementById("search-engine-editor-dialog");
+    if (engineDialog) {
+      engineDialog.addEventListener("close", function () {
+        showEngineEditor(false);
+      });
+    }
     var storedRows = 4;
     try {
       storedRows = localStorage.getItem(bookmarkRowsKey);

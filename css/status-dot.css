@@ -191,10 +191,19 @@ html.perf-lite .status-check-btn {
 /* 收藏工具栏中的测速与设置按钮使用完全一致的默认材质。 */
 #content.bookmarks-open .bookmark-navline .status-check-btn,
 #content.bookmarks-open .bookmark-navline #menu.bookmark-settings {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  flex: 0 0 34px;
+  border-radius: 50%;
   border-color: rgba(218, 234, 248, 0.22) !important;
   background: rgba(255, 255, 255, 0.08) !important;
   color: var(--text-primary) !important;
   box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 
 #content.bookmarks-open .bookmark-navline .status-check-btn:hover,
@@ -204,7 +213,7 @@ html.perf-lite .status-check-btn {
 }
 
 #content.bookmarks-open .bookmark-navline .status-check-icon {
-  width: 19px;
-  height: 19px;
-  stroke-width: 2;
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.8;
 }

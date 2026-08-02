@@ -63,15 +63,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.02.11") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.02.11") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.02.11") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.02.12") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.02.12") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.02.12") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.02.11") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.02.12") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -894,7 +894,6 @@ body:not(.onsearch) .all-search:hover {
         0 16px 40px rgba(0, 0, 0, 0.24),
         inset 0 1px 0 rgba(255, 255, 255, 0.24),
         inset 0 -1px 0 rgba(0, 0, 0, 0.14);
-    width: 100%;
 }
 
 .con .sou form .wd {
@@ -5725,7 +5724,7 @@ html.ios-standalone .bg-all {
     padding: 0;
     gap: 0;
     overflow: hidden;
-    transition: width 240ms var(--motion-ease), background-color 180ms ease,
+    transition: width 240ms var(--motion-ease), flex-basis 240ms var(--motion-ease), background-color 180ms ease,
         border-color 180ms ease, box-shadow 180ms ease;
 }
 

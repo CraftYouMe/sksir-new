@@ -1561,26 +1561,6 @@
     background: linear-gradient(135deg, rgba(155, 231, 215, 0.28), rgba(155, 231, 215, 0.16));
 }
 
-.quick-launch-binary-slider .performance-slider-indicator {
-    width: calc((100% - 8px) / 2);
-}
-
-.quick-launch-binary-slider .performance-slider-labels {
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.quick-launch-binary-slider[data-slider-value="disabled"] .performance-slider-indicator,
-.quick-launch-binary-slider[data-slider-value="manual"] .performance-slider-indicator {
-    transform: translateX(100%);
-}
-
-.quick-launch-binary-slider[data-slider-value="enabled"] .performance-slider-labels span:nth-child(1),
-.quick-launch-binary-slider[data-slider-value="disabled"] .performance-slider-labels span:nth-child(2),
-.quick-launch-binary-slider[data-slider-value="auto"] .performance-slider-labels span:nth-child(1),
-.quick-launch-binary-slider[data-slider-value="manual"] .performance-slider-labels span:nth-child(2) {
-    color: #dffbf5;
-}
-
 .quick-launch-option-list {
     display: flex;
     flex-direction: column;
@@ -2428,7 +2408,7 @@
 
 .set .se_list_table {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     margin: 0;
     gap: 9px;
 }
@@ -2450,6 +2430,8 @@
     color: #fff;
     text-align: left;
     cursor: grab;
+    touch-action: none;
+    user-select: none;
     transition: border-color 0.16s ease, background-color 0.16s ease, opacity 0.16s ease, transform 0.16s ease;
 }
 
@@ -2550,8 +2532,107 @@
 }
 
 .set .se-engine-card.is-dragging {
-    opacity: 0.42;
-    transform: scale(0.98);
+    position: fixed;
+    top: -1000px;
+    left: -1000px;
+    z-index: -1;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: none;
+}
+
+.set .se_list_table.is-reordering .se-engine-card:not(.is-dragging) {
+    border-color: rgba(255, 255, 255, 0.24);
+}
+
+.se-engine-drop-placeholder {
+    width: 100%;
+    height: 76px;
+    min-height: 76px;
+    box-sizing: border-box;
+    border: 1px dashed rgba(155, 231, 215, 0.86);
+    border-radius: var(--radius-card);
+    background: rgba(155, 231, 215, 0.10);
+    box-shadow: 0 0 0 3px rgba(155, 231, 215, 0.10);
+}
+
+.se-engine-drag-ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2147483000;
+    display: flex;
+    width: min(240px, calc(100vw - 32px));
+    height: 76px;
+    padding: 10px 12px;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    border: 1px solid rgba(155, 231, 215, 0.72);
+    border-radius: var(--radius-card);
+    background: rgba(20, 28, 36, 0.92);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38), 0 0 0 4px rgba(155, 231, 215, 0.12);
+    color: #fff;
+    pointer-events: none;
+    visibility: hidden;
+    transform: translate3d(-10000px, -10000px, 0);
+    transition: none;
+    will-change: transform;
+    contain: layout style;
+}
+
+.se-engine-drag-ghost .se-engine-card-icon {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 11px;
+    background: rgba(8, 12, 18, 0.32);
+    color: #9be7d7;
+    font-size: 1.05rem;
+}
+
+.se-engine-drag-ghost .se-engine-card-details {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.se-engine-drag-ghost .se-engine-card-details strong,
+.se-engine-drag-ghost .se-engine-card-details span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.se-engine-drag-ghost .se-engine-card-details strong {
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 0.84rem;
+}
+
+.se-engine-drag-ghost .se-engine-card-details span {
+    color: rgba(232, 239, 247, 0.52);
+    font-size: 0.7rem;
+}
+
+.set .se-engine-card.se-engine-just-dropped {
+    animation: se-engine-drop 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes se-engine-drop {
+    from {
+        opacity: 0.52;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .se-engine-context-menu {
@@ -2595,7 +2676,7 @@
 
 @media (max-width: 1000px) {
     .set .se_list_table {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
@@ -3512,11 +3593,6 @@
     margin-bottom: 12px;
 }
 
-.settings-quick-launch-panel .quick-launch-toggle {
-    width: 100%;
-    justify-content: space-between;
-}
-
 .quick-launch-rule-card {
     display: flex;
     min-height: 66px;
@@ -4411,6 +4487,143 @@ html.ios-safari .changelog-card,
     }
 }
 
+/* Search engine editor: use the shared Glassmorphism modal pattern. */
+.set .settings-search-engine-dialog {
+    width: min(500px, calc(100vw - 32px));
+    max-width: 500px;
+    max-height: min(680px, calc(100dvh - 32px));
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    background: rgba(17, 24, 32, 0.84);
+    color: #fff;
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    -webkit-backdrop-filter: blur(28px) saturate(1.16);
+    backdrop-filter: blur(28px) saturate(1.16);
+}
+
+.set .settings-search-engine-dialog[open] {
+    animation: wallpaper-dialog-in 0.24s ease both;
+}
+
+.set .settings-search-engine-dialog::backdrop {
+    background: rgba(2, 6, 10, 0.55);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+    animation: wallpaper-backdrop-in 0.2s ease both;
+}
+
+.set .settings-search-engine-dialog form {
+    display: flex;
+    padding: 22px;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.set .settings-dialog-handle {
+    display: none;
+    width: 38px;
+    height: 4px;
+    margin: 10px auto 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.set .settings-dialog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.set .settings-dialog-head > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.set .settings-dialog-head strong {
+    color: rgba(255, 255, 255, 0.96);
+    font-size: 1.08rem;
+    font-weight: 700;
+}
+
+.set .settings-dialog-head span {
+    color: rgba(232, 239, 247, 0.56);
+    font-size: 0.75rem;
+}
+
+.set .settings-dialog-close {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0 2px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 1.3rem;
+}
+
+.set .settings-dialog-close:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.13);
+}
+
+.set .settings-search-engine-dialog .se_add_content {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.set .settings-search-engine-dialog .from_items.button {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+@media (max-width: 720px) {
+    .set .settings-search-engine-dialog {
+        width: 100%;
+        max-width: none;
+        max-height: min(82dvh, 720px);
+        margin: auto 0 0;
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 24px 24px 0 0;
+    }
+
+    .set .settings-dialog-handle {
+        display: block;
+    }
+
+    .set .settings-search-engine-dialog form {
+        padding: 20px 18px calc(18px + env(safe-area-inset-bottom));
+    }
+
+    .set .settings-search-engine-dialog[open] {
+        animation-name: wallpaper-sheet-in;
+    }
+
+    .set .settings-search-engine-dialog .from_items.button button {
+        min-width: 0;
+        flex: 1 1 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .set .settings-search-engine-dialog[open],
+    .set .settings-search-engine-dialog::backdrop {
+        animation: none;
+    }
+}
+
 /* Final cascade: bookmark-style settings toolbar and continuous group flow. */
 .set {
     width: min(1080px, calc(100vw - 64px));
@@ -4564,9 +4777,10 @@ html.ios-safari .changelog-card,
     width: 100%;
     height: 100%;
     min-height: 0;
-    padding: 20px clamp(18px, 2.5vw, 30px) 24px;
+    align-items: center;
+    padding: 26px clamp(20px, 4vw, 42px) 34px;
     flex-direction: column;
-    gap: 16px;
+    gap: 0;
     overflow-x: hidden;
     overflow-y: auto;
     box-sizing: border-box;
@@ -4581,20 +4795,70 @@ html.ios-safari .changelog-card,
 
 .set .productss .mainConts,
 .set .productss .mainConts.selected {
-    width: 100%;
+    width: min(100%, 900px);
     height: auto;
     min-height: 0;
-    max-width: none;
-    padding: 18px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px 0 24px;
     flex: 0 0 auto;
     align-content: flex-start;
     overflow: visible;
     box-sizing: border-box;
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: var(--radius-card);
-    background: rgba(255, 255, 255, 0.035);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
     animation: none;
+}
+
+.set .productss .mainConts > *:not(.wallpaper-add-dialog):not(.settings-search-engine-dialog),
+.set .productss .mainConts > .settings-panel-head {
+    width: 100%;
+    max-width: none;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.set .productss .mainConts > .settings-section {
+    padding-top: 24px;
+    border-top: 0;
+}
+
+.set .productss .mainConts > .settings-panel-head + .settings-section {
+    padding-top: 8px;
+}
+
+.set .productss .mainConts .set_blocks_content {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.set .productss .mainConts .set_blocks {
+    gap: 12px;
+}
+
+/* Appearance content order: keep the lightweight controls before the wallpaper library. */
+.set .productss .mainConts[data-settings-panel="performance"] {
+    order: 1;
+}
+
+.set .productss .mainConts[data-settings-panel="theme"] {
+    order: 2;
+}
+
+.set .productss .mainConts[data-settings-panel="background"] {
+    order: 3;
+}
+
+.set .productss .settings-option-row {
+    border-color: rgba(179, 195, 214, 0.10);
+    background: rgba(255, 255, 255, 0.045);
+    box-shadow: none;
 }
 
 @media (max-width: 720px) {
@@ -4653,14 +4917,16 @@ html.ios-safari .changelog-card,
     }
 
     .set .productss {
-        padding: 70px 10px calc(14px + env(safe-area-inset-bottom, 0px));
-        gap: 10px;
+        align-items: stretch;
+        padding: 70px 14px calc(18px + env(safe-area-inset-bottom, 0px));
+        gap: 0;
         -webkit-overflow-scrolling: touch;
     }
 
     .set .productss .mainConts,
     .set .productss .mainConts.selected {
-        padding: 14px 10px;
-        border-radius: 14px;
+        width: 100%;
+        max-width: none;
+        padding: 8px 0 20px;
     }
 }
