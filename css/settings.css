@@ -448,7 +448,7 @@
     height: 52px;
     min-height: 52px;
     margin: 0 !important;
-    padding: 5px 48px 5px 7px;
+    padding: 5px 84px 5px 7px;
     flex-direction: row;
     align-items: center;
     overflow: hidden;
@@ -566,7 +566,7 @@
     .set .settings-sidebar {
         height: 50px;
         min-height: 50px;
-        padding: 4px 44px 4px 5px;
+        padding: 4px 78px 4px 5px;
     }
 
     .set .settings-primary {
@@ -609,6 +609,75 @@
     .set .productss .mainConts.selected {
         padding: 14px 10px;
         border-radius: 14px;
+    }
+}
+
+/* The settings view uses the same floating toolbar footprint as bookmarks. */
+.set .settings-sidebar {
+    padding-right: 84px;
+}
+
+.settings-surface-actions {
+    position: absolute;
+    top: 8px;
+    right: 7px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.settings-surface-toggle,
+.set .settings-surface-actions .settings-close {
+    display: grid;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    place-items: center;
+    box-sizing: border-box;
+    border: 1px solid rgba(218, 234, 248, 0.22);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.settings-surface-toggle svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 1.7;
+}
+
+.settings-surface-toggle:hover,
+.set .settings-surface-actions .settings-close:hover {
+    border-color: rgba(218, 234, 248, 0.34);
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.settings-surface-toggle:active,
+.set .settings-surface-actions .settings-close:active {
+    transform: scale(0.96);
+}
+
+@media (max-width: 720px) {
+    .set .settings-sidebar {
+        padding-right: 78px;
+    }
+
+    .settings-surface-actions {
+        top: 8px;
+        right: 5px;
+        gap: 4px;
+    }
+
+    .settings-surface-toggle,
+    .set .settings-surface-actions .settings-close {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
     }
 }
 
@@ -4430,30 +4499,64 @@ html.ios-safari .changelog-card,
 }
 
 .set .settings-primary-item {
+    position: relative;
+    display: flex;
     width: auto;
-    min-width: 108px;
+    min-width: 72px;
     height: 42px;
-    padding: 0 16px;
-    flex: 0 1 150px;
+    min-height: 42px;
+    max-height: 42px;
+    padding: 0 14px;
+    flex: 0 0 auto;
     justify-content: center;
-    gap: 8px;
+    gap: 0;
+    border: 1px solid transparent;
     border-radius: 999px;
+    color: rgba(232, 239, 247, 0.68);
+    background: transparent;
+    font-size: 0.9rem;
+    font-weight: 560;
+    line-height: 1;
     text-align: center;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .set .settings-primary-item > i,
 .set .settings-primary-item > .settings-primary-icon {
-    width: 24px;
-    height: 24px;
-    padding: 4px;
-    flex-basis: 24px;
-    border-radius: 7px;
+    display: none;
+}
+
+.set .settings-primary-item:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.045);
 }
 
 .set .settings-primary-item.is-active {
     border-color: rgba(218, 234, 248, 0.22);
     background: rgba(255, 255, 255, 0.11);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    font-size: 0.96rem;
+    font-weight: 720;
+}
+
+.set .settings-primary-item::after {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 28px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--color-primary);
+    content: "";
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0.45);
+    transition: opacity 0.18s ease, transform 0.2s ease;
+}
+
+.set .settings-primary-item.is-active::after {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
 }
 
 .set .productss {
@@ -4530,17 +4633,17 @@ html.ios-safari .changelog-card,
     }
 
     .set .settings-primary-item {
-        min-width: 70px;
+        min-width: 62px;
         height: 40px;
-        padding: 0 10px;
-        flex: 1 0 70px;
-        gap: 5px;
-        font-size: 0.8rem;
+        min-height: 40px;
+        max-height: 40px;
+        padding: 0 11px;
+        flex: 0 0 auto;
+        font-size: 0.86rem;
     }
 
-    .set .settings-primary-item > i,
-    .set .settings-primary-item > .settings-primary-icon {
-        display: none;
+    .set .settings-primary-item.is-active {
+        font-size: 0.86rem;
     }
 
     .set .settings-close {

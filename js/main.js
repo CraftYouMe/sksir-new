@@ -164,7 +164,7 @@ var navSitesLoadPromise = null;
 var navStatusLoadPromise = null;
 var settingsLoadPromise = null;
 var wallpaperSettingsLoadPromise = null;
-var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/";
+var sksirAssetBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/";
 
 function getVersionedAssetUrl(src) {
     if (!src || !/^(?:\.\/|\/(?!\/))/.test(src)) return src;
@@ -361,6 +361,14 @@ window.ensureNavStatusResourcesLoaded = ensureNavStatusResourcesLoaded;
 window.ensureSettingsResourcesLoaded = ensureSettingsResourcesLoaded;
 window.ensureWallpaperSettingsLoaded = ensureWallpaperSettingsLoaded;
 window.isMobileNavPriorityViewport = isMobileNavPriorityViewport;
+
+// Warm the settings assets without waiting for them during first-screen rendering.
+setTimeout(function () {
+    ensureSettingsResourcesLoaded().catch(function (error) {
+        // The first open path can reuse or retry this request.
+        console.warn("Settings resources warmup failed", error);
+    });
+}, 0);
 
 function scheduleWelcomeToast() {
     runAfterFirstPaint(function () {

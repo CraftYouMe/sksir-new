@@ -309,6 +309,21 @@
     });
   }
 
+  function setBookmarkDragGhostPosition(ghost, source, left, top) {
+    if (!ghost) return;
+    var boundary = source && source.matches && source.matches(".tab")
+      ? source
+      : (source && source.closest ? source.closest("[data-nav-items]") : null);
+    if (!boundary && source && source.closest) {
+      boundary = source.closest(".surface-shell") || source.closest(".mark");
+    }
+    var boundaryRect = boundary ? boundary.getBoundingClientRect() : null;
+    var minTop = boundaryRect ? Math.max(0, boundaryRect.top + 1) : 0;
+    var maxTop = Math.max(minTop, window.innerHeight - ghost.offsetHeight);
+    var clampedTop = Math.max(minTop, Math.min(top, maxTop));
+    ghost.style.transform = "translate3d(" + left + "px," + clampedTop + "px,0)";
+  }
+
   function bindCardDrag(card, panel) {
     if (!card || card.dataset.bookmarkCardDragBound === "1") return;
     card.dataset.bookmarkCardDragBound = "1";
@@ -335,8 +350,12 @@
       pointerX = point.clientX;
       pointerY = point.clientY;
       if (ghost) {
-        ghost.style.transform = "translate3d(" + (pointerX - grabOffsetX) + "px," +
-          (pointerY - grabOffsetY) + "px,0)";
+        setBookmarkDragGhostPosition(
+          ghost,
+          card,
+          pointerX - grabOffsetX,
+          pointerY - grabOffsetY
+        );
       }
     }
 
@@ -603,8 +622,12 @@
       pointerX = point.clientX;
       pointerY = point.clientY;
       if (ghost) {
-        ghost.style.transform = "translate3d(" + (pointerX - ghost.offsetWidth / 2) + "px," +
-          (pointerY - 24) + "px,0)";
+        setBookmarkDragGhostPosition(
+          ghost,
+          row,
+          pointerX - ghost.offsetWidth / 2,
+          pointerY - 24
+        );
       }
     }
 

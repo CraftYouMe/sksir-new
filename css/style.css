@@ -63,15 +63,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.02.9") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.02.9") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.02.9") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.02.11") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.02.11") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.02.11") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.02.9") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.02.11") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -5928,7 +5928,7 @@ html[data-bookmark-rows="6"] { --bookmark-panel-height: 790px; }
     }
 }
 
-/* 收藏中心：Tab 与工具按钮组成一条独立悬浮工具栏 */
+/* 收藏中心：Tab 与工具按钮组成一条独立悬浮工具栏。 */
 .mark {
     overflow: visible;
 }
@@ -6106,6 +6106,116 @@ html[data-bookmark-rows="6"] { --bookmark-panel-height: 790px; }
     }
 }
 
+/* Shared bookmark/settings surface: keep the panel frame stable while the view changes. */
+.surface-shell {
+    position: absolute;
+    z-index: 2000;
+    display: flex;
+    width: min(1080px, calc(100vw - 64px));
+    max-width: 1080px;
+    height: min(var(--bookmark-panel-height), calc(100vh - 96px));
+    min-height: min(190px, calc(100vh - 96px));
+    max-height: min(790px, calc(100vh - 96px));
+    margin-top: 0;
+    align-items: stretch;
+    flex-direction: column;
+    overflow: visible;
+    isolation: isolate;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-panel);
+    background: var(--glass-surface-strong);
+    box-shadow: var(--shadow-panel), var(--glass-highlight);
+    -webkit-backdrop-filter: blur(20px) saturate(1.12);
+    backdrop-filter: blur(20px) saturate(1.12);
+    visibility: hidden;
+}
+
+.surface-shell.surface-view-ready {
+    visibility: visible;
+}
+
+.surface-shell::before {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background:
+        linear-gradient(rgba(7, 11, 16, 0.12), rgba(7, 11, 16, 0.12)),
+        var(--main-background-color);
+    content: "";
+    pointer-events: none;
+}
+
+.surface-shell > .mark,
+.surface-shell > .set {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: none;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    flex: 1 1 auto;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    opacity: 0;
+    filter: none;
+    transform: translateY(8px) scale(0.985);
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 220ms ease, transform 260ms var(--motion-ease);
+    will-change: opacity, transform;
+}
+
+.surface-shell > .mark::before {
+    display: none;
+}
+
+.surface-shell > .set {
+    align-items: stretch;
+    overflow: visible;
+}
+
+.surface-shell > .mark.surface-view-active,
+.surface-shell > .set.surface-view-active,
+.surface-shell > .mark.surface-view-leaving,
+.surface-shell > .set.surface-view-leaving {
+    display: flex;
+    visibility: visible;
+}
+
+.surface-shell > .mark.surface-view-active,
+.surface-shell > .set.surface-view-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .surface-shell > .mark,
+    .surface-shell > .set {
+        transition: none;
+        transform: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .surface-shell {
+        width: calc(100vw - 16px);
+        height: calc(var(--app-height, 100vh) - 20px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        min-height: 0;
+        max-height: none;
+        border-radius: 18px;
+    }
+}
+
 /* 悬浮工具栏可以越界，收藏内容仍在面板圆角内裁切并独立滚动。 */
 .mark .products {
     min-height: 0;
@@ -6146,6 +6256,19 @@ html[data-bookmark-rows="6"] { --bookmark-panel-height: 790px; }
     overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: rgba(220, 233, 244, 0.32) transparent;
+}
+
+/* 第一排卡片为点击和拖动状态预留顶部缓冲，避免边框/阴影越过内容区。 */
+.mark .products .quick-all,
+.mark .products .quick-alls,
+.mark .products .quick-jl {
+    padding-top: 6px;
+}
+
+.mark .products [data-nav-items] > .quick:active,
+.mark .products [data-nav-items] > .quicks:active,
+.mark .products [data-nav-items] > .quickjl:active {
+    transform: none !important;
 }
 
 .mark .products .quick-all::-webkit-scrollbar,

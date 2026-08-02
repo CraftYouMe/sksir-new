@@ -465,20 +465,20 @@ function scheduleKeywordReminder(delay) {
  */
 var bg_img_preinstall = {
     "type": "1",
-    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/icon/background1.webp",
+    "path": "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background1.webp",
 };
 var bgImgStorageKey = "sksir-bg-img";
 
 var bg_img_pictures = [
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/icon/background1.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/icon/background-image2.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/icon/background-image3.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/icon/background-image4.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/icon/background-image5.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/icon/background-image6.webp'
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background1.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image2.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image3.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image4.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image5.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/icon/background-image6.webp'
 ];
 
-var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.9/wallpaper/responsive/";
+var bgImgResponsiveBase = "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.11/wallpaper/responsive/";
 var bgImgMobileMedia = window.matchMedia
     ? window.matchMedia("(max-width: 720px)")
     : null;
@@ -899,6 +899,49 @@ function isMobileNavViewport() {
     return !!(window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
 }
 
+var surfaceViewRequestId = 0;
+var surfaceViewFrame = null;
+
+function setSurfaceView(view) {
+    var requestId = ++surfaceViewRequestId;
+    var shell = $(".surface-shell");
+    var mark = $(".mark");
+    var settings = $(".set");
+    var showingBookmarks = view === "bookmarks";
+    var hasActiveView = mark.hasClass("surface-view-active") || settings.hasClass("surface-view-active");
+    var targetView = showingBookmarks ? mark : settings;
+    var currentView = mark.hasClass("surface-view-active") ? mark :
+        (settings.hasClass("surface-view-active") ? settings : $());
+
+    if (surfaceViewFrame) {
+        cancelAnimationFrame(surfaceViewFrame);
+        surfaceViewFrame = null;
+    }
+
+    mark.add(settings).removeClass("surface-view-leaving");
+    if (currentView.length && currentView[0] !== targetView[0]) {
+        currentView.addClass("surface-view-leaving");
+    }
+
+    shell.css("display", "flex");
+    if (!hasActiveView) shell.removeClass("surface-view-ready");
+    mark.css("display", "flex");
+    settings.css("display", "flex");
+    mark.removeClass("surface-view-active");
+    settings.removeClass("surface-view-active");
+
+    surfaceViewFrame = requestAnimationFrame(function () {
+        surfaceViewFrame = null;
+        if (requestId !== surfaceViewRequestId) return;
+        targetView.addClass("surface-view-active");
+        shell.addClass("surface-view-ready");
+        window.setTimeout(function () {
+            if (requestId !== surfaceViewRequestId) return;
+            mark.add(settings).removeClass("surface-view-leaving");
+        }, 280);
+    });
+}
+
 function openSet() {
     // 设置内容按需渲染。
     var loadSettings = typeof window.ensureSettingsResourcesLoaded === "function"
@@ -911,14 +954,7 @@ function openSet() {
         $("#content").addClass('box setting-open').removeClass('bookmarks-open');
         cancelBookmarkOpenTasks();
         $(".mark").removeClass("is-visible");
-
-        //隐藏书签打开设置
-        $(".mark").css({
-            "display": "none",
-        });
-        $(".set").css({
-            "display": "flex",
-        });
+        setSurfaceView("settings");
         setSeInit();
         setBackgroundFocusEffect(true);
         return true;
@@ -963,10 +999,9 @@ function openBox() {
     var liteMode = document.documentElement.classList.contains("perf-lite");
     document.body.classList.add("bookmarks-surface-open");
     $("#content").addClass('box bookmarks-open').removeClass('setting-open');
+    setSurfaceView("bookmarks");
     $(".mark").removeClass("is-visible").addClass("is-loading");
-    $(".mark").css({
-        "display": "flex",
-    });
+    $("#menu").show().removeClass("on");
     requestAnimationFrame(function () {
         if ($("#content").hasClass("bookmarks-open")) {
             $(".mark").addClass("is-visible");
@@ -994,9 +1029,6 @@ function openBox() {
             bookmarkOpenTimer = null;
             if (requestId !== bookmarkOpenRequestId) return;
 
-            $(".mark").css({
-                "display": "flex",
-            });
             if (typeof refreshCategoryIndicators === "function") {
                 refreshCategoryIndicators();
             }
@@ -1053,13 +1085,21 @@ function loadVisibleNavIcons() {
 // 书签关闭
 function closeBox() {
     cancelBookmarkOpenTasks();
+    surfaceViewRequestId++;
+    if (surfaceViewFrame) {
+        cancelAnimationFrame(surfaceViewFrame);
+        surfaceViewFrame = null;
+    }
     document.body.classList.remove("bookmarks-surface-open");
     $("#content").removeClass('box bookmarks-open setting-open');
     $(".mark").removeClass("is-visible");
     $(".mark").removeClass("is-loading");
+    $(".mark, .set").removeClass("surface-view-active surface-view-leaving");
     $(".mark").css({
         "display": "none",
     });
+    $(".set").css("display", "none");
+    $(".surface-shell").removeClass("surface-view-ready").css("display", "none");
     var bookmarkSearch = document.getElementById("bookmark-search-input");
     if (bookmarkSearch) bookmarkSearch.value = "";
     var bookmarkSearchWrap = document.querySelector(".bookmark-search");
@@ -1242,7 +1282,9 @@ $(document).ready(function () {
 
     // 菜单点击
     $("#menu").click(function () {
-        if ($(this).hasClass("on")) {
+        if ($("#content").hasClass("setting-open")) {
+            openBox();
+        } else if ($(this).hasClass("on")) {
             closeSet();
         } else {
             openSet();

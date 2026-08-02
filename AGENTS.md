@@ -388,6 +388,14 @@ node scripts\generate-changelog.js --pending "具体变化" --detail "用户结�
 
 全部基础、桌面、移动端、iOS 样式。
 
+- css/design-system.css
+
+`design-test.html` 的组件视觉基准；收藏中心工具栏和卡片调整后需要同步。
+
+- css/settings.css
+
+设置中心、按需设置组件及其移动端样式。
+
 - js/main.js
 
 首屏流程、提示、导航交互、更新检测。
@@ -399,6 +407,12 @@ Cookies、搜索、搜索建议、壁纸、设置。
 - js/settings.js
 
 设置中心分组、“关于”页面、更新日志延迟加载与渲染。
+
+同时维护收藏中心显示行数 `sksir-bookmark-visible-rows`；合法范围为 1 至 6，损坏值必须回退默认布局。
+
+- js/bookmarks.js
+
+收藏中心搜索、筛选、工具栏和面板交互。
 
 - data/sites.js
 
