@@ -1,9 +1,40 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-02T16:12:12.514Z",
+  "generatedAt": "2026-08-02T16:21:28.534Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-03",
+      "summary": "解决扩展搜索聚焦态视觉样式",
+      "details": [
+        "搜索框聚焦时恢复白色玻璃背景，避免扩展首屏样式覆盖网页端搜索态",
+        "搜索框两侧按钮和图标在聚焦态正确显示并切换为深色"
+      ],
+      "tags": [
+        "fix",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "4e76521",
+      "date": "2026-08-03",
+      "summary": "同步扩展清单版本",
+      "details": [],
+      "tags": [
+        "improve"
+      ]
+    },
+    {
+      "hash": "ac739dd",
+      "date": "2026-08-03",
+      "summary": "同步项目审计发布状态",
+      "details": [],
+      "tags": [
+        "improve"
+      ]
+    },
+    {
+      "hash": "6296e9a",
       "date": "2026-08-03",
       "summary": "新增本地浏览器扩展并同步首页适配",
       "details": [
