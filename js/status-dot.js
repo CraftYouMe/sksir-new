@@ -99,7 +99,8 @@
 
     try {
       var url = encodeURIComponent(link.href);
-      var res = await fetch("/api/check?url=" + url);
+      var apiUrl = window.sksirApiUrl ? window.sksirApiUrl("/api/check") : "/api/check";
+      var res = await fetch(apiUrl + "?url=" + url);
       var data = await res.json();
 
       if (data.status === "alive" || data.status === "slow") {

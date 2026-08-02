@@ -60,6 +60,104 @@
             animation: none;
         }
     </style>
+    <style id="extension-startup-styles">
+        /* Extension startup: keep the background stable and settle the page as one surface. */
+        @keyframes sksirExtensionPageSettle {
+            from {
+                opacity: 0.96;
+                transform: translate3d(0, 5px, 0) scale(0.996);
+            }
+            55% { opacity: 0.99; }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+        }
+
+        @keyframes sksirExtensionQuickLaunchSettle {
+            from {
+                opacity: 0;
+                transform: translate3d(0, -9px, 0) scaleY(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scaleY(1);
+            }
+        }
+
+        html[data-sksir-extension] #bg {
+            clip-path: none !important;
+            -webkit-mask-image: none !important;
+            mask-image: none !important;
+        }
+
+        html[data-sksir-extension].sksir-extension-starting #bg {
+            clip-path: none !important;
+            -webkit-mask-image: none !important;
+            mask-image: none !important;
+            animation: none !important;
+        }
+
+        html[data-sksir-extension] #section {
+            filter: none !important;
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transform-origin: center center;
+        }
+
+        html[data-sksir-extension].sksir-extension-starting #section {
+            animation: sksirExtensionPageSettle 420ms cubic-bezier(0.22, 0.72, 0.2, 1) both;
+        }
+
+        /* The online page keeps the search surface steady; do not animate its parent in the extension. */
+        html[data-sksir-extension].sksir-extension-starting #section {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
+
+        html[data-sksir-extension].sksir-extension-starting #quick-launch:not([hidden]) {
+            animation: sksirExtensionQuickLaunchSettle 420ms cubic-bezier(0.22, 0.72, 0.2, 1) 55ms both;
+            transform-origin: center top;
+        }
+
+        /* Paint the final glass surface in the first frame so the search box never starts transparent. */
+        html[data-sksir-extension] .all-search {
+            border-color: rgba(255, 255, 255, 0.20);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+                rgba(14, 20, 28, 0.34);
+            box-shadow:
+                0 14px 34px rgba(0, 0, 0, 0.20),
+                inset 0 1px 0 rgba(255, 255, 255, 0.18),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.10);
+            -webkit-backdrop-filter: blur(18px) saturate(1.22);
+            backdrop-filter: blur(18px) saturate(1.22);
+        }
+
+        html[data-sksir-extension].sksir-extension-starting .all-search {
+            transition: none !important;
+        }
+
+        html[data-sksir-extension] #content.box #quick-launch,
+        html[data-sksir-extension] #content.setting-open #quick-launch,
+        html[data-sksir-extension] body.onsearch #quick-launch {
+            opacity: 0 !important;
+            transform: translate3d(0, -8px, 0) scaleY(0.96) !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html[data-sksir-extension].sksir-extension-starting #section,
+            html[data-sksir-extension].sksir-extension-starting #quick-launch:not([hidden]) {
+                animation: none;
+            }
+        }
+    </style>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta content="jsthon" name="yuanone" />
@@ -69,12 +167,12 @@
     />
     <meta content="远一,远一的导航,farone" name="keywords" />
     <title>导航酱 - 但行好事，莫问前程</title>
-    <link rel="icon" type="image/png" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/icon/apple-touch-icon.png">
-    <link rel="apple-touch-icon" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/icon/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/icon/apple-touch-icon.png">
     <link rel="preconnect" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com" crossorigin>
-    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/css/style.css?v=2026.08.02.14" as="style">
-    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/font/iconfont.woff2?v=2026.08.02.14" as="font" type="font/woff2" crossorigin="anonymous">
-    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/font/MiSans-UI.woff2?v=2026.08.02.14" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/css/style.css?v=2026.08.03.2" as="style">
+    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/font/iconfont.woff2?v=2026.08.03.2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/font/MiSans-UI.woff2?v=2026.08.03.2" as="font" type="font/woff2" crossorigin="anonymous">
     <meta name="theme-color" content="#333333">
     <script>
         (function () {
@@ -314,16 +412,16 @@
         }());
     </script>
     <!-- 引入样式 -->
-    <link id="app-styles" rel="stylesheet" type="text/css" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/css/style.css?v=2026.08.02.14">
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/jquery-3.6.0.min.js"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/main.js?v=2026.08.02.14"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/storage.js?v=2026.08.02.14"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/quick-launch-data.js?v=2026.08.02.14"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/search-engines.js?v=2026.08.02.14"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/set.js?v=2026.08.02.14"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/quick-launch.js?v=2026.08.02.14"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/search-ui.js?v=2026.08.02.14"></script>
-    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.02.14/js/bootstrap.js?v=2026.08.02.14"></script>
+    <link id="app-styles" rel="stylesheet" type="text/css" href="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/css/style.css?v=2026.08.03.2">
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/jquery-3.6.0.min.js"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/main.js?v=2026.08.03.2"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/storage.js?v=2026.08.03.2"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/quick-launch-data.js?v=2026.08.03.2"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/search-engines.js?v=2026.08.03.2"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/set.js?v=2026.08.03.2"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/quick-launch.js?v=2026.08.03.2"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/search-ui.js?v=2026.08.03.2"></script>
+    <script defer src="https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.2/js/bootstrap.js?v=2026.08.03.2"></script>
     <!-- Bookmark assets load after first screen; settings warm up; wallpaper/status stay on demand. -->
     <!-- IE Out -->
 </head>
@@ -1107,7 +1205,7 @@
         <div class="foot">
             <div class="power" aria-label="站点信息">
                 <span class="daily-quote" id="daily-quote">天暗下来，你就是光</span>
-                <span id="app-version" class="app-version" data-version="2026.08.02.14">v2026.08.02.14</span>
+                <span id="app-version" class="app-version" data-version="2026.08.03.2">v2026.08.03.2</span>
                 <span class="footer-separator" aria-hidden="true" hidden>&middot;</span>
             </div>
         </div>

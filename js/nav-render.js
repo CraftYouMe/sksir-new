@@ -38,8 +38,16 @@
   }
 
   var tabs = Array.isArray(data.tabs) ? data.tabs : [];
-  var iconFallback = data.iconFallback || "./img/icon/fangdiu.png";
+  var iconFallback = data.iconFallback || window.sksirIconFallback || "./img/icon/fangdiu.png";
   var deferredHydrationScheduled = false;
+
+  function setIconSource(image, source) {
+    if (window.SksirIconCache && typeof window.SksirIconCache.load === "function") {
+      window.SksirIconCache.load(image, source);
+      return;
+    }
+    image.src = source;
+  }
 
   function appendText(parent, text) {
     parent.appendChild(document.createTextNode(text || ""));
@@ -98,7 +106,7 @@
     img.loading = "lazy";
     img.decoding = "async";
     img.setAttribute("fetchpriority", "low");
-    img.src = isRemoteIcon ? iconFallback : src;
+    setIconSource(img, isRemoteIcon ? iconFallback : src);
     if (isRemoteIcon) {
       img.dataset.iconSrc = src;
       img.classList.add("iconcss-pending");
@@ -111,7 +119,7 @@
         return;
       }
       img.dataset.fallbackApplied = "1";
-      img.src = iconFallback;
+      setIconSource(img, iconFallback);
     });
 
     return img;
@@ -139,7 +147,7 @@
         img.dataset.fallbackApplied = "";
         img.classList.remove("error", "iconcss-pending");
         delete img.dataset.iconSrc;
-        img.src = src;
+        setIconSource(img, src);
       });
 
       if (icons.length) {

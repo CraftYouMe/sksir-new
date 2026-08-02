@@ -3,7 +3,9 @@ const http = require("http");
 const path = require("path");
 const { URL } = require("url");
 
-const rootDir = path.resolve(__dirname, "..");
+const workspaceDir = path.resolve(__dirname, "..");
+const rootArg = process.argv.find((arg) => arg.startsWith("--root="));
+const rootDir = path.resolve(rootArg ? rootArg.slice("--root=".length) : workspaceDir);
 const host = "127.0.0.1";
 const portArg = process.argv.find((arg) => arg.startsWith("--port="));
 const port = portArg ? Number(portArg.slice(7)) : 4173;

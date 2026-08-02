@@ -39,7 +39,7 @@
 - 使用约 90 KiB 的本地 MiSans UI 子集并启用 `font-display: swap`，避免远程大字体阻塞文字显示
 - 带版本号的 CSS、JavaScript、字体和运行时数据脚本使用一年不可变缓存，HTML、版本检查和接口保持及时更新
 - 本地提示框兜底并入主脚本，减少一个首屏 defer 脚本请求
-- Cookies 依赖并入设置脚本，首屏 defer 脚本请求进一步精简为 3 个
+- Cookies 依赖并入设置脚本，首屏模块按职责拆分并使用 `defer` 加载；收藏数据、渲染器和状态检测不进入首屏资源链
 - 移动端适配，包含 iOS Safari 首屏高度与字体稳定处理
 - 欢迎提示、访问统计、每日一言页脚
 - 简单的前端密码隐藏分组
@@ -55,6 +55,7 @@
 ├── css/design-system.css    # 设计测试页与组件视觉基准
 ├── css/settings.css         # 设置中心与按需设置组件样式
 ├── css/status-dot.css       # 按需加载的网站状态与测速样式
+├── extension/               # Chromium Manifest V3 新标签页扩展源码
 ├── data/sites.json           # 规范化导航站点源数据
 ├── data/sites.js             # 自动生成的线上兼容数据
 ├── data/app-version.json     # 当前版本号
@@ -68,6 +69,7 @@
 ├── js/settings.js            # 设置中心分组、表单和收藏显示行数逻辑
 ├── js/status-dot.js          # 网站状态检测交互
 ├── scripts/check.js          # 本地统一检查入口
+├── scripts/build-extension.js # 构建项目外的新标签页扩展
 ├── scripts/preview.js        # 映射版本化 OSS 资源的首页本地预览服务
 ├── scripts/build-font-subset.js # 生成/校验 MiSans UI 子集
 ├── scripts/preflight.js      # 兼容旧检查入口
@@ -80,16 +82,17 @@
 ├── scripts/generate-changelog.js # 从 Git 历史生成更新日志
 ├── sw.js                     # 旧 Service Worker 退役与缓存清理
 ├── vercel.json               # Vercel 缓存和基础安全响应头
-├── docs/REFACTOR_PLAN.md      # 分阶段重构实施手册
+├── docs/PROJECT-AUDIT.md      # 当前架构、审计结论和发布边界
 ├── index.html                # 页面入口
 ├── README.md                 # 使用与日常维护说明
 └── AGENTS.md                 # 开发约定与敏感区域说明
 ```
 
-## 重构计划
+## 项目审计与维护说明
 
-后续页面、收藏维护和代码结构整改统一按
-[`docs/REFACTOR_PLAN.md`](docs/REFACTOR_PLAN.md) 分阶段实施。该文档包含每个阶段的范围、步骤、兼容边界、验收标准和交付记录格式。
+当前架构、历史实施摘要、审计结论和发布边界统一记录在
+[`docs/PROJECT-AUDIT.md`](docs/PROJECT-AUDIT.md)。技术约束仍以根目录
+[`AGENTS.md`](AGENTS.md) 为准，本文不重复维护两套规则。
 
 ## 日常维护
 
@@ -111,6 +114,26 @@ npm run preview -- --port=4187
 ```
 
 测试首屏动画时，在浏览器开发者工具中勾选 `Disable cache` 后硬刷新；完成后取消勾选，以便同时验证一年不可变缓存的正常读取。按 `Ctrl+C` 停止预览服务。
+
+### 浏览器扩展
+
+项目提供 Chromium Manifest V3 新标签页扩展。扩展由现有首页构建为独立本地页面：HTML、CSS、JavaScript、字体、默认壁纸、UI 资源和内置站点图标全部打包到扩展内；扩展不再请求远程 favicon。用户配置、收藏和设置继续使用本地存储，并沿用网页端的数据导入/导出方案。
+
+扩展源码位于 `extension/`，构建产物默认输出到项目目录外的同级目录：
+
+```powershell
+npm run build:extension
+```
+
+然后在 Chrome 或 Edge 打开扩展管理页，启用“开发者模式”，选择“加载已解压的扩展程序”，加载：
+
+```text
+D:\导航站和博客文件\sksir-new-extension
+```
+
+扩展源码适配层位于 `extension/`，构建脚本从当前 `index.html`、`css/`、`js/`、`font/`、`data/`、`img/` 和本地 UI 资源生成完整扩展，并把网站数据中的 OSS 图标引用改写为扩展内的本地路径。网站功能或资源变化后重新构建并在扩展管理页点击刷新；构建脚本会拒绝把产物写入项目目录。
+
+扩展加载后，新建标签页使用本地打包页面，不依赖线上页面 HTML、CSS 或 JavaScript。Chrome 不允许扩展通过 `startup_pages` 填写 `chrome://newtab/`，因此请在浏览器设置中选择“打开新标签页”；浏览器启动时会继续使用扩展接管的本地导航页。无痕窗口不支持扩展接管新标签页，这是 Chrome 的平台限制。状态检测、每日壁纸等现有在线 API 仍按网页端逻辑请求线上接口。
 
 ### 更新收藏
 

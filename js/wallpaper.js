@@ -2,7 +2,7 @@
   var customStorageKey = "sksir-custom-wallpapers";
   var dailySourceKey = "sksir-wallpaper-daily-source";
   var dailyApiKey = "sksir-wallpaper-daily-api";
-  var bingUrl = "/api/bing";
+  var bingUrl = window.sksirApiUrl ? window.sksirApiUrl("/api/bing") : "/api/bing";
   var activeWallpaper = null;
 
   function showMessage(message) {

@@ -337,7 +337,11 @@
                 icon.remove();
                 link.classList.add("is-icon-fallback");
             });
-            icon.src = entry.icon;
+            if (window.SksirIconCache && typeof window.SksirIconCache.load === "function") {
+                window.SksirIconCache.load(icon, entry.icon);
+            } else {
+                icon.src = entry.icon;
+            }
             if (entry.url === pendingAddedUrl) {
                 var slowTimer = setTimeout(function () {
                     var currentService = api();

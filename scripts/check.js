@@ -130,6 +130,22 @@ const checks = [
     args: ["--check", projectPath("scripts", "build-font-subset.js")]
   },
   {
+    name: "Syntax check extension config",
+    args: ["--check", projectPath("extension", "extension-config.js")]
+  },
+  {
+    name: "Syntax check extension icon cache",
+    args: ["--check", projectPath("extension", "icon-cache.js")]
+  },
+  {
+    name: "Syntax check extension event adapter",
+    args: ["--check", projectPath("extension", "extension-events.js")]
+  },
+  {
+    name: "Syntax check extension build script",
+    args: ["--check", projectPath("scripts", "build-extension.js")]
+  },
+  {
     name: "Test frontend data modules",
     args: [projectPath("scripts", "test-frontend-modules.js")]
   },
