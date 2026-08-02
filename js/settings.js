@@ -3,7 +3,7 @@
 
   function normalizeBookmarkRows(value) {
     var rows = parseInt(value, 10);
-    return rows >= 1 && rows <= 6 ? rows : 4;
+    return rows >= 1 && rows <= 6 ? rows : 6;
   }
 
   function applyBookmarkRows(value, persist) {
@@ -619,7 +619,7 @@
         showEngineEditor(false);
       });
     }
-    var storedRows = 4;
+    var storedRows = 6;
     try {
       storedRows = localStorage.getItem(bookmarkRowsKey);
     } catch (error) {}

@@ -63,15 +63,15 @@
 @font-face {
     font-family: "iconfont";
     src:
-        url("../font/iconfont.woff2?v=2026.08.02.12") format("woff2"),
-        url("../font/iconfont.woff?v=2026.08.02.12") format("woff"),
-        url("../font/iconfont.ttf?v=2026.08.02.12") format("truetype");
+        url("../font/iconfont.woff2?v=2026.08.02.14") format("woff2"),
+        url("../font/iconfont.woff?v=2026.08.02.14") format("woff"),
+        url("../font/iconfont.ttf?v=2026.08.02.14") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "MiSans UI";
-    src: url("../font/MiSans-UI.woff2?v=2026.08.02.12") format("woff2");
+    src: url("../font/MiSans-UI.woff2?v=2026.08.02.14") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -5893,9 +5893,9 @@ html.ios-standalone .bg-all {
     }
 }
 
-/* 收藏中心桌面可见行数：默认四行，超出部分在卡片区滚动。 */
+/* 收藏中心桌面可见行数：默认六行，超出部分在卡片区滚动。 */
 :root {
-    --bookmark-panel-height: 550px;
+    --bookmark-panel-height: 790px;
 }
 
 html[data-bookmark-rows="1"] { --bookmark-panel-height: 190px; }
@@ -6324,4 +6324,66 @@ html[data-bookmark-rows="6"] { --bookmark-panel-height: 790px; }
         max-height: none;
         flex: 1 1 auto;
     }
+}
+
+/* 收藏内容由 mark 统一承接溢出，避免不同手机命中不同媒体查询后无法滚动。 */
+.mark {
+    overflow: visible;
+}
+
+.mark .bookmark-navline {
+    position: absolute;
+    overflow: visible;
+    transform: translateX(-50%);
+}
+
+.mark .products {
+    height: 100%;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(220, 233, 244, 0.34) transparent;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    flex: 1 1 auto;
+}
+
+.mark .products .mainCont.selected {
+    height: auto;
+    min-height: 100%;
+    max-height: none;
+    align-content: flex-start;
+    overflow: visible;
+}
+
+.mark .products .mainCont.selected > [data-nav-items] {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    flex: 0 0 auto;
+}
+
+.mark .products .quick-all,
+.mark .products .quick-alls,
+.mark .products .quick-jl {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    flex: 0 0 auto;
+}
+
+.mark .products::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mark .products::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(220, 233, 244, 0.34);
+}
+
+/* 防止滚动规则改变工具栏原有的外悬位置。 */
+.mark .bookmark-navline {
+    z-index: 20;
 }

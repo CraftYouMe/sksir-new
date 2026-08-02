@@ -1,9 +1,20 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-02T10:49:44.105Z",
+  "generatedAt": "2026-08-02T11:15:28.232Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-02",
+      "summary": "解决收藏中心移动端滚动",
+      "details": [
+        "收藏内容超出面板时由收藏内容区统一承接滚动，兼容不同手机屏幕和媒体查询"
+      ],
+      "tags": [
+        "fix"
+      ]
+    },
+    {
+      "hash": "3b5952c",
       "date": "2026-08-02",
       "summary": "精修设置中心与搜索引擎拖拽交互",
       "details": [
