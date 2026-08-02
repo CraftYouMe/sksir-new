@@ -450,11 +450,19 @@
         }
     }
 
+    function syncExtensionSearchState(active) {
+        var searchBox = document.querySelector(".all-search");
+        var root = document.documentElement;
+        if (!searchBox || !root.hasAttribute("data-sksir-extension")) return;
+        searchBox.classList.toggle("sksir-extension-searching", !!active);
+    }
+
     function focusSearch() {
         if (!document.body.classList.contains("onsearch")) {
             var mobile = window.matchMedia && window.matchMedia("(max-width: 720px)").matches;
             panelReadyAt = mobile ? 0 : Date.now() + 320;
         }
+        syncExtensionSearchState(true);
         document.body.classList.add("onsearch");
         scheduleKeywordPanelUpdate();
         setTimeout(scheduleKeywordPanelUpdate, 180);
@@ -463,6 +471,7 @@
 
     function blurSearch() {
         panelReadyAt = 0;
+        syncExtensionSearchState(false);
         document.body.classList.remove("onsearch");
         var input = document.querySelector(".wd");
         var enginePanel = document.querySelector(".search-engine");

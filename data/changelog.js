@@ -1,9 +1,29 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-02T16:21:28.534Z",
+  "generatedAt": "2026-08-02T16:36:35.942Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-03",
+      "summary": "稳固扩展搜索进出过渡状态",
+      "details": [
+        "搜索框自身状态类直接驱动聚焦和失焦过渡，避免首次加载时父级状态匹配延迟导致瞬移"
+      ],
+      "tags": [
+        "optimize"
+      ]
+    },
+    {
+      "hash": "8615442",
+      "date": "2026-08-03",
+      "summary": "同步搜索修复发布状态",
+      "details": [],
+      "tags": [
+        "fix"
+      ]
+    },
+    {
+      "hash": "bdb5788",
       "date": "2026-08-03",
       "summary": "解决扩展搜索聚焦态视觉样式",
       "details": [
