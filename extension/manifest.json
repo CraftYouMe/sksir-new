@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Sksir New Tab",
   "version": "1.0.0",
-  "version_name": "2026.08.03.12",
+  "version_name": "2026.08.03.13",
   "description": "将 Sksir 导航站完整本地化为浏览器新标签页。",
   "homepage_url": "https://sksir.top/",
   "permissions": [],

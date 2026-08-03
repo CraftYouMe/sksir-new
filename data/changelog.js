@@ -1,7 +1,27 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T04:03:47.094Z",
+  "generatedAt": "2026-08-03T04:14:04.301Z",
   "source": "git",
   "entries": [
+    {
+      "hash": "本次更新",
+      "date": "2026-08-03",
+      "summary": "解决快捷入口拖动残影并统一设置字体",
+      "details": [
+        "快捷入口拖动结束或失去指针捕获时立即清理残影，设置选项行明确使用线上 MiSans 字体栈"
+      ],
+      "tags": [
+        "fix"
+      ]
+    },
+    {
+      "hash": "c7d4d04",
+      "date": "2026-08-03",
+      "summary": "同步收藏中心背景动画审计记录",
+      "details": [],
+      "tags": [
+        "improve"
+      ]
+    },
     {
       "hash": "a205219",
       "date": "2026-08-03",

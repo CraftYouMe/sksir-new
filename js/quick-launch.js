@@ -14,6 +14,19 @@
         return window.SksirQuickLaunch;
     }
 
+    function cleanupQuickLaunchDragArtifacts() {
+        document.querySelectorAll(".quick-launch-drag-ghost, .quick-launch-drop-placeholder").forEach(function (node) {
+            node.remove();
+        });
+        document.querySelectorAll("#quick-launch .quick-launch-item.is-dragging").forEach(function (node) {
+            node.classList.remove("is-dragging");
+            node.removeAttribute("aria-grabbed");
+        });
+        document.querySelectorAll("#quick-launch.is-reordering").forEach(function (node) {
+            node.classList.remove("is-reordering");
+        });
+    }
+
     function readValue(id) {
         var element = document.getElementById(id);
         return element ? element.value : "";
@@ -141,9 +154,17 @@
         var pointerY = 0;
         var moveFrame = 0;
         var dragging = false;
+        var finishing = false;
+        var activePointerId = null;
         var ghost = null;
         var placeholder = null;
         var panel = null;
+
+        function removeGhost() {
+            if (!ghost) return;
+            ghost.remove();
+            ghost = null;
+        }
 
         function moveGhostImmediately(event) {
             var points = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : null;
@@ -215,6 +236,7 @@
             startX = event.clientX;
             startY = event.clientY;
             dragging = false;
+            activePointerId = event.pointerId;
             item.setPointerCapture(event.pointerId);
         });
 
@@ -232,12 +254,19 @@
         });
 
         function finishDrag(event) {
-            if (item.hasPointerCapture(event.pointerId)) item.releasePointerCapture(event.pointerId);
+            if (finishing) return;
+            if (!dragging) {
+                removeGhost();
+                return;
+            }
+            finishing = true;
+            if (activePointerId !== null && item.hasPointerCapture(activePointerId)) {
+                item.releasePointerCapture(activePointerId);
+            }
             if (moveFrame) {
                 cancelAnimationFrame(moveFrame);
                 moveFrame = 0;
             }
-            if (!dragging) return;
 
             panel.insertBefore(item, placeholder);
             placeholder.remove();
@@ -245,17 +274,7 @@
             item.classList.remove("is-dragging");
             item.removeAttribute("aria-grabbed");
             panel.classList.remove("is-reordering");
-            if (ghost) {
-                var finalRect = item.getBoundingClientRect();
-                ghost.style.transition = "transform 160ms cubic-bezier(.2,.8,.2,1), opacity 160ms ease";
-                ghost.style.opacity = "0";
-                ghost.style.transform = "translate3d(" + (finalRect.left - 5) + "px," +
-                    (finalRect.top - 5) + "px,0) scale(0.78)";
-                setTimeout(function () {
-                    if (ghost) ghost.remove();
-                    ghost = null;
-                }, 170);
-            }
+            removeGhost();
             suppressClickUntil = Date.now() + 400;
             saveOrder(service);
             item.classList.add("just-dropped");
@@ -263,10 +282,21 @@
             event.preventDefault();
             dragging = false;
             panel = null;
+            activePointerId = null;
+            finishing = false;
         }
 
         item.addEventListener("pointerup", finishDrag);
         item.addEventListener("pointercancel", finishDrag);
+        item.addEventListener("lostpointercapture", function () {
+            if (!dragging || finishing) return;
+            finishDrag({
+                type: "pointercancel",
+                clientX: pointerX,
+                clientY: pointerY,
+                preventDefault: function () {}
+            });
+        });
         item.addEventListener("dragstart", function (event) {
             event.preventDefault();
         });
@@ -308,6 +338,7 @@
             panel.hidden = false;
             return Promise.resolve();
         }
+        cleanupQuickLaunchDragArtifacts();
         panel.replaceChildren();
         items.forEach(function (entry, itemIndex) {
             var link = document.createElement("a");
