@@ -1,9 +1,9 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T04:02:59.131Z",
+  "generatedAt": "2026-08-03T04:03:47.094Z",
   "source": "git",
   "entries": [
     {
-      "hash": "本次更新",
+      "hash": "a205219",
       "date": "2026-08-03",
       "summary": "恢复收藏中心背景过渡",
       "details": [
