@@ -1,7 +1,27 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T03:58:02.133Z",
+  "generatedAt": "2026-08-03T04:02:59.131Z",
   "source": "git",
   "entries": [
+    {
+      "hash": "本次更新",
+      "date": "2026-08-03",
+      "summary": "恢复收藏中心背景过渡",
+      "details": [
+        "打开收藏中心时背景沿用线上模糊聚焦效果，关闭时平滑恢复清晰"
+      ],
+      "tags": [
+        "improve"
+      ]
+    },
+    {
+      "hash": "3fd4498",
+      "date": "2026-08-03",
+      "summary": "同步扩展背景过渡审计记录",
+      "details": [],
+      "tags": [
+        "improve"
+      ]
+    },
     {
       "hash": "671235f",
       "date": "2026-08-03",
