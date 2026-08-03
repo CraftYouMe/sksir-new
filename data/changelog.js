@@ -1,9 +1,9 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T03:44:42.840Z",
+  "generatedAt": "2026-08-03T03:46:21.898Z",
   "source": "git",
   "entries": [
     {
-      "hash": "本次更新",
+      "hash": "b6a51ad",
       "date": "2026-08-03",
       "summary": "解决扩展首次搜索取消过渡",
       "details": [
