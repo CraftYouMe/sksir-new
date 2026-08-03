@@ -467,20 +467,20 @@ function scheduleKeywordReminder(delay) {
  */
 var bg_img_preinstall = {
     "type": "1",
-    "path": window.sksirDefaultWallpaper || "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.13/icon/background1.webp",
+    "path": window.sksirDefaultWallpaper || "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.14/icon/background1.webp",
 };
 var bgImgStorageKey = "sksir-bg-img";
 
 var bg_img_pictures = window.sksirWallpaperPictures || [
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.13/icon/background1.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.13/icon/background-image2.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.13/icon/background-image3.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.13/icon/background-image4.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.13/icon/background-image5.webp',
-    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.13/icon/background-image6.webp'
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.14/icon/background1.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.14/icon/background-image2.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.14/icon/background-image3.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.14/icon/background-image4.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.14/icon/background-image5.webp',
+    'https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.14/icon/background-image6.webp'
 ];
 
-var bgImgResponsiveBase = window.sksirWallpaperAssetBase || "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.13/wallpaper/responsive/";
+var bgImgResponsiveBase = window.sksirWallpaperAssetBase || "https://yuanone-blog-picture.oss-cn-beijing.aliyuncs.com/sksir/2026.08.03.14/wallpaper/responsive/";
 var bgImgMobileMedia = window.matchMedia
     ? window.matchMedia("(max-width: 720px)")
     : null;

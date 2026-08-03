@@ -4862,6 +4862,17 @@ html.ios-safari .changelog-card,
     box-shadow: none;
 }
 
+/* Extension parity: keep option-row copy at the same readable size as the live page. */
+html[data-sksir-extension] .set .settings-option-row strong {
+    font-size: 16px;
+    line-height: 1.45;
+}
+
+html[data-sksir-extension] .set .settings-option-row p {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 @media (max-width: 720px) {
     .set {
         width: calc(100vw - 16px);

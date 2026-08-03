@@ -1,7 +1,27 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T04:15:05.996Z",
+  "generatedAt": "2026-08-03T04:22:42.886Z",
   "source": "git",
   "entries": [
+    {
+      "hash": "本次更新",
+      "date": "2026-08-03",
+      "summary": "统一扩展设置选项字号",
+      "details": [
+        "固定设置选项标题和说明文字尺寸，解决扩展版显示偏小的问题"
+      ],
+      "tags": [
+        "fix"
+      ]
+    },
+    {
+      "hash": "58cc1cf",
+      "date": "2026-08-03",
+      "summary": "同步快捷入口残影与设置字体审计记录",
+      "details": [],
+      "tags": [
+        "improve"
+      ]
+    },
     {
       "hash": "bba19c4",
       "date": "2026-08-03",
