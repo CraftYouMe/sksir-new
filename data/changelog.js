@@ -1,9 +1,9 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T04:14:04.301Z",
+  "generatedAt": "2026-08-03T04:15:05.996Z",
   "source": "git",
   "entries": [
     {
-      "hash": "本次更新",
+      "hash": "bba19c4",
       "date": "2026-08-03",
       "summary": "解决快捷入口拖动残影并统一设置字体",
       "details": [
