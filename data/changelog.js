@@ -1,9 +1,30 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-02T16:36:35.942Z",
+  "generatedAt": "2026-08-03T03:44:42.840Z",
   "source": "git",
   "entries": [
     {
       "hash": "本次更新",
+      "date": "2026-08-03",
+      "summary": "解决扩展首次搜索取消过渡",
+      "details": [
+        "扩展搜索框在首次加载后进入和取消时保持连续过渡，不再被首屏性能样式覆盖"
+      ],
+      "tags": [
+        "fix",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "f0f8868",
+      "date": "2026-08-03",
+      "summary": "同步搜索动画发布状态",
+      "details": [],
+      "tags": [
+        "improve"
+      ]
+    },
+    {
+      "hash": "55c2636",
       "date": "2026-08-03",
       "summary": "稳固扩展搜索进出过渡状态",
       "details": [
