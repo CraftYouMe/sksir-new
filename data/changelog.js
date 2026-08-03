@@ -1,9 +1,9 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T03:57:09.560Z",
+  "generatedAt": "2026-08-03T03:58:02.133Z",
   "source": "git",
   "entries": [
     {
-      "hash": "本次更新",
+      "hash": "671235f",
       "date": "2026-08-03",
       "summary": "解决扩展背景取消模糊过渡",
       "details": [
