@@ -1,9 +1,9 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T04:22:42.886Z",
+  "generatedAt": "2026-08-03T04:23:52.802Z",
   "source": "git",
   "entries": [
     {
-      "hash": "本次更新",
+      "hash": "8822ffb",
       "date": "2026-08-03",
       "summary": "统一扩展设置选项字号",
       "details": [
