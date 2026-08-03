@@ -1,7 +1,28 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T03:53:40.805Z",
+  "generatedAt": "2026-08-03T03:57:09.560Z",
   "source": "git",
   "entries": [
+    {
+      "hash": "本次更新",
+      "date": "2026-08-03",
+      "summary": "解决扩展背景取消模糊过渡",
+      "details": [
+        "取消搜索时背景从模糊恢复清晰保持 300 毫秒过渡，不再被性能模式直接清零"
+      ],
+      "tags": [
+        "fix",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "3afaa5f",
+      "date": "2026-08-03",
+      "summary": "同步扩展搜索关闭过渡审计记录",
+      "details": [],
+      "tags": [
+        "improve"
+      ]
+    },
     {
       "hash": "7efafaa",
       "date": "2026-08-03",
