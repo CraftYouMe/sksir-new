@@ -1,7 +1,28 @@
 window.SKSIR_CHANGELOG = {
-  "generatedAt": "2026-08-03T03:46:21.898Z",
+  "generatedAt": "2026-08-03T03:52:40.868Z",
   "source": "git",
   "entries": [
+    {
+      "hash": "本次更新",
+      "date": "2026-08-03",
+      "summary": "解决扩展首次取消搜索过渡",
+      "details": [
+        "取消搜索时先建立关闭状态并强制完成一帧布局，首次加载也能连续恢复搜索框位置"
+      ],
+      "tags": [
+        "fix",
+        "optimize"
+      ]
+    },
+    {
+      "hash": "c42c076",
+      "date": "2026-08-03",
+      "summary": "同步扩展过渡修复审计记录",
+      "details": [],
+      "tags": [
+        "fix"
+      ]
+    },
     {
       "hash": "b6a51ad",
       "date": "2026-08-03",

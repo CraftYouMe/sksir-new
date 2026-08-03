@@ -8,6 +8,7 @@
     var remoteState = "idle";
     var remoteCleanup = null;
     var engineCloseTimer = 0;
+    var extensionSearchCloseTimer = 0;
     var suggestionsEnabledKey = "sksir-search-suggestions-enabled";
     var historySuggestionsEnabledKey = "sksir-search-history-suggestions-enabled";
 
@@ -454,6 +455,26 @@
         var searchBox = document.querySelector(".all-search");
         var root = document.documentElement;
         if (!searchBox || !root.hasAttribute("data-sksir-extension")) return;
+
+        if (extensionSearchCloseTimer) {
+            clearTimeout(extensionSearchCloseTimer);
+            extensionSearchCloseTimer = 0;
+        }
+
+        searchBox.classList.remove("sksir-extension-search-closing");
+        if (!active) {
+            searchBox.classList.remove("sksir-extension-searching");
+            searchBox.classList.add("sksir-extension-search-closing");
+            // Flush the closing state while the old search state is still painted.
+            // This prevents the first cancellation from collapsing in one frame.
+            void searchBox.offsetWidth;
+            extensionSearchCloseTimer = window.setTimeout(function () {
+                searchBox.classList.remove("sksir-extension-search-closing");
+                extensionSearchCloseTimer = 0;
+            }, 360);
+            return;
+        }
+
         searchBox.classList.toggle("sksir-extension-searching", !!active);
     }
 
@@ -471,8 +492,8 @@
 
     function blurSearch() {
         panelReadyAt = 0;
-        syncExtensionSearchState(false);
         document.body.classList.remove("onsearch");
+        syncExtensionSearchState(false);
         var input = document.querySelector(".wd");
         var enginePanel = document.querySelector(".search-engine");
         if (input) input.value = "";
